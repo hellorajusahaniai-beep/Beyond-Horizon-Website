@@ -191,14 +191,14 @@
         }
 
         resize() {
-            const isPortrait = (window.innerWidth / window.innerHeight) < 1.0;
-            const currentFolder = isPortrait ? this.portraitFolder : this.landscapeFolder;
+            const currentBase = this.getActiveBase();
 
             // If orientation flipped after initial preload, refresh frame paths
-            if (this.isPreloadStarted && this.activeFolder !== currentFolder) {
-                this.activeFolder = currentFolder;
+            if (this.isPreloadStarted && this.activeBase !== currentBase) {
+                this.activeBase = currentBase;
                 this.isPreloadStarted = false;
                 this.decodedCount = 0;
+                this.lastDrawnFrame = -1;
                 this.images = new Array(this.frameCount);
                 this.startPreload();
             }
