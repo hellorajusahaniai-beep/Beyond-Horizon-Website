@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond Horizon - Digital Marketing &amp; Creative Agency</title>
+    
+    <!-- Favicon data URI to prevent 404 console error -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Fixed Navigation Bar (z-50) -->
+    <header class="site-header" id="site-header">
+        <div class="nav-container">
+            <!-- Wordmark Logo -->
+            <a href="#" class="nav-logo" aria-label="Beyond Horizon Home">
+                <span class="logo-text">BEYOND HORIZON</span>
+                <span class="logo-dot"></span>
+            </a>
+
+            <!-- Desktop Navigation Links -->
+            <nav class="nav-desktop">
+                <a href="#work" class="nav-link">Work</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <a href="#contact" class="nav-cta-btn">LET'S TALK</a>
+            </nav>
+
+            <!-- Mobile Hamburger Button -->
+            <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle Navigation Menu" aria-expanded="false">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+        </div>
+
+        <!-- Mobile Fullscreen Overlay Menu -->
+        <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+            <nav class="mobile-nav-links">
+                <a href="#work" class="mobile-nav-link">Work</a>
+                <a href="#about" class="mobile-nav-link">About</a>
+                <a href="#services" class="mobile-nav-link">Services</a>
+                <a href="#contact" class="mobile-nav-link">Contact</a>
+                <a href="#contact" class="mobile-nav-cta">LET'S TALK</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Static Fine Film Grain Overlay (Fixed Full-Screen, 4.5% Opacity, Overlay Blend) -->
+    <div class="film-grain-overlay" aria-hidden="true"></div>
+
+    <!-- Sequence 1: 300vh Scroll Container driving Sticky Hero & Scrubbing Sequence -->
+    <div class="hero-scroll-wrapper" id="hero-scroll-wrapper">
+        <!-- Pinned Sticky Panel (100vh) -->
+        <section class="hero-sticky-panel" id="hero-sticky-panel">
+            <!-- Full-Bleed Canvas (z-0) -->
+            <canvas id="scroll-canvas" class="hero-canvas"></canvas>
+
+            <!-- Readability Gradient Overlay (z-10) -->
+            <div class="hero-gradient-overlay"></div>
+
+            <!-- Left-Aligned Text Steps (z-20) -->
+            <div class="hero-text-block" id="hero-text-block">
+                <!-- Step 1: Beyond Horizon (0.00 - 0.30) -->
+                <div class="text-step active" data-step="0">
+                    <h1 class="hero-heading">
+                        <span>BEYOND</span>
+                        <span>HORIZON</span>
+                    </h1>
+                    <p class="hero-subtext">DIGITAL MARKETING &amp; CREATIVE AGENCY</p>
+                </div>
+
+                <!-- Step 2: Raju Sahani (0.36 - 0.64) -->
+                <div class="text-step" data-step="1">
+                    <h1 class="hero-heading single-line">
+                        <span>RAJU SAHANI</span>
+                    </h1>
+                    <p class="hero-subtext">FOUNDER OF BEYOND HORIZON</p>
+                </div>
+
+                <!-- Step 3: Brands That Refuse To Blend In (0.70 - 0.82) -->
+                <div class="text-step" data-step="2">
+                    <h1 class="hero-heading">
+                        <span>BRANDS THAT REFUSE</span>
+                        <span>TO BLEND IN</span>
+                    </h1>
+                    <p class="hero-subtext">WE BUILD THEM. LET'S BUILD YOURS.</p>
+                    
+                    <div class="hero-cta-wrapper">
+                        <a href="#contact" class="hero-cta-btn">
+                            <span>START A PROJECT</span>
+                            <svg class="cta-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                        <p class="hero-cta-note">Currently taking 2 projects for this quarter</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom-Left Scroll Indicator with Step Dots (z-25) -->
+            <div class="scroll-indicator" id="scroll-indicator">
+                <div class="scroll-line"></div>
+                <span class="scroll-text">SCROLL</span>
+                <div class="step-dots">
+                    <span class="step-dot active" data-dot="0"></span>
+                    <span class="step-dot" data-dot="1"></span>
+                    <span class="step-dot" data-dot="2"></span>
+                </div>
+            </div>
+
+            <!-- Bottom-Left Minimal Preloader -->
+            <div class="hero-loader" id="hero-loader">
+                <div class="loader-bar-track">
+                    <div class="loader-bar-fill" id="loader-bar-fill"></div>
+                </div>
+                <span class="loader-text" id="loader-text">LOADING 0%</span>
+            </div>
+        </section>
+    </div>
+
+    <!-- Sequence 2: 300vh Scroll Container with Split Left-Right Composition & 60vh Overlap -->
+    <div class="seq2-scroll-wrapper" id="seq2-scroll-wrapper">
+        <!-- Pinned Sticky Panel (100vh) -->
+        <section class="seq2-sticky-panel" id="seq2-sticky-panel">
+            <!-- Full-Bleed Canvas (z-0) -->
+            <canvas id="seq2-scroll-canvas" class="hero-canvas"></canvas>
+
+            <!-- Symmetric Dual-Side Gradient Overlay (z-10) -->
+            <div class="seq2-gradient-overlay"></div>
+
+            <!-- Split Text Container (z-20) -->
+            <div class="seq2-text-container" id="seq2-text-container">
+                <!-- Step 1: WHAT WE DO & Services List (0.15 - 0.50) -->
+                <div class="seq2-step seq2-step-services active" data-seq2-step="0">
+                    <div class="seq2-left-block">
+                        <h2 class="seq2-heading seq2-heading-left">WHAT WE DO</h2>
+                        <p class="hero-subtext seq2-subtext-desktop">EVERYTHING YOUR BRAND NEEDS. NOTHING IT DOESN'T.</p>
+                    </div>
+                    <div class="seq2-right-block">
+                        <ul class="seq2-services-list" aria-label="Services List">
+                            <li class="seq2-service-item">BRAND STRATEGY</li>
+                            <li class="seq2-service-item">PERFORMANCE MARKETING</li>
+                            <li class="seq2-service-item">WEB DESIGN</li>
+                            <li class="seq2-service-item">CONTENT PRODUCTION</li>
+                        </ul>
+                    </div>
+                    <p class="hero-subtext seq2-subtext-mobile">EVERYTHING YOUR BRAND NEEDS. NOTHING IT DOESN'T.</p>
+                    <div class="seq2-vertical-subtext">
+                        <span>EVERYTHING YOUR BRAND NEEDS. NOTHING IT DOESN'T.</span>
+                    </div>
+                </div>
+
+                <!-- Step 2: Proof Stats (0.55 - 1.00) -->
+                <div class="seq2-step seq2-step-stats" data-seq2-step="1">
+                    <div class="seq2-left-block">
+                        <h2 class="seq2-heading seq2-heading-left">
+                            <span>REAL BUSINESSES.</span>
+                            <span>REAL REVENUE.</span>
+                        </h2>
+                        <p class="hero-subtext seq2-subtext-desktop">NO VANITY METRICS. PROVEN RESULTS.</p>
+                    </div>
+                    <div class="seq2-right-block">
+                        <div class="seq2-stats-list" aria-label="Key Performance Proof Stats">
+                            <div class="seq2-stat-item" data-target="12" data-suffix="">
+                                <div class="seq2-stat-num-wrapper">
+                                    <span class="seq2-stat-num">12</span>
+                                </div>
+                                <span class="seq2-stat-label">LOCAL BUSINESSES GROWN</span>
+                            </div>
+                            <div class="seq2-stat-item" data-target="3" data-suffix="X">
+                                <div class="seq2-stat-num-wrapper">
+                                    <span class="seq2-stat-num">3X</span>
+                                </div>
+                                <span class="seq2-stat-label">AVERAGE INCREASE IN ENQUIRIES</span>
+                            </div>
+                            <div class="seq2-stat-item" data-target="100" data-suffix="%">
+                                <div class="seq2-stat-num-wrapper">
+                                    <span class="seq2-stat-num">100%</span>
+                                </div>
+                                <span class="seq2-stat-label">CLIENTS STILL WITH US</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="hero-subtext seq2-subtext-mobile">NO VANITY METRICS. PROVEN RESULTS.</p>
+                    <div class="seq2-vertical-subtext">
+                        <span>NO VANITY METRICS. PROVEN RESULTS.</span>
+                    </div>
+                </div>
+
+                <!-- Step 3: WHO WE WORK WITH & Business Types (0.67 - 1.00) -->
+                <div class="seq2-step seq2-step-services" data-seq2-step="2">
+                    <div class="seq2-left-block">
+                        <h2 class="seq2-heading seq2-heading-left">WHO WE WORK WITH</h2>
+                        <p class="hero-subtext seq2-subtext-desktop">LOCAL BUSINESSES THAT WANT TO BE THE OBVIOUS CHOICE.</p>
+                    </div>
+                    <div class="seq2-right-block">
+                        <ul class="seq2-services-list" aria-label="Business Types List">
+                            <li class="seq2-service-item">SALONS · GYMS · CAFES</li>
+                            <li class="seq2-service-item">CLINICS · BOUTIQUES</li>
+                            <li class="seq2-service-item">RESTAURANTS · COACHING</li>
+                        </ul>
+                    </div>
+                    <p class="hero-subtext seq2-subtext-mobile">LOCAL BUSINESSES THAT WANT TO BE THE OBVIOUS CHOICE.</p>
+                    <div class="seq2-vertical-subtext">
+                        <span>LOCAL BUSINESSES THAT WANT TO BE THE OBVIOUS CHOICE.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom-Left Minimal Preloader for Sequence 2 (Lazy Loaded) -->
+            <div class="hero-loader" id="seq2-loader">
+                <div class="loader-bar-track">
+                    <div class="loader-bar-fill" id="seq2-loader-bar-fill"></div>
+                </div>
+                <span class="loader-text" id="seq2-loader-text">LOADING 0%</span>
+            </div>
+        </section>
+    </div>
+
+    <!-- Main Content Sections Following Pinned Sequences -->
+    <main class="main-content">
+        <!-- Compact Proof Bar Section (Thin Transition Strip directly after Sequence 2) -->
+        <section class="proof-bar" id="proof-bar" aria-label="Key Proof & Business Types">
+            <div class="section-container proof-container">
+                <!-- Top Tagline: Small Gray Uppercase, Wide Letter-Spacing -->
+                <div class="proof-tagline-wrapper">
+                    <p class="proof-tagline">REAL BUSINESSES. REAL REVENUE. NO VANITY METRICS.</p>
+                </div>
+
+                <!-- Scrolling Text Marquee: Business Types -->
+                <div class="proof-marquee-wrapper" aria-label="Business types we work with">
+                    <div class="proof-marquee-track">
+                        <!-- Group 1 -->
+                        <div class="proof-marquee-group" aria-hidden="false">
+                            <span class="marquee-text-item">SALONS</span>
+                            <span class="marquee-bullet">•</span>
+                            <span class="marquee-text-item">GYMS</span>
+                            <span class="marquee-bullet">•</span>
+                            <span class="marquee-text-item">CAFES</span>
+                            <span class="marquee-bullet">•</span>
+                            <span class="marquee-text-item">CLINICS</span>
+                            <span class="marquee-bullet">•</span>
+                            <span class="marquee-text-item">BOUTIQUES</span>
+                            <span class="marquee-bullet">•</span>
+                            <span class="marquee-text-item">REAL ESTATE</span>
+                            <span class="marquee-bullet">•</span>
+                            <span class="marquee-text-item">RESTAURANTS</span>
+                            <span class="marquee-bullet">•</span>
+                            <span class="marquee-text-item">COACHING CENTRES</span>
+                            <span class="marquee-bullet">•</span>
+                        </div>
+                        <!-- Group 2 (Duplicate for Seamless Infinite Loop) -->
+                        <div class="proof-marquee-group" aria-hidden="true">
+                            <span class="marquee-text-item">SALONS</span>
+                            <span class="marquee-bullet">•</span>
+                            <span class="marquee-text-item">GYMS</span>
+                            <span class="marquee-bullet">•</span>
+                            <span class="marquee-text-item">CAFES</span>
+                            <span class="marquee-bullet">•</span>
+                            <span class="marquee-text-item">CLINICS</span>
+                            <span class="marquee-bullet">•</span>
+                            <span class="marquee-text-item">BOUTIQUES</span>
+                            <span class="marquee-bullet">•</span>
+                            <span class="marquee-text-item">REAL ESTATE</span>
+                            <span class="marquee-bullet">•</span>
+                            <span class="marquee-text-item">RESTAURANTS</span>
+                            <span class="marquee-bullet">•</span>
+                            <span class="marquee-text-item">COACHING CENTRES</span>
+                            <span class="marquee-bullet">•</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Selected Work Section: Local Business Stories -->
+        <!-- PLACEHOLDER CASE STUDIES — replace with real client data before launch -->
+        <section id="work" class="content-section work-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="section-tag">SELECTED WORK</span>
+                    <h2 class="section-title">REAL STORIES. MEASURABLE RESULTS.</h2>
+                </div>
+
+                <div class="case-studies-list">
+                    <!-- Case Study 1 (Image Left, Content Right) -->
+                    <article class="case-study-row reveal-on-scroll" data-story="1">
+                        <div class="case-study-visual">
+                            <div class="case-study-img-placeholder">
+                                <span>IMAGE PLACEHOLDER</span>
+                            </div>
+                        </div>
+                        <div class="case-study-content">
+                            <span class="case-meta-label">BUSINESS TYPE · CITY</span>
+                            <h3 class="case-problem">[One-line problem goes here]</h3>
+                            <p class="case-action">[One-line action goes here]</p>
+                            
+                            <div class="case-result-box">
+                                <span class="case-result-num">00 → 00</span>
+                                <span class="case-result-label">METRIC LABEL</span>
+                            </div>
+
+                            <!-- Add case study URL when ready -->
+                            <span class="case-story-link is-disabled" role="link" aria-disabled="true">
+                                <span>READ THE FULL STORY</span>
+                                <svg class="link-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 8H12M12 8L8 4M12 8L8 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                        </div>
+                    </article>
+
+                    <!-- Case Study 2 (Content Left, Image Right on Desktop) -->
+                    <article class="case-study-row case-study-row-reverse reveal-on-scroll" data-story="2">
+                        <div class="case-study-visual">
+                            <div class="case-study-img-placeholder">
+                                <span>IMAGE PLACEHOLDER</span>
+                            </div>
+                        </div>
+                        <div class="case-study-content">
+                            <span class="case-meta-label">BUSINESS TYPE · CITY</span>
+                            <h3 class="case-problem">[One-line problem goes here]</h3>
+                            <p class="case-action">[One-line action goes here]</p>
+                            
+                            <div class="case-result-box">
+                                <span class="case-result-num">00 → 00</span>
+                                <span class="case-result-label">METRIC LABEL</span>
+                            </div>
+
+                            <!-- Add case study URL when ready -->
+                            <span class="case-story-link is-disabled" role="link" aria-disabled="true">
+                                <span>READ THE FULL STORY</span>
+                                <svg class="link-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 8H12M12 8L8 4M12 8L8 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                        </div>
+                    </article>
+
+                    <!-- Case Study 3 (Image Left, Content Right) -->
+                    <article class="case-study-row reveal-on-scroll" data-story="3">
+                        <div class="case-study-visual">
+                            <div class="case-study-img-placeholder">
+                                <span>IMAGE PLACEHOLDER</span>
+                            </div>
+                        </div>
+                        <div class="case-study-content">
+                            <span class="case-meta-label">BUSINESS TYPE · CITY</span>
+                            <h3 class="case-problem">[One-line problem goes here]</h3>
+                            <p class="case-action">[One-line action goes here]</p>
+                            
+                            <div class="case-result-box">
+                                <span class="case-result-num">00 → 00</span>
+                                <span class="case-result-label">METRIC LABEL</span>
+                            </div>
+
+                            <!-- Add case study URL when ready -->
+                            <span class="case-story-link is-disabled" role="link" aria-disabled="true">
+                                <span>READ THE FULL STORY</span>
+                                <svg class="link-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 8H12M12 8L8 4M12 8L8 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Honesty Section (Directly after Case Studies) -->
+        <section id="honesty" class="content-section honesty-section reveal-on-scroll" aria-label="Our Core Principles">
+            <div class="section-container honesty-container">
+                <h2 class="honesty-heading">WE'RE SMALL. THAT'S THE POINT.</h2>
+                <div class="honesty-lines">
+                    <p class="honesty-line">You talk to the person doing the work, not an account manager.</p>
+                    <p class="honesty-line">You get a direct line to us, not a ticket number.</p>
+                    <p class="honesty-line">No lock-in contracts. Stay because it's working.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="content-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="section-tag">ABOUT US</span>
+                    <h2 class="section-title">OBSESSED WITH GROWTH</h2>
+                </div>
+                <div class="about-grid">
+                    <div class="about-text">
+                        <p class="about-lead">We combine high-performance paid acquisition, relentless creative storytelling, and cutting-edge digital infrastructure to scale ambitious brands beyond conventional limits.</p>
+                        <p class="about-desc">Founded by Raju Sahani, Beyond Horizon operates as an elite growth partner for brands that refuse to blend into the noise.</p>
+                    </div>
+                    <div class="stats-list">
+                        <div class="stat-item">
+                            <span class="stat-num">10X+</span>
+                            <span class="stat-label">Average ROAS Delivered</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-num">50M+</span>
+                            <span class="stat-label">Targeted Impressions</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-num">100%</span>
+                            <span class="stat-label">Dedicated Partnership</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="content-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="section-tag">SERVICES</span>
+                    <h2 class="section-title">FULL-SPECTRUM MARKETING</h2>
+                </div>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <span class="service-num">01</span>
+                        <h3>Performance Advertising</h3>
+                        <p>High-ROI Meta, Google &amp; TikTok ad campaigns optimized relentlessly for conversion volume and low CPA.</p>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-num">02</span>
+                        <h3>Creative Direction &amp; Video</h3>
+                        <p>High-velocity visual assets, cinematic commercials, and viral social hooks that stop the scroll.</p>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-num">03</span>
+                        <h3>Brand Identity &amp; Positioning</h3>
+                        <p>Distinctive visual design systems, messaging frameworks, and premium market authority architecture.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="content-section contact-section">
+            <div class="section-container">
+                <div class="contact-box">
+                    <div class="contact-header">
+                        <span class="section-tag">START A CONVERSATION</span>
+                        <h2 class="section-title">LET'S BUILD SOMETHING BEYOND</h2>
+                        <p class="contact-subtitle">Currently taking 2 select projects for this quarter. Tell us about your vision.</p>
+                    </div>
+                    <div class="contact-actions">
+                        <a href="mailto:contact@beyondhorizon.com" class="contact-btn">
+                            <span>GET IN TOUCH</span>
+                            <svg class="cta-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                        <span class="contact-direct">or direct: <strong>contact@beyondhorizon.com</strong></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="section-container footer-container">
+            <div class="footer-brand">
+                <span class="footer-logo">BEYOND HORIZON</span>
+                <p>&copy; 2026 Beyond Horizon Digital Agency. All rights reserved.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#work">Work</a>
+                <a href="#about">About</a>
+                <a href="#services">Services</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
