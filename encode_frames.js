@@ -41,7 +41,7 @@ DIR_SEQ1_LAND_JPG  = os.path.join(BASE_DIR, "images-jpg")
 DIR_SEQ2_LAND_WEBP = os.path.join(BASE_DIR, "images-2-webp")
 DIR_SEQ2_LAND_JPG  = os.path.join(BASE_DIR, "images-2-jpg")
 
-# Clean old portrait directories to prevent stale frame files (e.g. frames 91-140)
+# Clean old portrait directories to prevent stale frame files
 for d in [DIR_SEQ1_PORT_WEBP, DIR_SEQ2_PORT_WEBP]:
     if os.path.exists(d):
         shutil.rmtree(d)
@@ -57,13 +57,38 @@ for obsolete_dir in [DIR_SEQ1_PORT_JPG, DIR_SEQ2_PORT_JPG]:
     if os.path.exists(obsolete_dir):
         shutil.rmtree(obsolete_dir)
 
+def aspect_preserving_crop(img, target_w, target_h, anchor_x=0.50, anchor_y=0.40):
+    src_w, src_h = img.size
+    # Cover scale: scale by max(target_w / src_w, target_h / src_h)
+    scale = max(target_w / src_w, target_h / src_h)
+    scaled_w = int(round(src_w * scale))
+    scaled_h = int(round(src_h * scale))
+    
+    # Assert output aspect ratio matches input aspect ratio before cropping
+    src_aspect = src_w / src_h
+    scaled_aspect = scaled_w / scaled_h
+    assert abs(scaled_aspect - src_aspect) < 0.005, f"Aspect ratio mismatch: scaled {scaled_aspect:.6f} vs source {src_aspect:.6f}"
+    
+    # High quality Lanczos scale
+    img_scaled = img.resize((scaled_w, scaled_h), Image.Resampling.LANCZOS)
+    
+    # Crop to exact target dimensions around tunable anchor
+    left = int(round((scaled_w - target_w) * anchor_x))
+    top  = int(round((scaled_h - target_h) * anchor_y))
+    left = max(0, min(scaled_w - target_w, left))
+    top  = max(0, min(scaled_h - target_h, top))
+    
+    img_cropped = img_scaled.crop((left, top, left + target_w, top + target_h))
+    return img_cropped
+
 def encode_portrait_task(args):
-    src_path, out_num, out_webp_dir, denoise = args
+    src_path, out_num, out_webp_dir, denoise, anchor_x, anchor_y = args
     try:
         with Image.open(src_path) as img:
             img = img.convert("RGB")
-            # Downsample to 960x2080 with high-quality Lanczos resampling
-            img_res = img.resize((960, 2080), Image.Resampling.LANCZOS)
+            # Aspect-preserving scale + cover crop to exactly 960x2080
+            img_res = aspect_preserving_crop(img, 960, 2080, anchor_x=anchor_x, anchor_y=anchor_y)
+            
             if denoise:
                 # Mild smoothing on noisy magenta/red gradient for Sequence 2
                 img_res = img_res.filter(ImageFilter.SMOOTH_MORE)
@@ -81,6 +106,10 @@ def encode_landscape_task(args):
     try:
         with Image.open(src_path) as img:
             img = img.convert("RGB")
+            # If dimensions differ from 1920x1080, perform aspect-preserving crop
+            if img.size != (1920, 1080):
+                img = aspect_preserving_crop(img, 1920, 1080, anchor_x=0.50, anchor_y=0.50)
+                
             out_name = f"frame_{out_num:04d}"
             webp_path = os.path.join(out_webp_dir, f"{out_name}.webp")
             jpg_path  = os.path.join(out_jpg_dir, f"{out_name}.jpg")
@@ -94,33 +123,33 @@ def encode_landscape_task(args):
         print(f"Error on {src_path}: {e}", flush=True)
         return False
 
-# 1. Build tasks for Sequence 1 Portrait (resampled to 90 frames from images-portrait/)
-port1_dir = os.path.join(BASE_DIR, "images-portrait")
-port1_files = sorted([os.path.join(port1_dir, f) for f in os.listdir(port1_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp'))]) if os.path.exists(port1_dir) else []
-
-tasks_seq1_port = []
-if port1_files:
-    for i in range(90):
-        out_num = i + 1
-        src_i = round(i * (len(port1_files) - 1) / (90 - 1)) if len(port1_files) > 1 else 0
-        src_p = port1_files[min(src_i, len(port1_files) - 1)]
-        tasks_seq1_port.append((src_p, out_num, DIR_SEQ1_PORT_WEBP, False))
-
-# 2. Build tasks for Sequence 2 Portrait (resampled to 96 frames from images-2-portrait/ with denoise)
-port2_dir = os.path.join(BASE_DIR, "images-2-portrait")
-port2_files = sorted([os.path.join(port2_dir, f) for f in os.listdir(port2_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp'))]) if os.path.exists(port2_dir) else []
-
-tasks_seq2_port = []
-if port2_files:
-    for i in range(96):
-        out_num = i + 1
-        src_i = round(i * (len(port2_files) - 1) / (96 - 1)) if len(port2_files) > 1 else 0
-        src_p = port2_files[min(src_i, len(port2_files) - 1)]
-        tasks_seq2_port.append((src_p, out_num, DIR_SEQ2_PORT_WEBP, True))
-
-# 3. Build tasks for Sequence 1 Landscape (140 frames from images/)
+# 1. Build tasks for Sequence 1 Portrait (90 frames cropped from original 16:9 source frames in images/)
 land1_dir = os.path.join(BASE_DIR, "images")
 land1_files = sorted([os.path.join(land1_dir, f) for f in os.listdir(land1_dir) if f.startswith("ezgif-") and f.lower().endswith(('.jpg', '.jpeg', '.png'))]) if os.path.exists(land1_dir) else []
+
+tasks_seq1_port = []
+if land1_files:
+    for i in range(90):
+        out_num = i + 1
+        src_i = round(i * (len(land1_files) - 1) / (90 - 1)) if len(land1_files) > 1 else 0
+        src_p = land1_files[min(src_i, len(land1_files) - 1)]
+        # Default anchor: 50% horizontal, 40% vertical
+        tasks_seq1_port.append((src_p, out_num, DIR_SEQ1_PORT_WEBP, False, 0.50, 0.40))
+
+# 2. Build tasks for Sequence 2 Portrait (96 frames cropped from original 16:9 source frames in images 2/)
+land2_dir = os.path.join(BASE_DIR, "images 2")
+land2_files = sorted([os.path.join(land2_dir, f) for f in os.listdir(land2_dir) if f.startswith("ezgif-") and f.lower().endswith(('.jpg', '.jpeg', '.png'))]) if os.path.exists(land2_dir) else []
+
+tasks_seq2_port = []
+if land2_files:
+    for i in range(96):
+        out_num = i + 1
+        src_i = round(i * (len(land2_files) - 1) / (96 - 1)) if len(land2_files) > 1 else 0
+        src_p = land2_files[min(src_i, len(land2_files) - 1)]
+        # Default anchor: 50% horizontal, 40% vertical with mild denoise
+        tasks_seq2_port.append((src_p, out_num, DIR_SEQ2_PORT_WEBP, True, 0.50, 0.40))
+
+# 3. Build tasks for Sequence 1 Landscape (140 frames from images/)
 tasks_seq1_land = []
 if land1_files:
     for i in range(140):
@@ -130,8 +159,6 @@ if land1_files:
         tasks_seq1_land.append((src_p, out_num, DIR_SEQ1_LAND_WEBP, DIR_SEQ1_LAND_JPG))
 
 # 4. Build tasks for Sequence 2 Landscape (150 frames from images 2/)
-land2_dir = os.path.join(BASE_DIR, "images 2")
-land2_files = sorted([os.path.join(land2_dir, f) for f in os.listdir(land2_dir) if f.startswith("ezgif-") and f.lower().endswith(('.jpg', '.jpeg', '.png'))]) if os.path.exists(land2_dir) else []
 tasks_seq2_land = []
 if land2_files:
     for i in range(150):
