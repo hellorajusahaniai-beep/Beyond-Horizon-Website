@@ -548,6 +548,10 @@
         lazyPreload: true,
         fadeEntry: true, // Enables 15% entry crossfade and 1.12 -> 1 scale
         onStepChange: (newStep, oldStep) => {
+            const wrapper = document.querySelector('#seq2-scroll-wrapper');
+            if (wrapper) {
+                wrapper.classList.toggle('step-stats-active', newStep === 1);
+            }
             if (newStep === 1) {
                 animateSeq2Stats(true);
             } else {
