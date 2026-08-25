@@ -30,8 +30,8 @@
 
             this.frameCount = config.frameCount;
             this.startFrame = config.startFrame || 1;
-            this.landscapePrefix = config.landscapePrefix || 'images';
-            this.portraitPrefix = config.portraitPrefix || 'images-portrait';
+            this.landscapeBase = config.landscapeBase || 'images';
+            this.portraitBase = config.portraitBase || 'images-portrait';
             this.filePrefix = config.filePrefix || 'frame_';
             this.padDigits = config.padDigits || 4;
             this.focalX = config.focalX !== undefined ? config.focalX : 0.50;
@@ -60,7 +60,7 @@
 
         getActiveBase() {
             const isPortrait = (window.innerWidth / window.innerHeight) < 1.0;
-            return isPortrait ? this.portraitPrefix : this.landscapePrefix;
+            return isPortrait ? this.portraitBase : this.landscapeBase;
         }
 
         getFramePath(index1Based, format = 'webp') {
@@ -372,8 +372,8 @@
         scrollIndicatorSelector: '#scroll-indicator',
         frameCount: 140,
         startFrame: 1,
-        landscapeFolder: 'frames-landscape',
-        portraitFolder: 'frames-portrait',
+        landscapeBase: 'images',
+        portraitBase: 'images-portrait',
         filePrefix: 'frame_',
         focalX: 0.50,
         focalY: 0.40,
@@ -461,8 +461,8 @@
         textStepSelector: '#seq2-scroll-wrapper .seq2-step',
         frameCount: 150,
         startFrame: 1,
-        landscapeFolder: 'frames-2-landscape',
-        portraitFolder: 'frames-2-portrait',
+        landscapeBase: 'images-2',
+        portraitBase: 'images-2-portrait',
         filePrefix: 'frame_',
         focalX: 0.50,
         focalY: 0.40,
