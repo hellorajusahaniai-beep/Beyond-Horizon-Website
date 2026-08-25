@@ -270,12 +270,19 @@
                 this.startPreload();
             }
 
-            // Scale the backing store by devicePixelRatio clamped to a maximum of 2
-            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const isPortrait = (window.innerWidth / window.innerHeight) < 1.0;
+            const frameW = isPortrait ? 960 : 1920;
+            const frameH = isPortrait ? 2080 : 1080;
+
+            // Clamp effective DPR to ensure canvas backing store never exceeds native source frame dimensions
+            // effectiveDPR = min(2, devicePixelRatio, frameWidth / cssWidth, frameHeight / cssHeight)
+            const systemDpr = Math.min(window.devicePixelRatio || 1, 2);
+            const maxAllowedDpr = Math.min(frameW / window.innerWidth, frameH / window.innerHeight);
+            const effectiveDpr = Math.min(systemDpr, maxAllowedDpr);
 
             // Set canvas backing store width and height attributes in physical device pixels
-            this.canvas.width = Math.round(window.innerWidth * dpr);
-            this.canvas.height = Math.round(window.innerHeight * dpr);
+            this.canvas.width = Math.round(window.innerWidth * effectiveDpr);
+            this.canvas.height = Math.round(window.innerHeight * effectiveDpr);
 
             // Set CSS display size separately in logical pixels
             this.canvas.style.width = `${window.innerWidth}px`;
