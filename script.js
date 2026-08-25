@@ -99,10 +99,12 @@
 
                 img.onload = () => this.onImageDecoded(i);
                 img.onerror = () => {
-                    // If WebP is not supported or fails, fallback to high-quality JPEG 4:4:4
+                    // If WebP fails, fallback to high-quality JPEG 4:4:4
                     if (img.src.endsWith('.webp')) {
                         img.src = this.getFramePath(frameNumber, 'jpg');
                     } else {
+                        // Frame unavailable in both formats: mark null and advance loader
+                        this.images[i] = null;
                         this.onImageDecoded(i);
                     }
                 };
@@ -117,6 +119,7 @@
                             if (img.src.endsWith('.webp')) {
                                 img.src = this.getFramePath(frameNumber, 'jpg');
                             } else {
+                                this.images[i] = null;
                                 this.onImageDecoded(i);
                             }
                         });
@@ -149,7 +152,24 @@
         }
 
         drawFrame(frameIdx) {
-            const img = this.images[frameIdx];
+            let img = this.images[frameIdx];
+
+            // If target frame is not ready or missing, fallback to nearest decoded frame
+            if (!img || !img.complete || img.naturalWidth === 0) {
+                for (let offset = 1; offset < this.frameCount; offset++) {
+                    const prev = this.images[frameIdx - offset];
+                    if (prev && prev.complete && prev.naturalWidth > 0) {
+                        img = prev;
+                        break;
+                    }
+                    const next = this.images[frameIdx + offset];
+                    if (next && next.complete && next.naturalWidth > 0) {
+                        img = next;
+                        break;
+                    }
+                }
+            }
+
             if (!img || !img.complete || img.naturalWidth === 0) return;
 
             const w = this.canvas.width;
