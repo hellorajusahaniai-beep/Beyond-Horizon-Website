@@ -4,3 +4,17 @@ images-2-portrait/
 image-portrait/
 image-2-portrait/
 .DS_Store
+
+# Encoded output frame folders
+images-webp/
+images-jpg/
+images-portrait-webp/
+images-portrait-jpg/
+images-2-webp/
+images-2-jpg/
+images-2-portrait-webp/
+images-2-portrait-jpg/
+frames-landscape/
+frames-portrait/
+frames-2-landscape/
+frames-2-portrait/
