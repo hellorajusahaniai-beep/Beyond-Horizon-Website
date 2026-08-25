@@ -28,7 +28,9 @@
             this.stepDots = config.stepDotsSelector ? document.querySelectorAll(config.stepDotsSelector) : [];
             this.scrollIndicator = config.scrollIndicatorSelector ? document.querySelector(config.scrollIndicatorSelector) : null;
 
-            this.frameCount = config.frameCount;
+            this.landscapeFrames = config.landscapeFrames || config.frameCount || 140;
+            this.portraitFrames = config.portraitFrames || config.frameCount || 90;
+            this.frameCount = this.getFrameCount();
             this.startFrame = config.startFrame || 1;
             this.landscapeBase = config.landscapeBase || 'images';
             this.portraitBase = config.portraitBase || 'images-portrait';
@@ -41,6 +43,11 @@
             this.fadeExit = config.fadeExit || false;
             this.fadeEntry = config.fadeEntry || false;
             this.onStepChange = config.onStepChange || null;
+
+            this.initialPreloadCount = 25;
+            this.streamBatchSize = 20;
+            this.lookaheadBuffer = 20;
+            this.loadedWindowEnd = -1;
 
             this.ctx = this.canvas ? this.canvas.getContext('2d', { alpha: true }) : null;
             this.images = new Array(this.frameCount);
@@ -58,6 +65,11 @@
             this.init();
         }
 
+        getFrameCount() {
+            const isPortrait = (window.innerWidth / window.innerHeight) < 1.0;
+            return isPortrait ? this.portraitFrames : this.landscapeFrames;
+        }
+
         getActiveBase() {
             const isPortrait = (window.innerWidth / window.innerHeight) < 1.0;
             return isPortrait ? this.portraitBase : this.landscapeBase;
@@ -67,6 +79,10 @@
             const frameNum = this.startFrame + (index1Based - 1);
             const padded = String(frameNum).padStart(this.padDigits, '0');
             const base = this.getActiveBase();
+            const isPortrait = (window.innerWidth / window.innerHeight) < 1.0;
+            if (isPortrait && format === 'jpg') {
+                return `${base}-webp/${this.filePrefix}${padded}.webp`;
+            }
             const folder = format === 'webp' ? `${base}-webp` : `${base}-jpg`;
             return `${folder}/${this.filePrefix}${padded}.${format}`;
         }
@@ -91,46 +107,74 @@
         startPreload() {
             if (this.isPreloadStarted) return;
             this.isPreloadStarted = true;
+            this.frameCount = this.getFrameCount();
             this.activeBase = this.getActiveBase();
+            this.images = new Array(this.frameCount);
+            this.decodedCount = 0;
+            this.loadedWindowEnd = -1;
 
-            for (let i = 0; i < this.frameCount; i++) {
-                const frameNumber = i + 1;
-                const img = new Image();
+            // Preload initial batch of 25 frames to dismiss loader promptly
+            const initialLoadCount = Math.min(this.initialPreloadCount, this.frameCount);
+            for (let i = 0; i < initialLoadCount; i++) {
+                this.loadFrame(i);
+            }
+            this.loadedWindowEnd = initialLoadCount - 1;
+        }
 
-                img.onload = () => this.onImageDecoded(i);
-                img.onerror = () => {
-                    // If WebP fails, fallback to high-quality JPEG 4:4:4
-                    if (img.src.endsWith('.webp')) {
-                        img.src = this.getFramePath(frameNumber, 'jpg');
-                    } else {
-                        // Frame unavailable in both formats: mark null and advance loader
-                        this.images[i] = null;
-                        this.onImageDecoded(i);
-                    }
-                };
+        loadFrame(i) {
+            if (this.images[i]) return; // Already requested
 
-                img.src = this.getFramePath(frameNumber, 'webp');
-                this.images[i] = img;
+            const frameNumber = i + 1;
+            const img = new Image();
+            this.images[i] = img;
 
-                if ('decode' in img) {
-                    img.decode()
-                        .then(() => this.onImageDecoded(i))
-                        .catch(() => {
-                            if (img.src.endsWith('.webp')) {
-                                img.src = this.getFramePath(frameNumber, 'jpg');
-                            } else {
-                                this.images[i] = null;
-                                this.onImageDecoded(i);
-                            }
-                        });
+            const onDecoded = () => this.onImageDecoded(i);
+
+            img.onload = onDecoded;
+            img.onerror = () => {
+                const isPortrait = (window.innerWidth / window.innerHeight) < 1.0;
+                if (!isPortrait && img.src.endsWith('.webp')) {
+                    img.src = this.getFramePath(frameNumber, 'jpg');
+                } else {
+                    this.images[i] = null;
+                    onDecoded();
                 }
+            };
+
+            img.src = this.getFramePath(frameNumber, 'webp');
+
+            if ('decode' in img) {
+                img.decode()
+                    .then(onDecoded)
+                    .catch(() => {
+                        const isPortrait = (window.innerWidth / window.innerHeight) < 1.0;
+                        if (!isPortrait && img.src.endsWith('.webp')) {
+                            img.src = this.getFramePath(frameNumber, 'jpg');
+                        } else {
+                            this.images[i] = null;
+                            onDecoded();
+                        }
+                    });
+            }
+        }
+
+        ensureFramesStreamed(targetFrameIdx) {
+            if (!this.isPreloadStarted) return;
+            const neededEnd = Math.min(targetFrameIdx + this.lookaheadBuffer + this.streamBatchSize, this.frameCount - 1);
+            if (neededEnd > this.loadedWindowEnd) {
+                const start = this.loadedWindowEnd + 1;
+                for (let i = start; i <= neededEnd; i++) {
+                    this.loadFrame(i);
+                }
+                this.loadedWindowEnd = neededEnd;
             }
         }
 
         onImageDecoded(idx) {
             this.decodedCount++;
 
-            const percent = Math.min(100, Math.floor((this.decodedCount / this.frameCount) * 100));
+            const targetInitial = Math.min(this.initialPreloadCount, this.frameCount);
+            const percent = Math.min(100, Math.floor((this.decodedCount / targetInitial) * 100));
 
             if (this.loaderBarFill) this.loaderBarFill.style.width = `${percent}%`;
             if (this.loaderText) this.loaderText.textContent = `LOADING ${percent}%`;
@@ -140,7 +184,7 @@
                 this.drawFrame(0);
             }
 
-            if (this.decodedCount >= 25 && !this.isLoaderDismissed) {
+            if (this.decodedCount >= targetInitial && !this.isLoaderDismissed) {
                 this.isLoaderDismissed = true;
                 if (this.loader) this.loader.classList.add('hidden');
                 this.updateScroll();
@@ -212,13 +256,16 @@
 
         resize() {
             const currentBase = this.getActiveBase();
+            const currentCount = this.getFrameCount();
 
-            // If orientation flipped after initial preload, refresh frame paths
-            if (this.isPreloadStarted && this.activeBase !== currentBase) {
+            // If orientation flipped after initial preload, refresh frame paths & count
+            if (this.isPreloadStarted && (this.activeBase !== currentBase || this.frameCount !== currentCount)) {
                 this.activeBase = currentBase;
+                this.frameCount = currentCount;
                 this.isPreloadStarted = false;
                 this.decodedCount = 0;
                 this.lastDrawnFrame = -1;
+                this.loadedWindowEnd = -1;
                 this.images = new Array(this.frameCount);
                 this.startPreload();
             }
@@ -372,6 +419,8 @@
                 const maxFrame = this.frameCount - 1;
                 const targetFrameIdx = Math.min(maxFrame, Math.max(0, Math.round(this.pendingProgress * maxFrame)));
 
+                this.ensureFramesStreamed(targetFrameIdx);
+
                 if (targetFrameIdx !== this.lastDrawnFrame) {
                     this.drawFrame(targetFrameIdx);
                 }
@@ -379,7 +428,7 @@
         }
     }
 
-    // Initialize Sequence 1 (Hero - 140 frames: frame_001.webp to frame_140.webp)
+    // Initialize Sequence 1 (Hero - 140 frames landscape / 90 frames portrait)
     const heroSequence = new ScrollSequenceController({
         wrapperSelector: '#hero-scroll-wrapper',
         canvasSelector: '#scroll-canvas',
@@ -390,7 +439,8 @@
         textStepSelector: '#hero-scroll-wrapper .text-step',
         stepDotsSelector: '.step-dot',
         scrollIndicatorSelector: '#scroll-indicator',
-        frameCount: 140,
+        landscapeFrames: 140,
+        portraitFrames: 90,
         startFrame: 1,
         landscapeBase: 'images',
         portraitBase: 'images-portrait',
@@ -470,7 +520,7 @@
         });
     }
 
-    // Initialize Sequence 2 (Capabilities & Proof Stats - 150 frames: frame_001.webp to frame_150.webp)
+    // Initialize Sequence 2 (Capabilities & Proof Stats - 150 frames landscape / 96 frames portrait)
     const seq2Sequence = new ScrollSequenceController({
         wrapperSelector: '#seq2-scroll-wrapper',
         canvasSelector: '#seq2-scroll-canvas',
@@ -479,7 +529,8 @@
         loaderBarFillSelector: '#seq2-loader-bar-fill',
         loaderTextSelector: '#seq2-loader-text',
         textStepSelector: '#seq2-scroll-wrapper .seq2-step',
-        frameCount: 150,
+        landscapeFrames: 150,
+        portraitFrames: 96,
         startFrame: 1,
         landscapeBase: 'images-2',
         portraitBase: 'images-2-portrait',
