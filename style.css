@@ -933,7 +933,7 @@ html, body {
     background-color: #000000;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 32px 0 28px 0;
+    padding: 20px 0 16px 0;
     z-index: 10;
 }
 
@@ -945,7 +945,7 @@ html, body {
 }
 
 .proof-tagline-wrapper {
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
 .proof-tagline {
@@ -956,48 +956,6 @@ html, body {
     color: #9ca3af;
     text-transform: uppercase;
     margin: 0;
-}
-
-.proof-stats-row {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 36px;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 56px;
-}
-
-.proof-stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    padding: 0;
-    margin: 0;
-}
-
-.proof-stat-num {
-    font-family: var(--font-display);
-    font-size: clamp(3.4rem, 5.5vw, 5rem);
-    font-weight: 900;
-    line-height: 1;
-    letter-spacing: 0.03em;
-    color: #ffffff;
-    text-transform: uppercase;
-    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
-}
-
-.proof-stat-label {
-    font-family: var(--font-body);
-    font-size: clamp(0.72rem, 0.9vw, 0.82rem);
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    color: #9ca3af;
-    text-transform: uppercase;
-    margin-top: 8px;
 }
 
 /* Text Marquee: Business Types */
@@ -1336,48 +1294,86 @@ html, body {
     letter-spacing: 0.05em;
 }
 
-/* Services Grid */
-.services-grid {
+/* ==========================================================================
+   Services Section (What We Do): Full-Width Outcome Rows
+   ========================================================================== */
+.services-section {
+    padding: 120px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.services-rows-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 36px;
+}
+
+.service-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 28px;
+    grid-template-columns: 80px 1.4fr 1.2fr;
+    align-items: center;
+    gap: 36px;
+    padding: 38px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: transparent;
+    transition: background-color 220ms ease, border-color 220ms ease;
+    cursor: default;
 }
 
-.service-card {
-    background-color: #0c0c0e;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 12px;
-    padding: 36px 28px;
-    transition: transform 300ms ease, border-color 300ms ease;
+.service-row:hover {
+    background-color: rgba(255, 255, 255, 0.03);
 }
 
-.service-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-.service-num {
+.service-row-num {
     font-family: var(--font-display);
-    font-size: 1.8rem;
-    color: #4b5563;
-    display: block;
-    margin-bottom: 16px;
-}
-
-.service-card h3 {
-    font-family: var(--font-body);
-    font-size: 1.2rem;
+    font-size: clamp(2.4rem, 3.8vw, 3.8rem);
     font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 12px;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.22);
+    letter-spacing: 0.02em;
+    transition: color 220ms ease;
 }
 
-.service-card p {
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: #9ca3af;
+.service-row:hover .service-row-num {
+    color: rgba(255, 255, 255, 0.45);
 }
+
+.service-row-name {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3vw, 2.9rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: 0.03em;
+    color: #ffffff;
+    text-transform: uppercase;
+    transform: translateX(0);
+    transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1), color 220ms ease;
+}
+
+.service-row:hover .service-row-name {
+    transform: translateX(8px);
+}
+
+.service-row-desc {
+    font-family: var(--font-body);
+    font-size: clamp(0.95rem, 1.15vw, 1.15rem);
+    font-weight: 400;
+    line-height: 1.55;
+    color: #9ca3af;
+    transition: color 220ms ease;
+}
+
+.service-row:hover .service-row-desc {
+    color: #e5e7eb;
+}
+
+/* Staggered Scroll-Triggered Reveal for Service Rows */
+.service-row.reveal-on-scroll:nth-child(1) { transition-delay: 0ms; }
+.service-row.reveal-on-scroll:nth-child(2) { transition-delay: 100ms; }
+.service-row.reveal-on-scroll:nth-child(3) { transition-delay: 200ms; }
+.service-row.reveal-on-scroll:nth-child(4) { transition-delay: 300ms; }
 
 /* Contact Section */
 .contact-section {
@@ -1808,11 +1804,11 @@ html, body {
 
     /* Proof Bar Mobile */
     .proof-bar {
-        padding: 24px 0 20px 0;
+        padding: 16px 0 14px 0;
     }
 
     .proof-tagline-wrapper {
-        margin-bottom: 12px;
+        margin-bottom: 10px;
     }
 
     .proof-marquee-group {
@@ -1849,6 +1845,46 @@ html, body {
         aspect-ratio: 16 / 10;
     }
 
+    /* Services Section (What We Do) Mobile */
+    .services-section {
+        padding: 80px 0;
+    }
+
+    .services-rows-list {
+        margin-top: 20px;
+    }
+
+    .service-row {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 26px 0;
+    }
+
+    .service-row-num {
+        font-size: 1.7rem;
+        color: rgba(255, 255, 255, 0.32);
+        margin-bottom: 2px;
+    }
+
+    .service-row-name {
+        font-size: clamp(1.45rem, 6.4vw, 1.95rem);
+        line-height: 1.05;
+        letter-spacing: 0.02em;
+    }
+
+    .service-row:hover .service-row-name {
+        transform: none; /* Disable hover translation on touch mobile */
+    }
+
+    .service-row-desc {
+        font-size: clamp(0.85rem, 3.6vw, 0.95rem);
+        line-height: 1.45;
+        margin-top: 4px;
+        color: #9ca3af;
+    }
+
     /* Honesty Section Mobile */
     .honesty-section {
         padding: 90px 0;
@@ -1862,8 +1898,7 @@ html, body {
         gap: 14px;
     }
 
-    .about-grid,
-    .services-grid {
+    .about-grid {
         grid-template-columns: 1fr;
         gap: 24px;
     }
