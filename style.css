@@ -2471,10 +2471,55 @@ a.info-value:hover {
 }
 
 /* ==========================================================================
+   Accessible Visible Focus States (WCAG 2.1 AA Compliance)
+   ========================================================================== */
+:focus-visible {
+    outline: 2px solid #ffffff !important;
+    outline-offset: 2px !important;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+.faq-question-btn:focus-visible,
+.editorial-submit-btn:focus-visible,
+.editorial-text-link:focus-visible,
+.nav-link:focus-visible,
+.nav-logo:focus-visible,
+.nav-cta-btn:focus-visible,
+.nav-hamburger:focus-visible {
+    outline: 2px solid #ffffff !important;
+    outline-offset: 2px !important;
+}
+
+/* Section Smooth Anchor Scroll Margin (Accounts for Navbar Height) */
+#work,
+#services,
+#process,
+#testimonials,
+#faq,
+#contact {
+    scroll-margin-top: calc(var(--nav-height, 70px) + 24px);
+}
+
+/* ==========================================================================
    Prefers Reduced Motion: Immediate Display & Disabled Transitions
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
-    .reveal-on-scroll {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .reveal-on-scroll,
+    .section-header .section-tag,
+    .section-header .section-title,
+    .section-header .contact-subtitle {
         opacity: 1 !important;
         transform: none !important;
         transition: none !important;
@@ -2503,3 +2548,4 @@ a.info-value:hover {
         scrollbar-width: none;
     }
 }
+
