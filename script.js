@@ -10,122 +10,148 @@
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let rafScheduled = false;
 
-    // In-Browser Measurement Function for Measured Verification (defined early)
-    window.measureWorkSlider = function() {
+    // In-Browser Measurement Function for Measured Verification of EDITORIAL BREATHE System
+    window.measureEditorialSystem = function() {
         const vw = window.innerWidth;
         const vh = window.innerHeight;
         const isMob = vw < 768;
-        const track = document.getElementById('work-track');
-        const slides = document.querySelectorAll('.work-slide');
         const nav = document.getElementById('site-header');
         const navHeight = nav ? nav.getBoundingClientRect().height : 70;
 
-        const results = {
-            viewport: { width: vw, height: vh },
-            isMobile: isMob,
-            trackWidth: track ? track.getBoundingClientRect().width : 0,
-            expectedTrackWidth: isMob ? vw : 3 * vw,
-            cardBoxAudit: {
-                hasCardBackground: false,
-                hasDropShadows: false,
-                hasBorderRadius: false,
-                details: []
-            },
-            slides: []
-        };
+        const sections = Array.from(document.querySelectorAll('.editorial-section')).map(sec => {
+            const style = window.getComputedStyle(sec);
+            const rect = sec.getBoundingClientRect();
+            const header = sec.querySelector('.section-header');
+            const tag = sec.querySelector('.section-tag');
+            const title = sec.querySelector('.section-title');
+            const firstContent = sec.querySelector('.work-editorial-list, .services-editorial-list, .process-steps-grid, .testimonials-list, .faq-accordion-list, .contact-editorial-grid');
 
-        slides.forEach((slide, i) => {
-            const visualWrapper = slide.querySelector('.work-visual-wrapper');
-            const img = slide.querySelector('.work-parallax-img');
-            const contentWrapper = slide.querySelector('.work-content-wrapper');
-            const editorialBlock = slide.querySelector('.work-editorial-block');
-            const problem = slide.querySelector('.work-problem');
-            const action = slide.querySelector('.work-action');
-            const resultBox = slide.querySelector('.work-result-box');
-            const resultNum = slide.querySelector('.work-result-num');
-            const resultLabel = slide.querySelector('.work-result-label');
+            const tagRect = tag ? tag.getBoundingClientRect() : null;
+            const titleRect = title ? title.getBoundingClientRect() : null;
+            const contentRect = firstContent ? firstContent.getBoundingClientRect() : null;
+            const titleStyle = title ? window.getComputedStyle(title) : null;
+            const tagStyle = tag ? window.getComputedStyle(tag) : null;
 
-            const imgRect = img ? img.getBoundingClientRect() : null;
-            const visualRect = visualWrapper ? visualWrapper.getBoundingClientRect() : null;
-            const problemRect = problem ? problem.getBoundingClientRect() : null;
-            const actionRect = action ? action.getBoundingClientRect() : null;
-            const contentRect = contentWrapper ? contentWrapper.getBoundingClientRect() : null;
+            const tagToHeadingGap = (tagRect && titleRect) ? Math.round(titleRect.top - tagRect.bottom) : null;
+            const headingToContentGap = (titleRect && contentRect) ? Math.round(contentRect.top - titleRect.bottom) : null;
 
-            const problemStyle = problem ? window.getComputedStyle(problem) : null;
-            const actionStyle = action ? window.getComputedStyle(action) : null;
-            const imgStyle = img ? window.getComputedStyle(img) : null;
-            const visualStyle = visualWrapper ? window.getComputedStyle(visualWrapper) : null;
-            const contentStyle = contentWrapper ? window.getComputedStyle(contentWrapper) : null;
-            const resultBoxStyle = resultBox ? window.getComputedStyle(resultBox) : null;
-
-            // Audit for box/card artifacts
-            const bgValues = [
-                visualStyle ? visualStyle.backgroundColor : '',
-                contentStyle ? contentStyle.backgroundColor : '',
-                resultBoxStyle ? resultBoxStyle.backgroundColor : ''
-            ].filter(bg => bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent' && bg !== 'rgb(0, 0, 0)');
-
-            const shadowValues = [
-                visualStyle ? visualStyle.boxShadow : '',
-                contentStyle ? contentStyle.boxShadow : '',
-                resultBoxStyle ? resultBoxStyle.boxShadow : ''
-            ].filter(s => s && s !== 'none');
-
-            const radiusValues = [
-                visualStyle ? visualStyle.borderRadius : '',
-                imgStyle ? imgStyle.borderRadius : '',
-                contentStyle ? contentStyle.borderRadius : ''
-            ].filter(r => r && r !== '0px');
-
-            if (bgValues.length > 0) results.cardBoxAudit.hasCardBackground = true;
-            if (shadowValues.length > 0) results.cardBoxAudit.hasDropShadows = true;
-            if (radiusValues.length > 0) results.cardBoxAudit.hasBorderRadius = true;
-
-            results.cardBoxAudit.details.push({
-                slide: i + 1,
-                visualBg: visualStyle ? visualStyle.backgroundColor : 'none',
-                visualBoxShadow: visualStyle ? visualStyle.boxShadow : 'none',
-                visualBorderRadius: visualStyle ? visualStyle.borderRadius : '0px',
-                contentPadding: contentStyle ? contentStyle.padding : 'none',
-                resultBoxBg: resultBoxStyle ? resultBoxStyle.backgroundColor : 'none'
-            });
-
-            const slideData = {
-                slide: i + 1,
-                image: {
-                    width: imgRect ? imgRect.width : 0,
-                    height: imgRect ? imgRect.height : 0,
-                    expectedWidthDesktop: 0.5 * vw,
-                    expectedHeightDesktop: vh,
-                    isExact50vwDesktop: imgRect ? Math.abs(imgRect.width - (0.5 * vw)) < 1.0 : false,
-                    isExact100vhDesktop: imgRect ? Math.abs(imgRect.height - vh) < 1.0 : false,
-                    objectFit: imgStyle ? imgStyle.objectFit : 'none',
-                    aspectRatio: imgRect && imgRect.height > 0 ? (imgRect.width / imgRect.height).toFixed(3) : 'none',
-                    transform: imgStyle ? imgStyle.transform : 'none'
+            return {
+                id: sec.id || sec.className,
+                paddingTopPx: parseFloat(style.paddingTop),
+                paddingBottomPx: parseFloat(style.paddingBottom),
+                backgroundColor: style.backgroundColor,
+                borderTop: style.borderTop,
+                hasVisibleTopSeparator: style.borderTopWidth !== '0px' && style.borderTopStyle !== 'none',
+                tag: {
+                    text: tag ? tag.textContent.trim() : '',
+                    fontSize: tagStyle ? tagStyle.fontSize : 'none',
+                    letterSpacing: tagStyle ? tagStyle.letterSpacing : 'none',
+                    color: tagStyle ? tagStyle.color : 'none'
                 },
-                typography: {
-                    headingFontSizePx: problemStyle ? parseFloat(problemStyle.fontSize) : 0,
-                    headingLineHeight: problemStyle ? problemStyle.lineHeight : 'none',
-                    headingHeightPx: problemRect ? problemRect.height : 0,
-                    bodyFontSizePx: actionStyle ? parseFloat(actionStyle.fontSize) : 0,
-                    bodyLineHeight: actionStyle ? actionStyle.lineHeight : 'none',
-                    bodyHeightPx: actionRect ? actionRect.height : 0,
-                    statMetric: resultNum ? resultNum.textContent.trim() : '',
-                    statLabel: resultLabel ? resultLabel.textContent.trim() : ''
+                heading: {
+                    text: title ? title.textContent.trim() : '',
+                    fontSizePx: titleStyle ? parseFloat(titleStyle.fontSize) : 0,
+                    lineHeight: titleStyle ? titleStyle.lineHeight : 'none'
                 },
-                contentContainer: {
-                    padding: contentStyle ? contentStyle.padding : 'none',
-                    width: contentRect ? contentRect.width : 0,
-                    height: contentRect ? contentRect.height : 0
-                }
+                gapBetweenTagAndHeadingPx: tagToHeadingGap,
+                gapBetweenHeadingAndFirstContentPx: headingToContentGap,
+                heightPx: Math.round(rect.height)
             };
-
-            results.slides.push(slideData);
         });
 
-        console.log('[MEASURE_WORK_SLIDER_RESULT]', JSON.stringify(results, null, 2));
+        const containers = Array.from(document.querySelectorAll('.editorial-container')).map(con => {
+            const style = window.getComputedStyle(con);
+            const rect = con.getBoundingClientRect();
+            return {
+                maxWidth: style.maxWidth,
+                computedWidth: Math.round(rect.width),
+                paddingLeft: style.paddingLeft,
+                paddingRight: style.paddingRight
+            };
+        });
+
+        const workRows = Array.from(document.querySelectorAll('.work-editorial-row')).map((row, idx) => {
+            const img = row.querySelector('.work-editorial-img');
+            const headline = row.querySelector('.work-headline');
+            const statNum = row.querySelector('.work-stat-number');
+            const imgStyle = img ? window.getComputedStyle(img) : null;
+            const imgRect = img ? img.getBoundingClientRect() : null;
+            const headlineStyle = headline ? window.getComputedStyle(headline) : null;
+
+            return {
+                row: idx + 1,
+                imageObjectFit: imgStyle ? imgStyle.objectFit : 'none',
+                imageWidth: imgRect ? Math.round(imgRect.width) : 0,
+                imageHeight: imgRect ? Math.round(imgRect.height) : 0,
+                headlineFontSize: headlineStyle ? headlineStyle.fontSize : 'none',
+                statNumber: statNum ? statNum.textContent.trim() : ''
+            };
+        });
+
+        const serviceRows = Array.from(document.querySelectorAll('.service-editorial-row')).map((row, idx) => {
+            const num = row.querySelector('.service-row-number');
+            const title = row.querySelector('.service-row-title');
+            const outcome = row.querySelector('.service-row-outcome');
+            const numStyle = num ? window.getComputedStyle(num) : null;
+            return {
+                index: idx + 1,
+                number: num ? num.textContent.trim() : '',
+                numberFontSize: numStyle ? numStyle.fontSize : 'none',
+                title: title ? title.textContent.trim() : '',
+                outcome: outcome ? outcome.textContent.trim() : ''
+            };
+        });
+
+        const faqItems = Array.from(document.querySelectorAll('.faq-item')).map((item, idx) => {
+            const btn = item.querySelector('.faq-question-btn');
+            const text = item.querySelector('.faq-question-text');
+            const btnRect = btn ? btn.getBoundingClientRect() : null;
+            return {
+                index: idx + 1,
+                question: text ? text.textContent.trim() : '',
+                buttonHeightPx: btnRect ? Math.round(btnRect.height) : 0,
+                isTouchTargetCompliant: btnRect ? btnRect.height >= 48 : false,
+                isOpen: item.classList.contains('is-open')
+            };
+        });
+
+        const formInputs = Array.from(document.querySelectorAll('.form-input, .form-textarea')).map(inp => {
+            const style = window.getComputedStyle(inp);
+            return {
+                tag: inp.tagName.toLowerCase(),
+                borderTop: style.borderTopWidth,
+                borderRight: style.borderRightWidth,
+                borderBottom: style.borderBottomWidth,
+                borderLeft: style.borderLeftWidth,
+                background: style.backgroundColor
+            };
+        });
+
+        const footerWordmark = document.querySelector('.footer-huge-wordmark');
+        const wordmarkStyle = footerWordmark ? window.getComputedStyle(footerWordmark) : null;
+
+        const results = {
+            viewport: { width: vw, height: vh, isMobile: isMob },
+            navHeightPx: Math.round(navHeight),
+            sectionsCount: sections.length,
+            sections,
+            containerMaxWidthExpected: '1200px',
+            containerSamples: containers.slice(0, 3),
+            workRows,
+            serviceRows,
+            faqItems,
+            formInputs,
+            footerWordmark: {
+                text: footerWordmark ? footerWordmark.textContent.trim() : '',
+                fontSize: wordmarkStyle ? wordmarkStyle.fontSize : 'none',
+                opacity: wordmarkStyle ? wordmarkStyle.opacity : 'none'
+            }
+        };
+
+        console.log('[MEASURE_EDITORIAL_BREATHE_SYSTEM]', JSON.stringify(results, null, 2));
         return results;
     };
+    window.measureWorkSlider = window.measureEditorialSystem;
 
     /**
      * Unified StageSequenceController
@@ -600,221 +626,176 @@
     }
 
     /**
-     * WorkSliderController
-     * Controls the cinematic 60fps horizontal scroll slider with subtle image parallax,
-     * staggered editorial reveals, real-data stat count-ups (Slides 1 & 3), and desktop arrow navigation.
+     * EditorialBreatheController
+     * Manages vertical editorial layout reveals, real-data stat animations,
+     * FAQ accordion interactions, bottom-border contact form, and smooth anchor scrolling.
      */
-    class WorkSliderController {
+    class EditorialBreatheController {
         constructor() {
-            this.wrapper = document.getElementById('work');
-            this.stickyPanel = this.wrapper ? this.wrapper.querySelector('.work-sticky-panel') : null;
-            this.track = document.getElementById('work-track');
-            this.slides = this.wrapper ? this.wrapper.querySelectorAll('.work-slide') : [];
-            this.prevBtn = document.getElementById('work-prev-btn');
-            this.nextBtn = document.getElementById('work-next-btn');
-            this.counter = document.getElementById('work-counter');
-            this.progressFill = document.getElementById('work-progress-fill');
-
-            this.slideCount = this.slides.length || 3;
-            this.currentActiveIndex = -1;
+            this.workRows = document.querySelectorAll('.work-editorial-row');
+            this.faqButtons = document.querySelectorAll('.faq-question-btn');
+            this.contactForm = document.getElementById('contact-form');
+            this.anchorLinks = document.querySelectorAll('a[href^="#"]');
             this.statAnimMap = new Map();
-
-            if (!this.wrapper || !this.track) return;
 
             this.init();
         }
 
-        isMobile() {
-            return window.innerWidth < 768;
-        }
-
         init() {
-            if (this.prevBtn) {
-                this.prevBtn.addEventListener('click', () => this.navigateSlide(-1));
-            }
-            if (this.nextBtn) {
-                this.nextBtn.addEventListener('click', () => this.navigateSlide(1));
-            }
-
-            // Mobile IntersectionObserver for staggered active state triggers
-            if (this.isMobile()) {
-                this.initMobileObserver();
-            }
-
-            this.renderTick();
+            this.initFaqAccordion();
+            this.initSmoothScroll();
+            this.initWorkObserver();
+            this.initContactForm();
         }
 
-        initMobileObserver() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const slide = entry.target;
-                        slide.classList.add('is-active');
-                        const slideIdx = parseInt(slide.dataset.slide, 10) - 1;
-                        this.triggerStatAnimation(slideIdx);
+        initFaqAccordion() {
+            this.faqButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const item = btn.closest('.faq-item');
+                    if (!item) return;
+                    const isOpen = item.classList.contains('is-open');
+
+                    if (isOpen) {
+                        item.classList.remove('is-open');
+                        btn.setAttribute('aria-expanded', 'false');
+                    } else {
+                        item.classList.add('is-open');
+                        btn.setAttribute('aria-expanded', 'true');
                     }
                 });
-            }, { threshold: 0.35 });
-
-            this.slides.forEach(slide => observer.observe(slide));
-        }
-
-        navigateSlide(direction) {
-            const vh = window.innerHeight || 1;
-            const wrapperRect = this.wrapper.getBoundingClientRect();
-            const wrapperTop = (window.scrollY || window.pageYOffset) + wrapperRect.top;
-
-            const currentIndex = this.currentActiveIndex === -1 ? 0 : this.currentActiveIndex;
-            const targetIndex = Math.max(0, Math.min(this.slideCount - 1, currentIndex + direction));
-            // 200vh total scroll travel for 3 slides -> 100vh per slide jump
-            const targetY = wrapperTop + (targetIndex * vh);
-
-            window.scrollTo({
-                top: targetY,
-                behavior: prefersReducedMotion ? 'auto' : 'smooth'
             });
         }
 
-        triggerStatAnimation(slideIdx) {
-            if (prefersReducedMotion) return;
-            if (slideIdx === 0) {
-                // Slide 1: 18 -> 64 over 1200ms
-                this.animateStat(slideIdx, (valEl) => {
-                    const duration = 1200;
-                    const startTime = performance.now();
-                    const startVal = 18;
-                    const endVal = 64;
+        initSmoothScroll() {
+            this.anchorLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const href = link.getAttribute('href');
+                    if (!href || href === '#' || href.startsWith('#scroll-')) return;
 
-                    const update = (now) => {
-                        const elapsed = now - startTime;
-                        const progress = Math.min(1, elapsed / duration);
-                        const ease = 1 - Math.pow(1 - progress, 3);
-                        const current = Math.round(startVal + (endVal - startVal) * ease);
-                        valEl.textContent = `18 → ${current}`;
+                    const targetEl = document.querySelector(href);
+                    if (targetEl) {
+                        e.preventDefault();
+                        const nav = document.getElementById('site-header');
+                        const navHeight = nav ? nav.getBoundingClientRect().height : 70;
+                        const targetY = targetEl.getBoundingClientRect().top + (window.scrollY || window.pageYOffset) - navHeight;
 
-                        if (progress < 1) {
-                            this.statAnimMap.set(slideIdx, requestAnimationFrame(update));
-                        } else {
-                            valEl.textContent = `18 → ${endVal}`;
-                            this.statAnimMap.delete(slideIdx);
-                        }
-                    };
-                    this.statAnimMap.set(slideIdx, requestAnimationFrame(update));
+                        window.scrollTo({
+                            top: Math.max(0, targetY),
+                            behavior: prefersReducedMotion ? 'auto' : 'smooth'
+                        });
+
+                        try {
+                            history.pushState(null, null, href);
+                        } catch (err) {}
+                    }
                 });
-            } else if (slideIdx === 2) {
-                // Slide 3: ₹3.2L -> ₹11.4L over 1200ms
-                this.animateStat(slideIdx, (valEl) => {
-                    const duration = 1200;
-                    const startTime = performance.now();
-                    const startVal = 3.2;
-                    const endVal = 11.4;
+            });
+        }
 
-                    const update = (now) => {
-                        const elapsed = now - startTime;
-                        const progress = Math.min(1, elapsed / duration);
-                        const ease = 1 - Math.pow(1 - progress, 3);
-                        const current = (startVal + (endVal - startVal) * ease).toFixed(1);
-                        valEl.textContent = `₹3.2L → ₹${current}L`;
+        initWorkObserver() {
+            if (!this.workRows.length) return;
 
-                        if (progress < 1) {
-                            this.statAnimMap.set(slideIdx, requestAnimationFrame(update));
-                        } else {
-                            valEl.textContent = `₹3.2L → ₹${endVal.toFixed(1)}L`;
-                            this.statAnimMap.delete(slideIdx);
+            if ('IntersectionObserver' in window && !prefersReducedMotion) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const row = entry.target;
+                            row.classList.add('is-active');
+                            const rowIdx = parseInt(row.dataset.row, 10) - 1;
+                            this.triggerStatAnimation(rowIdx);
+                            observer.unobserve(row);
                         }
-                    };
-                    this.statAnimMap.set(slideIdx, requestAnimationFrame(update));
-                });
+                    });
+                }, { threshold: 0.20 });
+
+                this.workRows.forEach(row => observer.observe(row));
+            } else {
+                this.workRows.forEach(row => row.classList.add('is-active'));
             }
         }
 
-        animateStat(slideIdx, runner) {
-            const slide = this.slides[slideIdx];
-            if (!slide) return;
-            const valEl = slide.querySelector('.work-result-num');
+        triggerStatAnimation(rowIdx) {
+            if (prefersReducedMotion) return;
+            const row = this.workRows[rowIdx];
+            if (!row) return;
+            const valEl = row.querySelector('.work-stat-number');
             if (!valEl) return;
 
-            if (this.statAnimMap.has(slideIdx)) {
-                cancelAnimationFrame(this.statAnimMap.get(slideIdx));
-                this.statAnimMap.delete(slideIdx);
-            }
+            if (rowIdx === 0) {
+                // Siddhi Dental Clinic: 18 -> 64 over 1200ms
+                const duration = 1200;
+                const startTime = performance.now();
+                const startVal = 18;
+                const endVal = 64;
 
-            runner(valEl);
+                const update = (now) => {
+                    const elapsed = now - startTime;
+                    const progress = Math.min(1, elapsed / duration);
+                    const ease = 1 - Math.pow(1 - progress, 3);
+                    const current = Math.round(startVal + (endVal - startVal) * ease);
+                    valEl.textContent = `18 → ${current}`;
+
+                    if (progress < 1) {
+                        this.statAnimMap.set(rowIdx, requestAnimationFrame(update));
+                    } else {
+                        valEl.textContent = `18 → ${endVal}`;
+                        this.statAnimMap.delete(rowIdx);
+                    }
+                };
+                this.statAnimMap.set(rowIdx, requestAnimationFrame(update));
+            } else if (rowIdx === 2) {
+                // IT Hardware & Enterprise: ₹3.2L -> ₹11.4L over 1200ms
+                const duration = 1200;
+                const startTime = performance.now();
+                const startVal = 3.2;
+                const endVal = 11.4;
+
+                const update = (now) => {
+                    const elapsed = now - startTime;
+                    const progress = Math.min(1, elapsed / duration);
+                    const ease = 1 - Math.pow(1 - progress, 3);
+                    const current = (startVal + (endVal - startVal) * ease).toFixed(1);
+                    valEl.textContent = `₹3.2L → ₹${current}L`;
+
+                    if (progress < 1) {
+                        this.statAnimMap.set(rowIdx, requestAnimationFrame(update));
+                    } else {
+                        valEl.textContent = `₹3.2L → ₹${endVal.toFixed(1)}L`;
+                        this.statAnimMap.delete(rowIdx);
+                    }
+                };
+                this.statAnimMap.set(rowIdx, requestAnimationFrame(update));
+            }
+        }
+
+        initContactForm() {
+            if (!this.contactForm) return;
+            this.contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const submitBtn = this.contactForm.querySelector('.editorial-submit-btn');
+                if (submitBtn) {
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = `MESSAGE SENT ✓`;
+                    submitBtn.style.color = '#ffffff';
+                    setTimeout(() => {
+                        this.contactForm.reset();
+                        submitBtn.innerHTML = originalText;
+                    }, 4000);
+                }
+            });
         }
 
         renderTick() {
-            if (this.isMobile() || prefersReducedMotion) {
-                if (this.progressFill) this.progressFill.style.width = '100%';
-                return;
-            }
-
-            const scrollY = window.scrollY || window.pageYOffset || 0;
-            const vh = window.innerHeight || 1;
-            const vw = window.innerWidth || 1;
-
-            const wrapperRect = this.wrapper.getBoundingClientRect();
-            // If completely outside viewport, avoid doing work
-            if (wrapperRect.bottom < 0 || wrapperRect.top > vh) {
-                return;
-            }
-
-            const wrapperTop = scrollY + wrapperRect.top;
-            const totalScrollDist = 2.0 * vh; // 300vh wrapper - 100vh viewport = 200vh scroll travel
-
-            // Compute clamped scroll progress through horizontal section [0, 1]
-            const progress = Math.min(1.0, Math.max(0.0, (scrollY - wrapperTop) / totalScrollDist));
-            const maxTranslate = (this.slideCount - 1) * vw; // 2 * 100vw = 200vw
-            const currentTranslateX = -progress * maxTranslate;
-
-            // Apply horizontal track translation
-            this.track.style.transform = `translate3d(${currentTranslateX.toFixed(2)}px, 0, 0)`;
-
-            // Update bottom progress bar
-            if (this.progressFill) {
-                this.progressFill.style.width = `${(progress * 100).toFixed(1)}%`;
-            }
-
-            // Determine active slide index and update parallax per slide
-            let activeIdx = 0;
-
-            this.slides.forEach((slide, idx) => {
-                // Slide viewport position: 0 means perfectly centered in viewport
-                const slideViewportX = (idx * vw) + currentTranslateX;
-
-                // Parallax on image: moves at 0.8x relative speed
-                const img = slide.querySelector('.work-parallax-img');
-                if (img) {
-                    const parallaxOffset = (slideViewportX / vw) * (vw * 0.15 * 0.8);
-                    img.style.transform = `translate3d(${parallaxOffset.toFixed(2)}px, 0, 0)`;
-                }
-
-                // Slide becomes active when at least 50% visible (|slideViewportX| <= 0.50 * vw)
-                if (Math.abs(slideViewportX) <= (0.50 * vw)) {
-                    activeIdx = idx;
-                    if (!slide.classList.contains('is-active')) {
-                        slide.classList.add('is-active');
-                        this.triggerStatAnimation(idx);
-                    }
-                }
-            });
-
-            // Update counter
-            if (activeIdx !== this.currentActiveIndex) {
-                this.currentActiveIndex = activeIdx;
-                if (this.counter) {
-                    this.counter.textContent = `${String(activeIdx + 1).padStart(2, '0')} / 03`;
-                }
-                if (this.prevBtn) this.prevBtn.classList.toggle('is-disabled', activeIdx === 0);
-                if (this.nextBtn) this.nextBtn.classList.toggle('is-disabled', activeIdx === this.slideCount - 1);
-            }
+            // Native vertical scroll layout
         }
     }
 
     // Initialize Controllers
     const stageController = new StageSequenceController();
-    const workSliderController = new WorkSliderController();
+    const editorialController = new EditorialBreatheController();
     window.stageController = stageController;
-    window.workSliderController = workSliderController;
+    window.editorialController = editorialController;
+    window.workSliderController = editorialController; // backwards compatibility
 
     // Fixed Navbar Management
     const siteHeader = document.getElementById('site-header');
@@ -860,7 +841,7 @@
         rafScheduled = false;
         updateNavbar();
         stageController.renderTick();
-        workSliderController.renderTick();
+        editorialController.renderTick();
     }
 
     // Global Resize Handler
@@ -869,8 +850,8 @@
         renderTick();
     }
 
-    // Scroll-triggered Reveal Observer for Case Studies & Honesty Section
-    const scrollRevealElements = document.querySelectorAll('.reveal-on-scroll');
+    // Scroll-triggered Reveal Observer for Editorial Breathe sections & staggered headers
+    const scrollRevealElements = document.querySelectorAll('.section-header, .reveal-on-scroll');
     if (scrollRevealElements.length && 'IntersectionObserver' in window && !prefersReducedMotion) {
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -881,7 +862,7 @@
             });
         }, {
             rootMargin: '0px 0px -50px 0px',
-            threshold: 0.12
+            threshold: 0.10
         });
 
         scrollRevealElements.forEach(el => revealObserver.observe(el));
@@ -889,7 +870,7 @@
         scrollRevealElements.forEach(el => el.classList.add('in-view'));
     }
 
-    // URL Query & Hash-based scroll position supporter for automated testing & deep-linking
+    // URL Query & Hash-based scroll position supporter for deep-linking
     function checkUrlScroll() {
         try {
             const urlParams = new URLSearchParams(window.location.search);
@@ -923,7 +904,7 @@
                 window.scrollTo(0, targetY);
                 updateNavbar();
                 stageController.renderTick();
-                workSliderController.renderTick();
+                editorialController.renderTick();
                 return;
             }
 
@@ -934,11 +915,13 @@
                         window.scrollTo(0, targetY);
                         onScroll();
                     }
-                } else if (window.location.hash === '#work') {
-                    const workEl = document.getElementById('work');
-                    if (workEl) {
-                        const targetY = workEl.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
-                        window.scrollTo({ top: targetY, behavior: 'smooth' });
+                } else {
+                    const targetEl = document.querySelector(window.location.hash);
+                    if (targetEl) {
+                        const nav = document.getElementById('site-header');
+                        const navHeight = nav ? nav.getBoundingClientRect().height : 70;
+                        const targetY = targetEl.getBoundingClientRect().top + (window.scrollY || window.pageYOffset) - navHeight;
+                        window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
                     }
                 }
             }
