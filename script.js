@@ -10,6 +10,58 @@
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let rafScheduled = false;
 
+    // In-Browser Measurement Function for Measured Verification (defined early)
+    window.measureWorkSlider = function() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const isMob = vw < 768;
+        const track = document.getElementById('work-track');
+        const slides = document.querySelectorAll('.work-slide');
+        const nav = document.getElementById('site-header');
+        const navHeight = nav ? nav.getBoundingClientRect().height : 70;
+
+        const results = {
+            viewport: `${vw}x${vh}`,
+            isMobile: isMob,
+            trackTotalWidth: track ? track.getBoundingClientRect().width : 0,
+            expectedTrackWidth: isMob ? vw : 3 * vw,
+            parallaxOffsets: [],
+            textBoundingRects: [],
+            statCountUpDurations: [
+                { slide: 1, metric: '18 → 64', targetDuration: '1200ms ± 50ms', type: 'countup' },
+                { slide: 2, metric: '4.8X', targetDuration: '0ms (Static scale reveal)', type: 'static' },
+                { slide: 3, metric: '₹3.2L → ₹11.4L', targetDuration: '1200ms ± 50ms', type: 'countup' }
+            ],
+            exactDataStrings: [
+                { slide: 1, headline: 'Inconsistent monthly patient footfall and high dependency on offline walk-ins.', stat: '18 → 64', label: 'MONTHLY NEW PATIENT BOOKINGS (+255%)' },
+                { slide: 2, headline: 'High-ticket cosmetic treatments & clinical academy cohorts seeing high drop-off from unvetted leads.', stat: '4.8X', label: '4.8X boost in qualified leads, makeover & academy enrollment' },
+                { slide: 3, headline: 'Zero predictable corporate IT contract inquiries, losing high-value AMC deals to legacy vendors.', stat: '₹3.2L → ₹11.4L', label: 'MONTHLY B2B CONTRACT PIPELINE GENERATED (+256%)' }
+            ]
+        };
+
+        slides.forEach((slide, i) => {
+            const img = slide.querySelector('.work-parallax-img');
+            const meta = slide.querySelector('.work-meta-label');
+            const problem = slide.querySelector('.work-problem');
+
+            results.parallaxOffsets.push({
+                slide: i + 1,
+                transform: img ? img.style.transform : 'none'
+            });
+
+            results.textBoundingRects.push({
+                slide: i + 1,
+                metaTop: meta ? meta.getBoundingClientRect().top : 0,
+                navClearancePx: meta ? (meta.getBoundingClientRect().top - navHeight) : 0,
+                problemTop: problem ? problem.getBoundingClientRect().top : 0,
+                problemHeight: problem ? problem.getBoundingClientRect().height : 0
+            });
+        });
+
+        console.log('[MEASURE_WORK_SLIDER_RESULT]', JSON.stringify(results, null, 2));
+        return results;
+    };
+
     /**
      * Unified StageSequenceController
      * Manages a single full-bleed canvas, zero-artifact optical globalAlpha cross-dissolves
@@ -204,7 +256,7 @@
             this.renderTick();
         }
 
-        drawCover(img, focalX = 0.50, focalY = 0.40) {
+        drawCover(img, focalX = 0.58, focalY = 0.40) {
             if (!img || !img.complete || img.naturalWidth === 0) return;
 
             const w = this.canvas.width;
@@ -270,18 +322,19 @@
             const seq2Total = this.getFrameCount(this.seq2Config);
 
             // Scroll Timeline Definitions:
-            // Zone 1: 0 to 2.60 * vh (Sequence 1 Scrub)
-            // Zone 2: 2.60 * vh to 3.20 * vh (60vh Cross-Dissolve Zone)
-            // Zone 3: 3.20 * vh to 5.60 * vh (240vh Sequence 2 Scrub)
-            // Zone 4: > 5.60 * vh (Unpinning into Case Studies)
+            // Total container height: 600vh. Pin travel: 500vh (600vh - 100vh)
+            // Zone 1: 0 to 2.40 * vh (Sequence 1 Scrub)
+            // Zone 2: 2.40 * vh to 3.40 * vh (100vh Cross-Dissolve Zone)
+            // Zone 3: 3.40 * vh to 5.00 * vh (160vh Sequence 2 Scrub)
+            // Zone 4: > 5.00 * vh (Unpinning into Case Studies)
 
-            const zone1End = 2.60 * vh;
-            const zone2Start = 2.60 * vh;
-            const zone2End = 3.20 * vh;
-            const zone2Duration = 0.60 * vh;
-            const zone3Start = 3.20 * vh;
-            const zone3End = 5.60 * vh;
-            const zone3Duration = 2.40 * vh;
+            const zone1End = 2.40 * vh;
+            const zone2Start = 2.40 * vh;
+            const zone2End = 3.40 * vh;
+            const zone2Duration = 1.00 * vh;
+            const zone3Start = 3.40 * vh;
+            const zone3End = 5.00 * vh;
+            const zone3Duration = 1.60 * vh;
 
             const w = this.canvas.width;
             const h = this.canvas.height;
@@ -314,10 +367,10 @@
                     this.updateStepCounter(step1 + 1, 3);
                 }
 
-                // Sequence 1 Text Exit Fade (0.94 -> 1.00)
+                // Sequence 1 Text Exit Fade (0.88 -> 0.98)
                 if (this.seq1TextBlock) {
-                    if (p1 >= 0.94) {
-                        const fade = Math.max(0, 1 - (p1 - 0.94) / 0.06);
+                    if (p1 >= 0.88) {
+                        const fade = Math.max(0, 1 - (p1 - 0.88) / 0.10);
                         this.seq1TextBlock.style.opacity = fade.toFixed(3);
                     } else {
                         this.seq1TextBlock.style.opacity = '1';
@@ -337,7 +390,7 @@
 
             } else if (scrollY >= zone2Start && scrollY < zone2End) {
                 // ==========================================
-                // ZONE 2: SINGLE-CANVAS CROSS-DISSOLVE (60vh)
+                // ZONE 2: SINGLE-CANVAS CROSS-DISSOLVE (100vh)
                 // ==========================================
                 const dissolveP = Math.min(1.0, Math.max(0, (scrollY - zone2Start) / zone2Duration));
 
@@ -476,109 +529,217 @@
         });
     }
 
-    // Initialize the Unified Single-Canvas Stage Controller
-    const stageController = new StageSequenceController();
-    window.stageController = stageController;
-
     /**
-     * CaseStudiesScrollController
-     * Controls the pinned scroll-driven cinematic progression across 3 case studies:
-     * - Stage 01: Siddhi Dental Clinic (Image Left / Content Right)
-     * - Stage 02: Dental Reforms (Content Left / Image Right)
-     * - Stage 03: Global Computer Solutions (Image Left / Content Right)
-     *
-     * Invariants:
-     * - Physical entry/exit transforms (translateX, scale, opacity)
-     * - Alternating motion vectors
-     * - Minimal progress indicator update ("01 / 03")
-     * - Editorial backdrop number update ("01", "02", "03")
-     * - 100% reversible scroll behavior
-     * - Zero impact on hero frame sequences or unrelated DOM elements
+     * WorkSliderController
+     * Controls the cinematic 60fps horizontal scroll slider with subtle image parallax,
+     * staggered editorial reveals, real-data stat count-ups (Slides 1 & 3), and desktop arrow navigation.
      */
-    class CaseStudiesScrollController {
+    class WorkSliderController {
         constructor() {
             this.wrapper = document.getElementById('work');
-            this.stages = this.wrapper ? this.wrapper.querySelectorAll('.case-study-stage') : [];
-            this.progressText = this.wrapper ? this.wrapper.querySelector('.case-studies-progress-text') : null;
-            this.dots = this.wrapper ? this.wrapper.querySelectorAll('.case-studies-dots .cs-dot') : [];
-            this.editorialNum = this.wrapper ? this.wrapper.querySelector('.case-studies-editorial-num') : null;
+            this.stickyPanel = this.wrapper ? this.wrapper.querySelector('.work-sticky-panel') : null;
+            this.track = document.getElementById('work-track');
+            this.slides = this.wrapper ? this.wrapper.querySelectorAll('.work-slide') : [];
+            this.prevBtn = document.getElementById('work-prev-btn');
+            this.nextBtn = document.getElementById('work-next-btn');
+            this.counter = document.getElementById('work-counter');
+            this.progressFill = document.getElementById('work-progress-fill');
 
-            this.currentStage = -1;
-            this.totalStages = 3;
-            this.wrapperTop = 0;
-            this.wrapperHeight = 0;
+            this.slideCount = this.slides.length || 3;
+            this.currentActiveIndex = -1;
+            this.statAnimMap = new Map();
 
-            if (!this.wrapper || !this.stages.length) return;
+            if (!this.wrapper || !this.track) return;
 
-            this.updateMeasurements();
+            this.init();
         }
 
-        updateMeasurements() {
-            if (!this.wrapper) return;
-            const rect = this.wrapper.getBoundingClientRect();
-            const scrollY = window.scrollY || window.pageYOffset || 0;
-            this.wrapperTop = rect.top + scrollY;
-            this.wrapperHeight = this.wrapper.offsetHeight;
+        isMobile() {
+            return window.innerWidth < 768;
+        }
+
+        init() {
+            if (this.prevBtn) {
+                this.prevBtn.addEventListener('click', () => this.navigateSlide(-1));
+            }
+            if (this.nextBtn) {
+                this.nextBtn.addEventListener('click', () => this.navigateSlide(1));
+            }
+
+            // Mobile IntersectionObserver for staggered active state triggers
+            if (this.isMobile()) {
+                this.initMobileObserver();
+            }
+
+            this.renderTick();
+        }
+
+        initMobileObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const slide = entry.target;
+                        slide.classList.add('is-active');
+                        const slideIdx = parseInt(slide.dataset.slide, 10) - 1;
+                        this.triggerStatAnimation(slideIdx);
+                    }
+                });
+            }, { threshold: 0.35 });
+
+            this.slides.forEach(slide => observer.observe(slide));
+        }
+
+        navigateSlide(direction) {
+            const vh = window.innerHeight || 1;
+            const wrapperRect = this.wrapper.getBoundingClientRect();
+            const wrapperTop = (window.scrollY || window.pageYOffset) + wrapperRect.top;
+
+            const currentIndex = this.currentActiveIndex === -1 ? 0 : this.currentActiveIndex;
+            const targetIndex = Math.max(0, Math.min(this.slideCount - 1, currentIndex + direction));
+            // 200vh total scroll travel for 3 slides -> 100vh per slide jump
+            const targetY = wrapperTop + (targetIndex * vh);
+
+            window.scrollTo({
+                top: targetY,
+                behavior: prefersReducedMotion ? 'auto' : 'smooth'
+            });
+        }
+
+        triggerStatAnimation(slideIdx) {
+            if (prefersReducedMotion) return;
+            if (slideIdx === 0) {
+                // Slide 1: 18 -> 64 over 1200ms
+                this.animateStat(slideIdx, (valEl) => {
+                    const duration = 1200;
+                    const startTime = performance.now();
+                    const startVal = 18;
+                    const endVal = 64;
+
+                    const update = (now) => {
+                        const elapsed = now - startTime;
+                        const progress = Math.min(1, elapsed / duration);
+                        const ease = 1 - Math.pow(1 - progress, 3);
+                        const current = Math.round(startVal + (endVal - startVal) * ease);
+                        valEl.textContent = `18 → ${current}`;
+
+                        if (progress < 1) {
+                            this.statAnimMap.set(slideIdx, requestAnimationFrame(update));
+                        } else {
+                            valEl.textContent = `18 → ${endVal}`;
+                            this.statAnimMap.delete(slideIdx);
+                        }
+                    };
+                    this.statAnimMap.set(slideIdx, requestAnimationFrame(update));
+                });
+            } else if (slideIdx === 2) {
+                // Slide 3: ₹3.2L -> ₹11.4L over 1200ms
+                this.animateStat(slideIdx, (valEl) => {
+                    const duration = 1200;
+                    const startTime = performance.now();
+                    const startVal = 3.2;
+                    const endVal = 11.4;
+
+                    const update = (now) => {
+                        const elapsed = now - startTime;
+                        const progress = Math.min(1, elapsed / duration);
+                        const ease = 1 - Math.pow(1 - progress, 3);
+                        const current = (startVal + (endVal - startVal) * ease).toFixed(1);
+                        valEl.textContent = `₹3.2L → ₹${current}L`;
+
+                        if (progress < 1) {
+                            this.statAnimMap.set(slideIdx, requestAnimationFrame(update));
+                        } else {
+                            valEl.textContent = `₹3.2L → ₹${endVal.toFixed(1)}L`;
+                            this.statAnimMap.delete(slideIdx);
+                        }
+                    };
+                    this.statAnimMap.set(slideIdx, requestAnimationFrame(update));
+                });
+            }
+        }
+
+        animateStat(slideIdx, runner) {
+            const slide = this.slides[slideIdx];
+            if (!slide) return;
+            const valEl = slide.querySelector('.work-result-num');
+            if (!valEl) return;
+
+            if (this.statAnimMap.has(slideIdx)) {
+                cancelAnimationFrame(this.statAnimMap.get(slideIdx));
+                this.statAnimMap.delete(slideIdx);
+            }
+
+            runner(valEl);
         }
 
         renderTick() {
-            if (prefersReducedMotion || !this.wrapper || !this.stages.length) return;
+            if (this.isMobile() || prefersReducedMotion) {
+                if (this.progressFill) this.progressFill.style.width = '100%';
+                return;
+            }
 
             const scrollY = window.scrollY || window.pageYOffset || 0;
             const vh = window.innerHeight || 1;
-            const pinDistance = this.wrapperHeight - vh;
+            const vw = window.innerWidth || 1;
 
-            if (pinDistance <= 0) return;
+            const wrapperRect = this.wrapper.getBoundingClientRect();
+            const wrapperTop = scrollY + wrapperRect.top;
+            const totalScrollDist = 2.0 * vh; // 300vh wrapper - 100vh viewport = 200vh scroll travel
 
-            const relativeScroll = scrollY - this.wrapperTop;
-            const rawProgress = relativeScroll / pinDistance;
-            const progress = Math.min(1.0, Math.max(0.0, rawProgress));
+            // Compute clamped scroll progress through horizontal section [0, 1]
+            const progress = Math.min(1.0, Math.max(0.0, (scrollY - wrapperTop) / totalScrollDist));
+            const maxTranslate = (this.slideCount - 1) * vw; // 2 * 100vw = 200vw
+            const currentTranslateX = -progress * maxTranslate;
 
-            // Stage Partitioning across progress [0.0, 1.0]:
-            // Stage 1 Active: 0.00 -> 0.33
-            // Stage 2 Active: 0.33 -> 0.67
-            // Stage 3 Active: 0.67 -> 1.00
-            let activeStage = 0;
-            if (progress < 0.35) {
-                activeStage = 0;
-            } else if (progress < 0.68) {
-                activeStage = 1;
-            } else {
-                activeStage = 2;
+            // Apply horizontal track translation
+            this.track.style.transform = `translate3d(${currentTranslateX.toFixed(2)}px, 0, 0)`;
+
+            // Update bottom progress bar
+            if (this.progressFill) {
+                this.progressFill.style.width = `${(progress * 100).toFixed(1)}%`;
             }
 
-            // Update Active & Exit Classes
-            this.stages.forEach((stage, idx) => {
-                const isActive = idx === activeStage;
-                const isPast = idx < activeStage;
-                stage.classList.toggle('active', isActive);
-                stage.classList.toggle('exit-prev', isPast);
+            // Determine active slide index and update parallax per slide
+            let activeIdx = 0;
+
+            this.slides.forEach((slide, idx) => {
+                // Slide viewport position: 0 means perfectly centered in viewport
+                const slideViewportX = (idx * vw) + currentTranslateX;
+
+                // Parallax on image: moves at 0.8x relative speed
+                const img = slide.querySelector('.work-parallax-img');
+                if (img) {
+                    const parallaxOffset = (slideViewportX / vw) * (vw * 0.15 * 0.8);
+                    img.style.transform = `translate3d(${parallaxOffset.toFixed(2)}px, 0, 0)`;
+                }
+
+                // Slide becomes active when at least 50% visible (|slideViewportX| <= 0.50 * vw)
+                if (Math.abs(slideViewportX) <= (0.50 * vw)) {
+                    activeIdx = idx;
+                    if (!slide.classList.contains('is-active')) {
+                        slide.classList.add('is-active');
+                        this.triggerStatAnimation(idx);
+                    }
+                }
             });
 
-            // Update Progress Indicator & Editorial Number
-            if (this.currentStage !== activeStage) {
-                this.currentStage = activeStage;
-                if (this.progressText) {
-                    this.progressText.textContent = `${String(activeStage + 1).padStart(2, '0')} / 03`;
+            // Update counter
+            if (activeIdx !== this.currentActiveIndex) {
+                this.currentActiveIndex = activeIdx;
+                if (this.counter) {
+                    this.counter.textContent = `${String(activeIdx + 1).padStart(2, '0')} / 03`;
                 }
-                this.dots.forEach((dot, idx) => {
-                    dot.classList.toggle('active', idx === activeStage);
-                });
-                if (this.editorialNum) {
-                    this.editorialNum.style.opacity = '0';
-                    setTimeout(() => {
-                        if (this.editorialNum) {
-                            this.editorialNum.textContent = String(activeStage + 1).padStart(2, '0');
-                            this.editorialNum.style.opacity = '';
-                        }
-                    }, 150);
-                }
+                if (this.prevBtn) this.prevBtn.classList.toggle('is-disabled', activeIdx === 0);
+                if (this.nextBtn) this.nextBtn.classList.toggle('is-disabled', activeIdx === this.slideCount - 1);
             }
         }
     }
 
-    const caseStudiesController = new CaseStudiesScrollController();
-    window.caseStudiesController = caseStudiesController;
+    // Initialize Controllers
+    const stageController = new StageSequenceController();
+    const workSliderController = new WorkSliderController();
+    window.stageController = stageController;
+    window.workSliderController = workSliderController;
 
     // Fixed Navbar Management
     const siteHeader = document.getElementById('site-header');
@@ -614,7 +775,7 @@
     function onScroll() {
         updateNavbar();
         stageController.renderTick();
-        caseStudiesController.renderTick();
+        workSliderController.renderTick();
 
         if (!rafScheduled) {
             rafScheduled = true;
@@ -627,14 +788,13 @@
     function renderTick() {
         rafScheduled = false;
         stageController.renderTick();
-        caseStudiesController.renderTick();
+        workSliderController.renderTick();
     }
 
     // Global Resize Handler
     function onResize() {
         stageController.resize();
-        caseStudiesController.updateMeasurements();
-        caseStudiesController.renderTick();
+        workSliderController.renderTick();
     }
 
     // Scroll-triggered Reveal Observer for Case Studies & Honesty Section
@@ -683,10 +843,7 @@
                         'stats': vh * 4.40,
                         '5': vh * 4.40,
                         'clients': vh * 5.20,
-                        '6': vh * 5.20,
-                        'case1': vh * 4.80,
-                        'case2': vh * 6.00,
-                        'case3': vh * 7.20
+                        '6': vh * 5.20
                     };
                     targetY = stepScrollMap[stepParam] !== undefined ? stepScrollMap[stepParam] : 0;
                 }
@@ -694,21 +851,83 @@
                 window.scrollTo(0, targetY);
                 updateNavbar();
                 stageController.renderTick();
-                caseStudiesController.renderTick();
+                workSliderController.renderTick();
                 return;
             }
 
-            if (window.location.hash && window.location.hash.startsWith('#scroll-')) {
-                const targetY = parseInt(window.location.hash.replace('#scroll-', ''));
-                if (!isNaN(targetY)) {
-                    window.scrollTo(0, targetY);
-                    onScroll();
+            if (window.location.hash) {
+                if (window.location.hash.startsWith('#scroll-')) {
+                    const targetY = parseInt(window.location.hash.replace('#scroll-', ''));
+                    if (!isNaN(targetY)) {
+                        window.scrollTo(0, targetY);
+                        onScroll();
+                    }
+                } else if (window.location.hash === '#work') {
+                    const workEl = document.getElementById('work');
+                    if (workEl) {
+                        const targetY = workEl.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
+                        window.scrollTo({ top: targetY, behavior: 'smooth' });
+                    }
                 }
             }
         } catch (e) {
             console.error('Error applying URL scroll:', e);
         }
     }
+
+    // In-Browser Measurement Function for Measured Verification
+    window.measureWorkSlider = function() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const isMob = vw < 768;
+        const track = document.getElementById('work-track');
+        const slides = document.querySelectorAll('.work-slide');
+        const nav = document.getElementById('site-header');
+        const navHeight = nav ? nav.getBoundingClientRect().height : 70;
+
+        const results = {
+            viewport: `${vw}x${vh}`,
+            isMobile: isMob,
+            trackTotalWidth: track ? track.getBoundingClientRect().width : 0,
+            expectedTrackWidth: isMob ? vw : 3 * vw,
+            parallaxOffsets: [],
+            textBoundingRects: [],
+            statCountUpDurations: [
+                { slide: 1, metric: '18 → 64', targetDuration: '1200ms ± 50ms', type: 'countup' },
+                { slide: 2, metric: '4.8X', targetDuration: '0ms (Static scale reveal)', type: 'static' },
+                { slide: 3, metric: '₹3.2L → ₹11.4L', targetDuration: '1200ms ± 50ms', type: 'countup' }
+            ],
+            exactDataStrings: [
+                { slide: 1, headline: 'Inconsistent monthly patient footfall and high dependency on offline walk-ins.', stat: '18 → 64', label: 'MONTHLY NEW PATIENT BOOKINGS (+255%)' },
+                { slide: 2, headline: 'High-ticket cosmetic treatments & clinical academy cohorts seeing high drop-off from unvetted leads.', stat: '4.8X', label: '4.8X boost in qualified leads, makeover & academy enrollment' },
+                { slide: 3, headline: 'Zero predictable corporate IT contract inquiries, losing high-value AMC deals to legacy vendors.', stat: '₹3.2L → ₹11.4L', label: 'MONTHLY B2B CONTRACT PIPELINE GENERATED (+256%)' }
+            ]
+        };
+
+        slides.forEach((slide, i) => {
+            const img = slide.querySelector('.work-parallax-img');
+            const meta = slide.querySelector('.work-meta-label');
+            const problem = slide.querySelector('.work-problem');
+            const action = slide.querySelector('.work-action');
+            const result = slide.querySelector('.work-result-num');
+
+            results.parallaxOffsets.push({
+                slide: i + 1,
+                transform: img ? img.style.transform : 'none'
+            });
+
+            results.textBoundingRects.push({
+                slide: i + 1,
+                metaTop: meta ? meta.getBoundingClientRect().top : 0,
+                navClearancePx: meta ? (meta.getBoundingClientRect().top - navHeight) : 0,
+                problemTop: problem ? problem.getBoundingClientRect().top : 0,
+                problemHeight: problem ? problem.getBoundingClientRect().height : 0
+            });
+        });
+
+        console.log('[MEASURE_WORK_SLIDER_RESULT]', JSON.stringify(results, null, 2));
+        return results;
+    };
 
     window.addEventListener('hashchange', checkUrlScroll);
     window.addEventListener('resize', onResize, { passive: true });

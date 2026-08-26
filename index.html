@@ -258,111 +258,109 @@
             </div>
         </section>
 
-        <!-- Selected Work Section: Pinned Cinematic Scroll-Driven Experience -->
-        <!-- PLACEHOLDER CASE STUDIES — replace with real client data before launch -->
-        <section id="work" class="case-studies-scroll-wrapper" aria-label="Selected Client Case Studies">
-            <div class="case-studies-sticky-viewport">
-                <div class="case-studies-inner-container">
-                    
-                    <!-- Fixed Header within Pinned Viewport -->
-                    <div class="case-studies-top-bar">
-                        <div class="case-studies-header-text">
-                            <span class="section-tag">SELECTED WORK</span>
-                            <h2 class="section-title case-studies-title">REAL STORIES. MEASURABLE RESULTS.</h2>
+        <!-- Selected Work Section: Cinematic Horizontal Scroll Slider -->
+        <section id="work" class="work-scroll-wrapper" aria-label="Selected Work Case Studies">
+            <div class="work-sticky-panel">
+                <div class="work-track" id="work-track">
+                    <!-- Case Study 1: Siddhi Dental Clinic (Image Left, Content Right) -->
+                    <article class="work-slide" data-slide="1">
+                        <div class="work-visual-wrapper">
+                            <img src="assets/case-study-siddhi.webp" class="work-parallax-img" alt="Siddhi Dental Care Case Study" loading="eager">
                         </div>
-                        
-                        <!-- Minimal Progress Indicator -->
-                        <div class="case-studies-progress-indicator" aria-label="Case study progress">
-                            <span class="case-studies-progress-text">01 / 03</span>
-                            <div class="case-studies-dots">
-                                <span class="cs-dot active" data-index="0"></span>
-                                <span class="cs-dot" data-index="1"></span>
-                                <span class="cs-dot" data-index="2"></span>
+                        <div class="work-content-wrapper">
+                            <div class="work-editorial-block">
+                                <span class="work-section-badge">SELECTED WORK · REAL STORIES</span>
+                                <span class="work-meta-label">DENTAL CLINIC · HEALTHCARE</span>
+                                <h3 class="work-problem">Inconsistent monthly patient footfall and high dependency on offline walk-ins.</h3>
+                                <p class="work-action">Structured hyper-local Google Search acquisition for dental implants &amp; smile correction, paired with geo-fenced doctor trust video reels.</p>
+                                
+                                <div class="work-result-box">
+                                    <span class="work-result-num" data-type="countup-slide1">18 → 64</span>
+                                    <span class="work-result-label">MONTHLY NEW PATIENT BOOKINGS (+255%)</span>
+                                </div>
+
+                                <a href="#contact" class="work-story-link">
+                                    <span>GET SIMILAR RESULTS</span>
+                                    <svg class="link-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4 8H12M12 8L8 4M12 8L8 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </a>
                             </div>
                         </div>
-                    </div>
+                    </article>
 
-                    <!-- Editorial Backdrop Number: 01, 02, 03 -->
-                    <div class="case-studies-editorial-num" aria-hidden="true">01</div>
-
-                    <!-- Pinned Stages Stage Container -->
-                    <div class="case-studies-stages-track">
-                        
-                        <!-- Stage 01: Siddhi Dental Clinic (Image Left / Content Right) -->
-                        <article class="case-study-stage cs-stage-1 active" data-stage="1">
-                            <div class="case-study-visual cs-visual-left">
-                                <img src="assets/case-study-siddhi.webp" class="case-study-img" alt="Siddhi Dental Care Case Study" loading="lazy">
-                            </div>
-                            <div class="case-study-content cs-content-right">
-                                <span class="case-meta-label">DENTAL CLINIC · HEALTHCARE</span>
-                                <h3 class="case-problem">Inconsistent monthly patient footfall and high dependency on offline walk-ins.</h3>
-                                <p class="case-action">Structured hyper-local Google Search acquisition for dental implants & smile correction, paired with geo-fenced doctor trust video reels.</p>
+                    <!-- Case Study 2: Dental Reforms (Content Left, Image Right) -->
+                    <article class="work-slide work-slide-reverse" data-slide="2">
+                        <div class="work-content-wrapper">
+                            <div class="work-editorial-block">
+                                <span class="work-section-badge">SELECTED WORK · REAL STORIES</span>
+                                <span class="work-meta-label">ADVANCED DENTISTRY &amp; ACADEMY</span>
+                                <h3 class="work-problem">High-ticket cosmetic treatments &amp; clinical academy cohorts seeing high drop-off from unvetted leads.</h3>
+                                <p class="work-action">Re-architected the patient consultation funnel with interactive smile makeover assessments and high-intent clinical academy enrollment flows.</p>
                                 
-                                <div class="case-result-box">
-                                    <span class="case-result-num">18 → 64</span>
-                                    <span class="case-result-label">MONTHLY NEW PATIENT BOOKINGS (+255%)</span>
+                                <div class="work-result-box">
+                                    <span class="work-result-num work-result-static" data-type="static-slide2">4.8X</span>
+                                    <span class="work-result-label">4.8X boost in qualified leads, makeover &amp; academy enrollment</span>
                                 </div>
 
-                                <!-- CTA non-navigating pending final destination link -->
-                                <a href="#contact" class="case-story-link" role="button" aria-label="Get similar results for dental clinic">
+                                <a href="#contact" class="work-story-link">
                                     <span>GET SIMILAR RESULTS</span>
                                     <svg class="link-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M4 8H12M12 8L8 4M12 8L8 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
                                 </a>
                             </div>
-                        </article>
+                        </div>
+                        <div class="work-visual-wrapper">
+                            <img src="assets/case-study-dental-reforms.webp" class="work-parallax-img" alt="Dental Reforms Case Study" loading="eager">
+                        </div>
+                    </article>
 
-                        <!-- Stage 02: Dental Reforms (Content Left / Image Right) -->
-                        <article class="case-study-stage cs-stage-2" data-stage="2">
-                            <div class="case-study-content cs-content-left">
-                                <span class="case-meta-label">ADVANCED DENTISTRY & ACADEMY</span>
-                                <h3 class="case-problem">High-ticket cosmetic treatments & clinical academy cohorts seeing high drop-off from unvetted leads.</h3>
-                                <p class="case-action">Re-architected the patient consultation funnel with interactive smile makeover assessments and high-intent clinical academy enrollment flows.</p>
+                    <!-- Case Study 3: Global Computer Solutions (Image Left, Content Right) -->
+                    <article class="work-slide" data-slide="3">
+                        <div class="work-visual-wrapper">
+                            <img src="assets/case-study-gcs.webp" class="work-parallax-img" alt="Global Computer Solution Case Study" loading="eager">
+                        </div>
+                        <div class="work-content-wrapper">
+                            <div class="work-editorial-block">
+                                <span class="work-section-badge">SELECTED WORK · REAL STORIES</span>
+                                <span class="work-meta-label">IT HARDWARE &amp; B2B ENTERPRISE SERVICES</span>
+                                <h3 class="work-problem">Zero predictable corporate IT contract inquiries, losing high-value AMC deals to legacy vendors.</h3>
+                                <p class="work-action">Launched targeted commercial B2B Google Search campaigns targeting corporate hardware supply, server deployment, and annual IT maintenance.</p>
                                 
-                                <div class="case-result-box">
-                                    <span class="case-result-num">4.8X</span>
-                                    <span class="case-result-label">SURGE IN QUALIFIED SMILE MAKEOVER & ACADEMY INQUIRIES</span>
+                                <div class="work-result-box">
+                                    <span class="work-result-num" data-type="countup-slide3">₹3.2L → ₹11.4L</span>
+                                    <span class="work-result-label">MONTHLY B2B CONTRACT PIPELINE GENERATED (+256%)</span>
                                 </div>
 
-                                <!-- CTA non-navigating pending final destination link -->
-                                <a href="#contact" class="case-story-link" role="button" aria-label="Get similar results for advanced dentistry">
+                                <a href="#contact" class="work-story-link">
                                     <span>GET SIMILAR RESULTS</span>
                                     <svg class="link-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M4 8H12M12 8L8 4M12 8L8 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
                                 </a>
                             </div>
-                            <div class="case-study-visual cs-visual-right">
-                                <img src="assets/case-study-dental-reforms.webp" class="case-study-img" alt="Dental Reforms Case Study" loading="lazy">
-                            </div>
-                        </article>
+                        </div>
+                    </article>
+                </div>
 
-                        <!-- Stage 03: Global Computer Solutions (Image Left / Content Right) -->
-                        <article class="case-study-stage cs-stage-3" data-stage="3">
-                            <div class="case-study-visual cs-visual-left">
-                                <img src="assets/case-study-gcs.webp" class="case-study-img" alt="Global Computer Solution Case Study" loading="lazy">
-                            </div>
-                            <div class="case-study-content cs-content-right">
-                                <span class="case-meta-label">IT HARDWARE & B2B ENTERPRISE SERVICES</span>
-                                <h3 class="case-problem">Zero predictable corporate IT contract inquiries, losing high-value AMC deals to legacy vendors.</h3>
-                                <p class="case-action">Launched targeted commercial B2B Google Search campaigns targeting corporate hardware supply, server deployment, and annual IT maintenance.</p>
-                                
-                                <div class="case-result-box">
-                                    <span class="case-result-num">₹3.2L → ₹11.4L</span>
-                                    <span class="case-result-label">MONTHLY B2B CONTRACT PIPELINE GENERATED (+256%)</span>
-                                </div>
+                <!-- Minimal Arrow Navigation (Desktop) -->
+                <button class="work-arrow work-arrow-prev" id="work-prev-btn" aria-label="Previous Case Study">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+                <button class="work-arrow work-arrow-next" id="work-next-btn" aria-label="Next Case Study">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
 
-                                <!-- CTA non-navigating pending final destination link -->
-                                <a href="#contact" class="case-story-link" role="button" aria-label="Get similar results for IT hardware and B2B">
-                                    <span>GET SIMILAR RESULTS</span>
-                                    <svg class="link-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M4 8H12M12 8L8 4M12 8L8 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </a>
-                            </div>
-                        </article>
-
+                <!-- Bottom Counter & Progress Bar -->
+                <div class="work-bottom-bar">
+                    <span class="work-counter" id="work-counter">01 / 03</span>
+                    <div class="work-progress-track">
+                        <div class="work-progress-fill" id="work-progress-fill"></div>
                     </div>
                 </div>
             </div>
