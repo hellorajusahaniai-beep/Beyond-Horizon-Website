@@ -21,41 +21,106 @@
         const navHeight = nav ? nav.getBoundingClientRect().height : 70;
 
         const results = {
-            viewport: `${vw}x${vh}`,
+            viewport: { width: vw, height: vh },
             isMobile: isMob,
-            trackTotalWidth: track ? track.getBoundingClientRect().width : 0,
+            trackWidth: track ? track.getBoundingClientRect().width : 0,
             expectedTrackWidth: isMob ? vw : 3 * vw,
-            parallaxOffsets: [],
-            textBoundingRects: [],
-            statCountUpDurations: [
-                { slide: 1, metric: '18 → 64', targetDuration: '1200ms ± 50ms', type: 'countup' },
-                { slide: 2, metric: '4.8X', targetDuration: '0ms (Static scale reveal)', type: 'static' },
-                { slide: 3, metric: '₹3.2L → ₹11.4L', targetDuration: '1200ms ± 50ms', type: 'countup' }
-            ],
-            exactDataStrings: [
-                { slide: 1, headline: 'Inconsistent monthly patient footfall and high dependency on offline walk-ins.', stat: '18 → 64', label: 'MONTHLY NEW PATIENT BOOKINGS (+255%)' },
-                { slide: 2, headline: 'High-ticket cosmetic treatments & clinical academy cohorts seeing high drop-off from unvetted leads.', stat: '4.8X', label: '4.8X boost in qualified leads, makeover & academy enrollment' },
-                { slide: 3, headline: 'Zero predictable corporate IT contract inquiries, losing high-value AMC deals to legacy vendors.', stat: '₹3.2L → ₹11.4L', label: 'MONTHLY B2B CONTRACT PIPELINE GENERATED (+256%)' }
-            ]
+            cardBoxAudit: {
+                hasCardBackground: false,
+                hasDropShadows: false,
+                hasBorderRadius: false,
+                details: []
+            },
+            slides: []
         };
 
         slides.forEach((slide, i) => {
+            const visualWrapper = slide.querySelector('.work-visual-wrapper');
             const img = slide.querySelector('.work-parallax-img');
-            const meta = slide.querySelector('.work-meta-label');
+            const contentWrapper = slide.querySelector('.work-content-wrapper');
+            const editorialBlock = slide.querySelector('.work-editorial-block');
             const problem = slide.querySelector('.work-problem');
+            const action = slide.querySelector('.work-action');
+            const resultBox = slide.querySelector('.work-result-box');
+            const resultNum = slide.querySelector('.work-result-num');
+            const resultLabel = slide.querySelector('.work-result-label');
 
-            results.parallaxOffsets.push({
+            const imgRect = img ? img.getBoundingClientRect() : null;
+            const visualRect = visualWrapper ? visualWrapper.getBoundingClientRect() : null;
+            const problemRect = problem ? problem.getBoundingClientRect() : null;
+            const actionRect = action ? action.getBoundingClientRect() : null;
+            const contentRect = contentWrapper ? contentWrapper.getBoundingClientRect() : null;
+
+            const problemStyle = problem ? window.getComputedStyle(problem) : null;
+            const actionStyle = action ? window.getComputedStyle(action) : null;
+            const imgStyle = img ? window.getComputedStyle(img) : null;
+            const visualStyle = visualWrapper ? window.getComputedStyle(visualWrapper) : null;
+            const contentStyle = contentWrapper ? window.getComputedStyle(contentWrapper) : null;
+            const resultBoxStyle = resultBox ? window.getComputedStyle(resultBox) : null;
+
+            // Audit for box/card artifacts
+            const bgValues = [
+                visualStyle ? visualStyle.backgroundColor : '',
+                contentStyle ? contentStyle.backgroundColor : '',
+                resultBoxStyle ? resultBoxStyle.backgroundColor : ''
+            ].filter(bg => bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent' && bg !== 'rgb(0, 0, 0)');
+
+            const shadowValues = [
+                visualStyle ? visualStyle.boxShadow : '',
+                contentStyle ? contentStyle.boxShadow : '',
+                resultBoxStyle ? resultBoxStyle.boxShadow : ''
+            ].filter(s => s && s !== 'none');
+
+            const radiusValues = [
+                visualStyle ? visualStyle.borderRadius : '',
+                imgStyle ? imgStyle.borderRadius : '',
+                contentStyle ? contentStyle.borderRadius : ''
+            ].filter(r => r && r !== '0px');
+
+            if (bgValues.length > 0) results.cardBoxAudit.hasCardBackground = true;
+            if (shadowValues.length > 0) results.cardBoxAudit.hasDropShadows = true;
+            if (radiusValues.length > 0) results.cardBoxAudit.hasBorderRadius = true;
+
+            results.cardBoxAudit.details.push({
                 slide: i + 1,
-                transform: img ? img.style.transform : 'none'
+                visualBg: visualStyle ? visualStyle.backgroundColor : 'none',
+                visualBoxShadow: visualStyle ? visualStyle.boxShadow : 'none',
+                visualBorderRadius: visualStyle ? visualStyle.borderRadius : '0px',
+                contentPadding: contentStyle ? contentStyle.padding : 'none',
+                resultBoxBg: resultBoxStyle ? resultBoxStyle.backgroundColor : 'none'
             });
 
-            results.textBoundingRects.push({
+            const slideData = {
                 slide: i + 1,
-                metaTop: meta ? meta.getBoundingClientRect().top : 0,
-                navClearancePx: meta ? (meta.getBoundingClientRect().top - navHeight) : 0,
-                problemTop: problem ? problem.getBoundingClientRect().top : 0,
-                problemHeight: problem ? problem.getBoundingClientRect().height : 0
-            });
+                image: {
+                    width: imgRect ? imgRect.width : 0,
+                    height: imgRect ? imgRect.height : 0,
+                    expectedWidthDesktop: 0.5 * vw,
+                    expectedHeightDesktop: vh,
+                    isExact50vwDesktop: imgRect ? Math.abs(imgRect.width - (0.5 * vw)) < 1.0 : false,
+                    isExact100vhDesktop: imgRect ? Math.abs(imgRect.height - vh) < 1.0 : false,
+                    objectFit: imgStyle ? imgStyle.objectFit : 'none',
+                    aspectRatio: imgRect && imgRect.height > 0 ? (imgRect.width / imgRect.height).toFixed(3) : 'none',
+                    transform: imgStyle ? imgStyle.transform : 'none'
+                },
+                typography: {
+                    headingFontSizePx: problemStyle ? parseFloat(problemStyle.fontSize) : 0,
+                    headingLineHeight: problemStyle ? problemStyle.lineHeight : 'none',
+                    headingHeightPx: problemRect ? problemRect.height : 0,
+                    bodyFontSizePx: actionStyle ? parseFloat(actionStyle.fontSize) : 0,
+                    bodyLineHeight: actionStyle ? actionStyle.lineHeight : 'none',
+                    bodyHeightPx: actionRect ? actionRect.height : 0,
+                    statMetric: resultNum ? resultNum.textContent.trim() : '',
+                    statLabel: resultLabel ? resultLabel.textContent.trim() : ''
+                },
+                contentContainer: {
+                    padding: contentStyle ? contentStyle.padding : 'none',
+                    width: contentRect ? contentRect.width : 0,
+                    height: contentRect ? contentRect.height : 0
+                }
+            };
+
+            results.slides.push(slideData);
         });
 
         console.log('[MEASURE_WORK_SLIDER_RESULT]', JSON.stringify(results, null, 2));
@@ -335,6 +400,11 @@
             const zone3Start = 3.40 * vh;
             const zone3End = 5.00 * vh;
             const zone3Duration = 1.60 * vh;
+
+            // Performance Optimization: If stage is scrolled past viewport, skip canvas rendering
+            if (scrollY > (zone3End + 0.5 * vh)) {
+                return;
+            }
 
             const w = this.canvas.width;
             const h = this.canvas.height;
@@ -683,6 +753,11 @@
             const vw = window.innerWidth || 1;
 
             const wrapperRect = this.wrapper.getBoundingClientRect();
+            // If completely outside viewport, avoid doing work
+            if (wrapperRect.bottom < 0 || wrapperRect.top > vh) {
+                return;
+            }
+
             const wrapperTop = scrollY + wrapperRect.top;
             const totalScrollDist = 2.0 * vh; // 300vh wrapper - 100vh viewport = 200vh scroll travel
 
@@ -771,12 +846,8 @@
         });
     }
 
-    // Master Scroll Handler
+    // Master Scroll Handler with single rAF gating
     function onScroll() {
-        updateNavbar();
-        stageController.renderTick();
-        workSliderController.renderTick();
-
         if (!rafScheduled) {
             rafScheduled = true;
             requestAnimationFrame(renderTick);
@@ -787,6 +858,7 @@
     // Master rAF Tick
     function renderTick() {
         rafScheduled = false;
+        updateNavbar();
         stageController.renderTick();
         workSliderController.renderTick();
     }
@@ -794,7 +866,7 @@
     // Global Resize Handler
     function onResize() {
         stageController.resize();
-        workSliderController.renderTick();
+        renderTick();
     }
 
     // Scroll-triggered Reveal Observer for Case Studies & Honesty Section
@@ -874,60 +946,6 @@
             console.error('Error applying URL scroll:', e);
         }
     }
-
-    // In-Browser Measurement Function for Measured Verification
-    window.measureWorkSlider = function() {
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        const isMob = vw < 768;
-        const track = document.getElementById('work-track');
-        const slides = document.querySelectorAll('.work-slide');
-        const nav = document.getElementById('site-header');
-        const navHeight = nav ? nav.getBoundingClientRect().height : 70;
-
-        const results = {
-            viewport: `${vw}x${vh}`,
-            isMobile: isMob,
-            trackTotalWidth: track ? track.getBoundingClientRect().width : 0,
-            expectedTrackWidth: isMob ? vw : 3 * vw,
-            parallaxOffsets: [],
-            textBoundingRects: [],
-            statCountUpDurations: [
-                { slide: 1, metric: '18 → 64', targetDuration: '1200ms ± 50ms', type: 'countup' },
-                { slide: 2, metric: '4.8X', targetDuration: '0ms (Static scale reveal)', type: 'static' },
-                { slide: 3, metric: '₹3.2L → ₹11.4L', targetDuration: '1200ms ± 50ms', type: 'countup' }
-            ],
-            exactDataStrings: [
-                { slide: 1, headline: 'Inconsistent monthly patient footfall and high dependency on offline walk-ins.', stat: '18 → 64', label: 'MONTHLY NEW PATIENT BOOKINGS (+255%)' },
-                { slide: 2, headline: 'High-ticket cosmetic treatments & clinical academy cohorts seeing high drop-off from unvetted leads.', stat: '4.8X', label: '4.8X boost in qualified leads, makeover & academy enrollment' },
-                { slide: 3, headline: 'Zero predictable corporate IT contract inquiries, losing high-value AMC deals to legacy vendors.', stat: '₹3.2L → ₹11.4L', label: 'MONTHLY B2B CONTRACT PIPELINE GENERATED (+256%)' }
-            ]
-        };
-
-        slides.forEach((slide, i) => {
-            const img = slide.querySelector('.work-parallax-img');
-            const meta = slide.querySelector('.work-meta-label');
-            const problem = slide.querySelector('.work-problem');
-            const action = slide.querySelector('.work-action');
-            const result = slide.querySelector('.work-result-num');
-
-            results.parallaxOffsets.push({
-                slide: i + 1,
-                transform: img ? img.style.transform : 'none'
-            });
-
-            results.textBoundingRects.push({
-                slide: i + 1,
-                metaTop: meta ? meta.getBoundingClientRect().top : 0,
-                navClearancePx: meta ? (meta.getBoundingClientRect().top - navHeight) : 0,
-                problemTop: problem ? problem.getBoundingClientRect().top : 0,
-                problemHeight: problem ? problem.getBoundingClientRect().height : 0
-            });
-        });
-
-        console.log('[MEASURE_WORK_SLIDER_RESULT]', JSON.stringify(results, null, 2));
-        return results;
-    };
 
     window.addEventListener('hashchange', checkUrlScroll);
     window.addEventListener('resize', onResize, { passive: true });
