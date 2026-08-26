@@ -71,34 +71,71 @@
         });
 
         const workRows = Array.from(document.querySelectorAll('.work-editorial-row')).map((row, idx) => {
+            const visual = row.querySelector('.work-row-visual');
             const img = row.querySelector('.work-editorial-img');
+            const content = row.querySelector('.work-row-content');
+            const tag = row.querySelector('.work-tag');
             const headline = row.querySelector('.work-headline');
+            const desc = row.querySelector('.work-description');
             const statNum = row.querySelector('.work-stat-number');
+            const statLbl = row.querySelector('.work-stat-label');
+            const cta = row.querySelector('.editorial-text-link');
+
+            const visualStyle = visual ? window.getComputedStyle(visual) : null;
+            const visualRect = visual ? visual.getBoundingClientRect() : null;
             const imgStyle = img ? window.getComputedStyle(img) : null;
             const imgRect = img ? img.getBoundingClientRect() : null;
-            const headlineStyle = headline ? window.getComputedStyle(headline) : null;
 
             return {
                 row: idx + 1,
-                imageObjectFit: imgStyle ? imgStyle.objectFit : 'none',
-                imageWidth: imgRect ? Math.round(imgRect.width) : 0,
-                imageHeight: imgRect ? Math.round(imgRect.height) : 0,
-                headlineFontSize: headlineStyle ? headlineStyle.fontSize : 'none',
+                imageContainer: {
+                    widthPx: visualRect ? Math.round(visualRect.width) : 0,
+                    heightPx: visualRect ? Math.round(visualRect.height) : 0,
+                    padding: visualStyle ? visualStyle.padding : 'none',
+                    backgroundColor: visualStyle ? visualStyle.backgroundColor : 'none',
+                    borderRadius: visualStyle ? visualStyle.borderRadius : 'none'
+                },
+                imageElement: {
+                    widthPx: imgRect ? Math.round(imgRect.width) : 0,
+                    heightPx: imgRect ? Math.round(imgRect.height) : 0,
+                    objectFit: imgStyle ? imgStyle.objectFit : 'none',
+                    borderRadius: imgStyle ? imgStyle.borderRadius : 'none'
+                },
+                textAlignments: {
+                    container: content ? window.getComputedStyle(content).textAlign : 'none',
+                    tag: tag ? window.getComputedStyle(tag).textAlign : 'none',
+                    headline: headline ? window.getComputedStyle(headline).textAlign : 'none',
+                    description: desc ? window.getComputedStyle(desc).textAlign : 'none',
+                    statNumber: statNum ? window.getComputedStyle(statNum).textAlign : 'none',
+                    statLabel: statLbl ? window.getComputedStyle(statLbl).textAlign : 'none',
+                    ctaLink: cta ? window.getComputedStyle(cta).textAlign : 'none'
+                },
+                headlineFontSize: headline ? window.getComputedStyle(headline).fontSize : 'none',
                 statNumber: statNum ? statNum.textContent.trim() : ''
             };
         });
 
         const serviceRows = Array.from(document.querySelectorAll('.service-editorial-row')).map((row, idx) => {
             const num = row.querySelector('.service-row-number');
+            const main = row.querySelector('.service-row-main');
             const title = row.querySelector('.service-row-title');
             const outcome = row.querySelector('.service-row-outcome');
             const numStyle = num ? window.getComputedStyle(num) : null;
+            const titleStyle = title ? window.getComputedStyle(title) : null;
+            const outcomeStyle = outcome ? window.getComputedStyle(outcome) : null;
+            const rowStyle = window.getComputedStyle(row);
             return {
                 index: idx + 1,
                 number: num ? num.textContent.trim() : '',
-                numberFontSize: numStyle ? numStyle.fontSize : 'none',
+                numberFontSizePx: numStyle ? parseFloat(numStyle.fontSize) : 0,
+                numberTextAlign: numStyle ? numStyle.textAlign : 'none',
                 title: title ? title.textContent.trim() : '',
-                outcome: outcome ? outcome.textContent.trim() : ''
+                titleFontSizePx: titleStyle ? parseFloat(titleStyle.fontSize) : 0,
+                titleTextAlign: titleStyle ? titleStyle.textAlign : 'none',
+                outcome: outcome ? outcome.textContent.trim() : '',
+                outcomeTextAlign: outcomeStyle ? outcomeStyle.textAlign : 'none',
+                rowDisplay: rowStyle.display,
+                rowGridColumns: rowStyle.gridTemplateColumns
             };
         });
 
