@@ -56,23 +56,28 @@
     <!-- Static Fine Film Grain Overlay (Fixed Full-Screen, 4.5% Opacity, Overlay Blend) -->
     <div class="film-grain-overlay" aria-hidden="true"></div>
 
-    <!-- Sequence 1: 300vh Scroll Container driving Sticky Hero & Scrubbing Sequence -->
-    <div class="hero-scroll-wrapper" id="hero-scroll-wrapper">
+    <!-- Single Viewport Pinned Scroll Stage (Sequence 1 & Sequence 2 via Single Canvas Dissolve) -->
+    <div class="stage-scroll-wrapper" id="stage-scroll-wrapper">
         <!-- Pinned Sticky Panel (100vh) -->
-        <section class="hero-sticky-panel" id="hero-sticky-panel">
-            <!-- Full-Bleed Canvas (z-0) -->
-            <canvas id="scroll-canvas" class="hero-canvas"></canvas>
+        <section class="stage-sticky-panel" id="stage-sticky-panel">
+            <!-- Full-Bleed Unified Canvas (z-0) -->
+            <canvas id="stage-canvas" class="stage-canvas"></canvas>
 
-            <!-- Readability Gradient Overlay (z-10) -->
-            <div class="hero-gradient-overlay"></div>
+            <!-- Dynamic Readability Gradient Overlay (z-10) -->
+            <div class="stage-gradient-overlay" id="stage-gradient-overlay"></div>
 
             <!-- Static Fine Film Grain Overlay (z-15) -->
             <div class="film-grain-overlay" aria-hidden="true"></div>
 
-            <!-- Left-Aligned Text Steps (z-20) -->
-            <div class="hero-text-block" id="hero-text-block">
+            <!-- Unified Rotated Desktop Step Indicator (z-20) -->
+            <div class="seq-step-counter" id="stage-step-counter" aria-hidden="true">
+                <span class="seq-counter-text" id="stage-counter-text">01 / 03</span>
+            </div>
+
+            <!-- Sequence 1 Text Block: Left-Aligned Steps (z-20) -->
+            <div class="hero-text-block seq1-text-block" id="hero-text-block">
                 <!-- Step 1: Beyond Horizon (0.00 - 0.30) -->
-                <div class="text-step active" data-step="0">
+                <div class="text-step" data-step="0">
                     <h1 class="hero-heading">
                         <span>BEYOND</span>
                         <span>HORIZON</span>
@@ -103,49 +108,15 @@
                                 <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </a>
-                        <p class="hero-cta-note">Currently taking 2 projects for this quarter</p>
+                        <p class="hero-cta-note">Let's grow your business</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Bottom-Left Scroll Indicator with Step Dots (z-25) -->
-            <div class="scroll-indicator" id="scroll-indicator">
-                <div class="scroll-line"></div>
-                <span class="scroll-text">SCROLL</span>
-                <div class="step-dots">
-                    <span class="step-dot active" data-dot="0"></span>
-                    <span class="step-dot" data-dot="1"></span>
-                    <span class="step-dot" data-dot="2"></span>
-                </div>
-            </div>
-
-            <!-- Bottom-Left Minimal Preloader -->
-            <div class="hero-loader" id="hero-loader">
-                <div class="loader-bar-track">
-                    <div class="loader-bar-fill" id="loader-bar-fill"></div>
-                </div>
-                <span class="loader-text" id="loader-text">LOADING 0%</span>
-            </div>
-        </section>
-    </div>
-
-    <!-- Sequence 2: 300vh Scroll Container with Split Left-Right Composition & 60vh Overlap -->
-    <div class="seq2-scroll-wrapper" id="seq2-scroll-wrapper">
-        <!-- Pinned Sticky Panel (100vh) -->
-        <section class="seq2-sticky-panel" id="seq2-sticky-panel">
-            <!-- Full-Bleed Canvas (z-0) -->
-            <canvas id="seq2-scroll-canvas" class="hero-canvas"></canvas>
-
-            <!-- Symmetric Dual-Side Gradient Overlay (z-10) -->
-            <div class="seq2-gradient-overlay"></div>
-
-            <!-- Static Fine Film Grain Overlay (z-15) -->
-            <div class="film-grain-overlay" aria-hidden="true"></div>
-
-            <!-- Split Text Container (z-20) -->
+            <!-- Sequence 2 Text Container: Split Left-Right Composition (z-20) -->
             <div class="seq2-text-container" id="seq2-text-container">
-                <!-- Step 1: WHAT WE DO & Services List (0.15 - 0.50) -->
-                <div class="seq2-step seq2-step-services active" data-seq2-step="0">
+                <!-- Step 1: WHAT WE DO & Services List -->
+                <div class="seq2-step seq2-step-services" data-seq2-step="0">
                     <div class="seq2-left-block">
                         <h2 class="seq2-heading seq2-heading-left">WHAT WE DO</h2>
                         <p class="hero-subtext seq2-subtext-desktop">EVERYTHING YOUR BRAND NEEDS. NOTHING IT DOESN'T.</p>
@@ -159,12 +130,9 @@
                         </ul>
                     </div>
                     <p class="hero-subtext seq2-subtext-mobile">EVERYTHING YOUR BRAND NEEDS. NOTHING IT DOESN'T.</p>
-                    <div class="seq2-vertical-subtext">
-                        <span>EVERYTHING YOUR BRAND NEEDS. NOTHING IT DOESN'T.</span>
-                    </div>
                 </div>
 
-                <!-- Step 2: Proof Stats (0.55 - 1.00) -->
+                <!-- Step 2: Proof Stats -->
                 <div class="seq2-step seq2-step-stats" data-seq2-step="1">
                     <div class="seq2-left-block">
                         <h2 class="seq2-heading seq2-heading-left">
@@ -195,37 +163,46 @@
                         </div>
                     </div>
                     <p class="hero-subtext seq2-subtext-mobile">NO VANITY METRICS. PROVEN RESULTS.</p>
-                    <div class="seq2-vertical-subtext">
-                        <span>NO VANITY METRICS. PROVEN RESULTS.</span>
-                    </div>
                 </div>
 
-                <!-- Step 3: WHO WE WORK WITH & Business Types (0.67 - 1.00) -->
-                <div class="seq2-step seq2-step-services" data-seq2-step="2">
+                <!-- Step 3: WHO WE WORK WITH & Business Types -->
+                <div class="seq2-step seq2-step-services seq2-step-clients" data-seq2-step="2">
                     <div class="seq2-left-block">
                         <h2 class="seq2-heading seq2-heading-left">WHO WE WORK WITH</h2>
                         <p class="hero-subtext seq2-subtext-desktop">LOCAL BUSINESSES THAT WANT TO BE THE OBVIOUS CHOICE.</p>
                     </div>
                     <div class="seq2-right-block">
-                        <ul class="seq2-services-list" aria-label="Business Types List">
-                            <li class="seq2-service-item">SALONS · GYMS · CAFES</li>
-                            <li class="seq2-service-item">CLINICS · BOUTIQUES</li>
-                            <li class="seq2-service-item">RESTAURANTS · COACHING</li>
+                        <ul class="seq2-services-list seq2-clients-list" aria-label="Business Types List">
+                            <li class="seq2-service-item">SALONS</li>
+                            <li class="seq2-service-item">GYMS</li>
+                            <li class="seq2-service-item">CAFES</li>
+                            <li class="seq2-service-item">CLINICS</li>
+                            <li class="seq2-service-item">BOUTIQUES</li>
+                            <li class="seq2-service-item">RESTAURANTS</li>
+                            <li class="seq2-service-item">COACHING</li>
                         </ul>
                     </div>
                     <p class="hero-subtext seq2-subtext-mobile">LOCAL BUSINESSES THAT WANT TO BE THE OBVIOUS CHOICE.</p>
-                    <div class="seq2-vertical-subtext">
-                        <span>LOCAL BUSINESSES THAT WANT TO BE THE OBVIOUS CHOICE.</span>
-                    </div>
                 </div>
             </div>
 
-            <!-- Bottom-Left Minimal Preloader for Sequence 2 (Lazy Loaded) -->
-            <div class="hero-loader" id="seq2-loader">
-                <div class="loader-bar-track">
-                    <div class="loader-bar-fill" id="seq2-loader-bar-fill"></div>
+            <!-- Bottom-Left Scroll Indicator with Step Dots (z-25) -->
+            <div class="scroll-indicator" id="scroll-indicator">
+                <div class="scroll-line"></div>
+                <span class="scroll-text">SCROLL</span>
+                <div class="step-dots">
+                    <span class="step-dot active" data-dot="0"></span>
+                    <span class="step-dot" data-dot="1"></span>
+                    <span class="step-dot" data-dot="2"></span>
                 </div>
-                <span class="loader-text" id="seq2-loader-text">LOADING 0%</span>
+            </div>
+
+            <!-- Bottom-Left Minimal Preloader -->
+            <div class="hero-loader" id="stage-loader">
+                <div class="loader-bar-track">
+                    <div class="loader-bar-fill" id="loader-bar-fill"></div>
+                </div>
+                <span class="loader-text" id="loader-text">LOADING 0%</span>
             </div>
         </section>
     </div>
@@ -235,11 +212,6 @@
         <!-- Compact Proof Bar Section (Thin Transition Strip directly after Sequence 2) -->
         <section class="proof-bar" id="proof-bar" aria-label="Key Proof & Business Types">
             <div class="section-container proof-container">
-                <!-- Top Tagline: Small Gray Uppercase, Wide Letter-Spacing -->
-                <div class="proof-tagline-wrapper">
-                    <p class="proof-tagline">REAL BUSINESSES. REAL REVENUE. NO VANITY METRICS.</p>
-                </div>
-
                 <!-- Scrolling Text Marquee: Business Types -->
                 <div class="proof-marquee-wrapper" aria-label="Business types we work with">
                     <div class="proof-marquee-track">
@@ -286,96 +258,112 @@
             </div>
         </section>
 
-        <!-- Selected Work Section: Local Business Stories -->
+        <!-- Selected Work Section: Pinned Cinematic Scroll-Driven Experience -->
         <!-- PLACEHOLDER CASE STUDIES — replace with real client data before launch -->
-        <section id="work" class="content-section work-section">
-            <div class="section-container">
-                <div class="section-header">
-                    <span class="section-tag">SELECTED WORK</span>
-                    <h2 class="section-title">REAL STORIES. MEASURABLE RESULTS.</h2>
-                </div>
-
-                <div class="case-studies-list">
-                    <!-- Case Study 1 (Image Left, Content Right) -->
-                    <article class="case-study-row reveal-on-scroll" data-story="1">
-                        <div class="case-study-visual">
-                            <div class="case-study-img-placeholder">
-                                <span>IMAGE PLACEHOLDER</span>
+        <section id="work" class="case-studies-scroll-wrapper" aria-label="Selected Client Case Studies">
+            <div class="case-studies-sticky-viewport">
+                <div class="case-studies-inner-container">
+                    
+                    <!-- Fixed Header within Pinned Viewport -->
+                    <div class="case-studies-top-bar">
+                        <div class="case-studies-header-text">
+                            <span class="section-tag">SELECTED WORK</span>
+                            <h2 class="section-title case-studies-title">REAL STORIES. MEASURABLE RESULTS.</h2>
+                        </div>
+                        
+                        <!-- Minimal Progress Indicator -->
+                        <div class="case-studies-progress-indicator" aria-label="Case study progress">
+                            <span class="case-studies-progress-text">01 / 03</span>
+                            <div class="case-studies-dots">
+                                <span class="cs-dot active" data-index="0"></span>
+                                <span class="cs-dot" data-index="1"></span>
+                                <span class="cs-dot" data-index="2"></span>
                             </div>
                         </div>
-                        <div class="case-study-content">
-                            <span class="case-meta-label">BUSINESS TYPE · CITY</span>
-                            <h3 class="case-problem">[One-line problem goes here]</h3>
-                            <p class="case-action">[One-line action goes here]</p>
-                            
-                            <div class="case-result-box">
-                                <span class="case-result-num">00 → 00</span>
-                                <span class="case-result-label">METRIC LABEL</span>
-                            </div>
+                    </div>
 
-                            <!-- Add case study URL when ready -->
-                            <span class="case-story-link is-disabled" role="link" aria-disabled="true">
-                                <span>READ THE FULL STORY</span>
-                                <svg class="link-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M4 8H12M12 8L8 4M12 8L8 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </span>
-                        </div>
-                    </article>
+                    <!-- Editorial Backdrop Number: 01, 02, 03 -->
+                    <div class="case-studies-editorial-num" aria-hidden="true">01</div>
 
-                    <!-- Case Study 2 (Content Left, Image Right on Desktop) -->
-                    <article class="case-study-row case-study-row-reverse reveal-on-scroll" data-story="2">
-                        <div class="case-study-visual">
-                            <div class="case-study-img-placeholder">
-                                <span>IMAGE PLACEHOLDER</span>
+                    <!-- Pinned Stages Stage Container -->
+                    <div class="case-studies-stages-track">
+                        
+                        <!-- Stage 01: Siddhi Dental Clinic (Image Left / Content Right) -->
+                        <article class="case-study-stage cs-stage-1 active" data-stage="1">
+                            <div class="case-study-visual cs-visual-left">
+                                <img src="assets/case-study-siddhi.webp" class="case-study-img" alt="Siddhi Dental Care Case Study" loading="lazy">
                             </div>
-                        </div>
-                        <div class="case-study-content">
-                            <span class="case-meta-label">BUSINESS TYPE · CITY</span>
-                            <h3 class="case-problem">[One-line problem goes here]</h3>
-                            <p class="case-action">[One-line action goes here]</p>
-                            
-                            <div class="case-result-box">
-                                <span class="case-result-num">00 → 00</span>
-                                <span class="case-result-label">METRIC LABEL</span>
-                            </div>
+                            <div class="case-study-content cs-content-right">
+                                <span class="case-meta-label">DENTAL CLINIC · HEALTHCARE</span>
+                                <h3 class="case-problem">Inconsistent monthly patient footfall and high dependency on offline walk-ins.</h3>
+                                <p class="case-action">Structured hyper-local Google Search acquisition for dental implants & smile correction, paired with geo-fenced doctor trust video reels.</p>
+                                
+                                <div class="case-result-box">
+                                    <span class="case-result-num">18 → 64</span>
+                                    <span class="case-result-label">MONTHLY NEW PATIENT BOOKINGS (+255%)</span>
+                                </div>
 
-                            <!-- Add case study URL when ready -->
-                            <span class="case-story-link is-disabled" role="link" aria-disabled="true">
-                                <span>READ THE FULL STORY</span>
-                                <svg class="link-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M4 8H12M12 8L8 4M12 8L8 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </span>
-                        </div>
-                    </article>
-
-                    <!-- Case Study 3 (Image Left, Content Right) -->
-                    <article class="case-study-row reveal-on-scroll" data-story="3">
-                        <div class="case-study-visual">
-                            <div class="case-study-img-placeholder">
-                                <span>IMAGE PLACEHOLDER</span>
+                                <!-- CTA non-navigating pending final destination link -->
+                                <a href="#contact" class="case-story-link" role="button" aria-label="Get similar results for dental clinic">
+                                    <span>GET SIMILAR RESULTS</span>
+                                    <svg class="link-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4 8H12M12 8L8 4M12 8L8 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </a>
                             </div>
-                        </div>
-                        <div class="case-study-content">
-                            <span class="case-meta-label">BUSINESS TYPE · CITY</span>
-                            <h3 class="case-problem">[One-line problem goes here]</h3>
-                            <p class="case-action">[One-line action goes here]</p>
-                            
-                            <div class="case-result-box">
-                                <span class="case-result-num">00 → 00</span>
-                                <span class="case-result-label">METRIC LABEL</span>
-                            </div>
+                        </article>
 
-                            <!-- Add case study URL when ready -->
-                            <span class="case-story-link is-disabled" role="link" aria-disabled="true">
-                                <span>READ THE FULL STORY</span>
-                                <svg class="link-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M4 8H12M12 8L8 4M12 8L8 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </span>
-                        </div>
-                    </article>
+                        <!-- Stage 02: Dental Reforms (Content Left / Image Right) -->
+                        <article class="case-study-stage cs-stage-2" data-stage="2">
+                            <div class="case-study-content cs-content-left">
+                                <span class="case-meta-label">ADVANCED DENTISTRY & ACADEMY</span>
+                                <h3 class="case-problem">High-ticket cosmetic treatments & clinical academy cohorts seeing high drop-off from unvetted leads.</h3>
+                                <p class="case-action">Re-architected the patient consultation funnel with interactive smile makeover assessments and high-intent clinical academy enrollment flows.</p>
+                                
+                                <div class="case-result-box">
+                                    <span class="case-result-num">4.8X</span>
+                                    <span class="case-result-label">SURGE IN QUALIFIED SMILE MAKEOVER & ACADEMY INQUIRIES</span>
+                                </div>
+
+                                <!-- CTA non-navigating pending final destination link -->
+                                <a href="#contact" class="case-story-link" role="button" aria-label="Get similar results for advanced dentistry">
+                                    <span>GET SIMILAR RESULTS</span>
+                                    <svg class="link-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4 8H12M12 8L8 4M12 8L8 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </a>
+                            </div>
+                            <div class="case-study-visual cs-visual-right">
+                                <img src="assets/case-study-dental-reforms.webp" class="case-study-img" alt="Dental Reforms Case Study" loading="lazy">
+                            </div>
+                        </article>
+
+                        <!-- Stage 03: Global Computer Solutions (Image Left / Content Right) -->
+                        <article class="case-study-stage cs-stage-3" data-stage="3">
+                            <div class="case-study-visual cs-visual-left">
+                                <img src="assets/case-study-gcs.webp" class="case-study-img" alt="Global Computer Solution Case Study" loading="lazy">
+                            </div>
+                            <div class="case-study-content cs-content-right">
+                                <span class="case-meta-label">IT HARDWARE & B2B ENTERPRISE SERVICES</span>
+                                <h3 class="case-problem">Zero predictable corporate IT contract inquiries, losing high-value AMC deals to legacy vendors.</h3>
+                                <p class="case-action">Launched targeted commercial B2B Google Search campaigns targeting corporate hardware supply, server deployment, and annual IT maintenance.</p>
+                                
+                                <div class="case-result-box">
+                                    <span class="case-result-num">₹3.2L → ₹11.4L</span>
+                                    <span class="case-result-label">MONTHLY B2B CONTRACT PIPELINE GENERATED (+256%)</span>
+                                </div>
+
+                                <!-- CTA non-navigating pending final destination link -->
+                                <a href="#contact" class="case-story-link" role="button" aria-label="Get similar results for IT hardware and B2B">
+                                    <span>GET SIMILAR RESULTS</span>
+                                    <svg class="link-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4 8H12M12 8L8 4M12 8L8 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </article>
+
+                    </div>
                 </div>
             </div>
         </section>

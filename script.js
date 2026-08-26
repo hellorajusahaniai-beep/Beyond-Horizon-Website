@@ -11,209 +11,200 @@
     let rafScheduled = false;
 
     /**
-     * Reusable ScrollSequenceController
-     * Manages full-bleed canvas scrubbing, independent scroll progress, lazy preloading,
-     * high-DPI scaling, crossfade transitions, and text step animations.
-     * All layout positioning is 100% controlled by CSS (Zero positional inline styles).
+     * Unified StageSequenceController
+     * Manages a single full-bleed canvas, zero-artifact optical globalAlpha cross-dissolves
+     * between Sequence 1 and Sequence 2, independent step states, high-DPI scaling,
+     * and responsive overlay gradients on a single pinned stage.
      */
-    class ScrollSequenceController {
-        constructor(config) {
-            this.wrapper = document.querySelector(config.wrapperSelector);
-            this.canvas = document.querySelector(config.canvasSelector);
-            this.textContainer = config.textContainerSelector ? document.querySelector(config.textContainerSelector) : null;
-            this.loader = document.querySelector(config.loaderSelector);
-            this.loaderBarFill = document.querySelector(config.loaderBarFillSelector);
-            this.loaderText = document.querySelector(config.loaderTextSelector);
-            this.textSteps = config.textStepSelector ? document.querySelectorAll(config.textStepSelector) : [];
-            this.stepDots = config.stepDotsSelector ? document.querySelectorAll(config.stepDotsSelector) : [];
-            this.scrollIndicator = config.scrollIndicatorSelector ? document.querySelector(config.scrollIndicatorSelector) : null;
+    class StageSequenceController {
+        constructor() {
+            this.wrapper = document.getElementById('stage-scroll-wrapper');
+            this.stickyPanel = document.getElementById('stage-sticky-panel');
+            this.canvas = document.getElementById('stage-canvas');
+            this.gradientOverlay = document.getElementById('stage-gradient-overlay');
+            this.stepCounter = document.getElementById('stage-step-counter');
+            this.stepCounterText = document.getElementById('stage-counter-text');
 
-            this.landscapeFrames = config.landscapeFrames || config.frameCount || 140;
-            this.portraitFrames = config.portraitFrames || config.frameCount || 90;
-            this.frameCount = this.getFrameCount();
-            this.startFrame = config.startFrame || 1;
-            this.landscapeBase = config.landscapeBase || 'images';
-            this.portraitBase = config.portraitBase || 'images-portrait';
-            this.filePrefix = config.filePrefix || 'frame_';
-            this.padDigits = config.padDigits || 4;
-            this.focalX = config.focalX !== undefined ? config.focalX : 0.50;
-            this.focalY = config.focalY !== undefined ? config.focalY : 0.40;
-            this.stepRanges = config.stepRanges || [];
-            this.lazyPreload = config.lazyPreload || false;
-            this.fadeExit = config.fadeExit || false;
-            this.fadeEntry = config.fadeEntry || false;
-            this.onStepChange = config.onStepChange || null;
+            this.loader = document.getElementById('stage-loader');
+            this.loaderBarFill = document.getElementById('loader-bar-fill');
+            this.loaderText = document.getElementById('loader-text');
 
-            this.initialPreloadCount = 25;
-            this.streamBatchSize = 20;
-            this.lookaheadBuffer = 20;
-            this.loadedWindowEnd = -1;
+            // Text Blocks
+            this.seq1TextBlock = document.getElementById('hero-text-block');
+            this.seq1Steps = this.seq1TextBlock ? this.seq1TextBlock.querySelectorAll('.text-step') : [];
+            this.stepDots = document.querySelectorAll('.step-dots .step-dot');
+
+            this.seq2Container = document.getElementById('seq2-text-container');
+            this.seq2Steps = this.seq2Container ? this.seq2Container.querySelectorAll('.seq2-step') : [];
 
             this.ctx = this.canvas ? this.canvas.getContext('2d', { alpha: true }) : null;
-            this.images = new Array(this.frameCount);
+
+            // Frame Configurations
+            this.seq1Config = {
+                landscapeFrames: 140,
+                portraitFrames: 90,
+                startFrame: 1,
+                landscapeBase: 'images',
+                portraitBase: 'images-portrait',
+                filePrefix: 'frame_',
+                focalX: 0.58,
+                focalY: 0.40,
+                stepRanges: [0.33, 0.67] // Steps: 0.00-0.33, 0.33-0.67, 0.67-1.00
+            };
+
+            this.seq2Config = {
+                landscapeFrames: 148,
+                portraitFrames: 95,
+                startFrame: 2,
+                landscapeBase: 'images-2',
+                portraitBase: 'images-2-portrait',
+                filePrefix: 'frame_',
+                focalX: 0.50,
+                focalY: 0.40,
+                stepRanges: [0.34, 0.67] // Steps: 0.00-0.34 (Services), 0.34-0.67 (Stats), 0.67-1.00 (Clients)
+            };
+
+            this.seq1Frames = [];
+            this.seq2Frames = [];
             this.decodedCount = 0;
-            this.lastDrawnFrame = -1;
-            this.currentStep = -1;
             this.isLoaderDismissed = false;
             this.isPreloadStarted = false;
-            this.isVisible = false;
-            this.pendingProgress = 0;
-            this.activeBase = this.getActiveBase();
+
+            this.seq1CurrentStep = -1;
+            this.seq2CurrentStep = -1;
+            this.activeZone = 1; // 1: Seq1, 2: Dissolve, 3: Seq2, 4: Outro
 
             if (!this.wrapper || !this.canvas || !this.ctx) return;
 
             this.init();
         }
 
-        getFrameCount() {
-            const isPortrait = (window.innerWidth / window.innerHeight) < 1.0;
-            return isPortrait ? this.portraitFrames : this.landscapeFrames;
+        isPortrait() {
+            return (window.innerWidth / window.innerHeight) < 1.0;
         }
 
-        getActiveBase() {
-            const isPortrait = (window.innerWidth / window.innerHeight) < 1.0;
-            return isPortrait ? this.portraitBase : this.landscapeBase;
+        getFrameCount(cfg) {
+            return this.isPortrait() ? cfg.portraitFrames : cfg.landscapeFrames;
         }
 
-        getFramePath(index1Based, format = 'webp') {
-            const frameNum = this.startFrame + (index1Based - 1);
-            const padded = String(frameNum).padStart(this.padDigits, '0');
-            const base = this.getActiveBase();
-            const isPortrait = (window.innerWidth / window.innerHeight) < 1.0;
-            if (isPortrait && format === 'jpg') {
-                return `${base}-webp/${this.filePrefix}${padded}.webp`;
+        getBase(cfg) {
+            return this.isPortrait() ? cfg.portraitBase : cfg.landscapeBase;
+        }
+
+        getFramePath(cfg, index1Based, format = 'webp') {
+            const frameNum = cfg.startFrame + (index1Based - 1);
+            const padded = String(frameNum).padStart(4, '0');
+            const base = this.getBase(cfg);
+            if (this.isPortrait() && format === 'jpg') {
+                return `${base}-webp/${cfg.filePrefix}${padded}.webp`;
             }
             const folder = format === 'webp' ? `${base}-webp` : `${base}-jpg`;
-            return `${folder}/${this.filePrefix}${padded}.${format}`;
+            return `${folder}/${cfg.filePrefix}${padded}.${format}`;
         }
 
         init() {
             this.resize();
-
-            if (this.lazyPreload) {
-                // Preload sequence early when within 1 viewport height (before crossfade starts)
-                const observer = new IntersectionObserver((entries) => {
-                    if (entries[0] && entries[0].isIntersecting) {
-                        this.startPreload();
-                        observer.disconnect();
-                    }
-                }, { rootMargin: '100% 0px' });
-                observer.observe(this.wrapper);
-            } else {
-                this.startPreload();
-            }
+            this.startPreload();
         }
 
         startPreload() {
             if (this.isPreloadStarted) return;
             this.isPreloadStarted = true;
-            this.frameCount = this.getFrameCount();
-            this.activeBase = this.getActiveBase();
-            this.images = new Array(this.frameCount);
-            this.decodedCount = 0;
-            this.loadedWindowEnd = -1;
 
-            // Preload initial batch of 25 frames to dismiss loader promptly
-            const initialLoadCount = Math.min(this.initialPreloadCount, this.frameCount);
-            for (let i = 0; i < initialLoadCount; i++) {
-                this.loadFrame(i);
+            const seq1Total = this.getFrameCount(this.seq1Config);
+            const seq2Total = this.getFrameCount(this.seq2Config);
+
+            this.seq1Frames = new Array(seq1Total);
+            this.seq2Frames = new Array(seq2Total);
+            this.decodedCount = 0;
+
+            // Preload initial batch of Sequence 1 to dismiss loader fast
+            const initialCount = Math.min(25, seq1Total);
+            for (let i = 0; i < initialCount; i++) {
+                this.loadFrame(1, i);
             }
-            this.loadedWindowEnd = initialLoadCount - 1;
+
+            // Stream remaining Sequence 1 and all Sequence 2
+            setTimeout(() => {
+                for (let i = initialCount; i < seq1Total; i++) {
+                    this.loadFrame(1, i);
+                }
+                for (let i = 0; i < seq2Total; i++) {
+                    this.loadFrame(2, i);
+                }
+            }, 300);
         }
 
-        loadFrame(i) {
-            if (this.images[i]) return; // Already requested
+        loadFrame(seqId, i) {
+            const cfg = seqId === 1 ? this.seq1Config : this.seq2Config;
+            const arr = seqId === 1 ? this.seq1Frames : this.seq2Frames;
+            if (arr[i]) return;
 
             const frameNumber = i + 1;
             const img = new Image();
-            this.images[i] = img;
+            arr[i] = img;
 
-            const onDecoded = () => this.onImageDecoded(i);
+            const onDecoded = () => {
+                this.decodedCount++;
+                const targetInitial = 25;
+                const percent = Math.min(100, Math.floor((this.decodedCount / targetInitial) * 100));
+
+                if (this.loaderBarFill) this.loaderBarFill.style.width = `${percent}%`;
+                if (this.loaderText) this.loaderText.textContent = `LOADING ${percent}%`;
+
+                if (this.decodedCount >= targetInitial && !this.isLoaderDismissed) {
+                    this.isLoaderDismissed = true;
+                    if (this.loader) this.loader.classList.add('hidden');
+                    this.renderTick();
+                }
+            };
 
             img.onload = onDecoded;
             img.onerror = () => {
-                const isPortrait = (window.innerWidth / window.innerHeight) < 1.0;
-                if (!isPortrait && img.src.endsWith('.webp')) {
-                    img.src = this.getFramePath(frameNumber, 'jpg');
+                if (!this.isPortrait() && img.src.endsWith('.webp')) {
+                    img.src = this.getFramePath(cfg, frameNumber, 'jpg');
                 } else {
-                    this.images[i] = null;
+                    arr[i] = null;
                     onDecoded();
                 }
             };
 
-            img.src = this.getFramePath(frameNumber, 'webp');
+            img.src = this.getFramePath(cfg, frameNumber, 'webp');
 
             if ('decode' in img) {
-                img.decode()
-                    .then(onDecoded)
-                    .catch(() => {
-                        const isPortrait = (window.innerWidth / window.innerHeight) < 1.0;
-                        if (!isPortrait && img.src.endsWith('.webp')) {
-                            img.src = this.getFramePath(frameNumber, 'jpg');
-                        } else {
-                            this.images[i] = null;
-                            onDecoded();
-                        }
-                    });
-            }
-        }
-
-        ensureFramesStreamed(targetFrameIdx) {
-            if (!this.isPreloadStarted) return;
-            const neededEnd = Math.min(targetFrameIdx + this.lookaheadBuffer + this.streamBatchSize, this.frameCount - 1);
-            if (neededEnd > this.loadedWindowEnd) {
-                const start = this.loadedWindowEnd + 1;
-                for (let i = start; i <= neededEnd; i++) {
-                    this.loadFrame(i);
-                }
-                this.loadedWindowEnd = neededEnd;
-            }
-        }
-
-        onImageDecoded(idx) {
-            this.decodedCount++;
-
-            const targetInitial = Math.min(this.initialPreloadCount, this.frameCount);
-            const percent = Math.min(100, Math.floor((this.decodedCount / targetInitial) * 100));
-
-            if (this.loaderBarFill) this.loaderBarFill.style.width = `${percent}%`;
-            if (this.loaderText) this.loaderText.textContent = `LOADING ${percent}%`;
-
-            // Draw frame 0 immediately once decoded so canvas is never blank
-            if (idx === 0 && this.lastDrawnFrame === -1) {
-                this.drawFrame(0);
-            }
-
-            if (this.decodedCount >= targetInitial && !this.isLoaderDismissed) {
-                this.isLoaderDismissed = true;
-                if (this.loader) this.loader.classList.add('hidden');
-                this.updateScroll();
-            }
-
-            if (this.decodedCount >= this.frameCount && this.loader) {
-                this.loader.classList.add('hidden');
-            }
-        }
-
-        drawFrame(frameIdx) {
-            let img = this.images[frameIdx];
-
-            // If target frame is not ready or missing, fallback to nearest decoded frame
-            if (!img || !img.complete || img.naturalWidth === 0) {
-                for (let offset = 1; offset < this.frameCount; offset++) {
-                    const prev = this.images[frameIdx - offset];
-                    if (prev && prev.complete && prev.naturalWidth > 0) {
-                        img = prev;
-                        break;
+                img.decode().then(onDecoded).catch(() => {
+                    if (!this.isPortrait() && img.src.endsWith('.webp')) {
+                        img.src = this.getFramePath(cfg, frameNumber, 'jpg');
+                    } else {
+                        arr[i] = null;
+                        onDecoded();
                     }
-                    const next = this.images[frameIdx + offset];
-                    if (next && next.complete && next.naturalWidth > 0) {
-                        img = next;
-                        break;
-                    }
-                }
+                });
             }
+        }
 
+        resize() {
+            const isPort = this.isPortrait();
+            const frameW = isPort ? 3698 : 1920;
+            const frameH = isPort ? 2080 : 1080;
+
+            const systemDpr = Math.min(window.devicePixelRatio || 1, 2);
+            const maxAllowedDpr = Math.min(frameW / window.innerWidth, frameH / window.innerHeight);
+            const effectiveDpr = Math.min(systemDpr, maxAllowedDpr);
+
+            this.canvas.width = Math.round(window.innerWidth * effectiveDpr);
+            this.canvas.height = Math.round(window.innerHeight * effectiveDpr);
+
+            this.canvas.style.width = `${window.innerWidth}px`;
+            this.canvas.style.height = `${window.innerHeight}px`;
+
+            this.ctx.imageSmoothingEnabled = true;
+            this.ctx.imageSmoothingQuality = 'high';
+
+            this.renderTick();
+        }
+
+        drawCover(img, focalX = 0.50, focalY = 0.40) {
             if (!img || !img.complete || img.naturalWidth === 0) return;
 
             const w = this.canvas.width;
@@ -221,243 +212,202 @@
             const imgW = img.naturalWidth;
             const imgH = img.naturalHeight;
 
-            const isPortrait = (window.innerWidth / window.innerHeight) < 1.0;
-            const scale = Math.max(w / imgW, h / imgH);
+            const isPort = this.isPortrait();
+            const scaleX = w / imgW;
+            const scaleY = h / imgH;
+            const drawScale = Math.max(scaleX, scaleY);
 
-            // Assert cover scale never exceeds 1.0 at runtime
-            if (scale > 1.001) {
-                console.warn(`[ScrollSequence] WARNING: Frame drawn upscaled! Scale: ${scale.toFixed(3)} > 1.0 (Canvas: ${w}x${h}, Frame: ${imgW}x${imgH}, Viewport: ${window.innerWidth}x${window.innerHeight})`);
-            }
-
-            const drawScale = Math.min(1.0, scale);
             const drawW = imgW * drawScale;
             const drawH = imgH * drawScale;
 
             let drawX = 0;
             let drawY = 0;
 
-            if (!isPortrait) {
+            if (!isPort) {
                 drawX = (w - drawW) / 2;
                 drawY = (h - drawH) / 2;
             } else {
-                const idealX = (w * 0.5) - (drawW * this.focalX);
+                const idealX = (w * 0.5) - (drawW * focalX);
                 drawX = Math.min(0, Math.max(w - drawW, idealX));
 
-                const idealY = (h * 0.40) - (drawH * this.focalY);
+                const idealY = (h * 0.40) - (drawH * focalY);
                 drawY = Math.min(0, Math.max(h - drawH, idealY));
             }
 
-            this.ctx.clearRect(0, 0, w, h);
-            this.ctx.imageSmoothingEnabled = true;
-            this.ctx.imageSmoothingQuality = 'high';
             this.ctx.drawImage(img, drawX, drawY, drawW, drawH);
-            this.lastDrawnFrame = frameIdx;
         }
 
-        resize() {
-            const currentBase = this.getActiveBase();
-            const currentCount = this.getFrameCount();
+        getFallbackFrame(arr, index, total) {
+            let img = arr[index];
+            if (img && img.complete && img.naturalWidth > 0) return img;
 
-            // If orientation flipped after initial preload, refresh frame paths & count
-            if (this.isPreloadStarted && (this.activeBase !== currentBase || this.frameCount !== currentCount)) {
-                this.activeBase = currentBase;
-                this.frameCount = currentCount;
-                this.isPreloadStarted = false;
-                this.decodedCount = 0;
-                this.lastDrawnFrame = -1;
-                this.loadedWindowEnd = -1;
-                this.images = new Array(this.frameCount);
-                this.startPreload();
+            for (let offset = 1; offset < total; offset++) {
+                const prev = arr[index - offset];
+                if (prev && prev.complete && prev.naturalWidth > 0) return prev;
+                const next = arr[index + offset];
+                if (next && next.complete && next.naturalWidth > 0) return next;
             }
+            return null;
+        }
 
-            const isPortrait = (window.innerWidth / window.innerHeight) < 1.0;
-            const frameW = isPortrait ? 960 : 1920;
-            const frameH = isPortrait ? 2080 : 1080;
-
-            // Clamp effective DPR to ensure canvas backing store never exceeds native source frame dimensions
-            // effectiveDPR = min(2, devicePixelRatio, frameWidth / cssWidth, frameHeight / cssHeight)
-            const systemDpr = Math.min(window.devicePixelRatio || 1, 2);
-            const maxAllowedDpr = Math.min(frameW / window.innerWidth, frameH / window.innerHeight);
-            const effectiveDpr = Math.min(systemDpr, maxAllowedDpr);
-
-            // Set canvas backing store width and height attributes in physical device pixels
-            this.canvas.width = Math.round(window.innerWidth * effectiveDpr);
-            this.canvas.height = Math.round(window.innerHeight * effectiveDpr);
-
-            // Set CSS display size separately in logical pixels
-            this.canvas.style.width = `${window.innerWidth}px`;
-            this.canvas.style.height = `${window.innerHeight}px`;
-
-            // Reset image smoothing after backing store resize (browser resets context properties on resize)
-            this.ctx.imageSmoothingEnabled = true;
-            this.ctx.imageSmoothingQuality = 'high';
-
-            // Redraw current frame immediately at new backing store size
-            if (this.lastDrawnFrame !== -1) {
-                this.drawFrame(this.lastDrawnFrame);
-            } else if (this.images[0] && this.images[0].complete) {
-                this.drawFrame(0);
+        updateStepCounter(stepNum, totalSteps = 3) {
+            if (!this.stepCounter || !this.stepCounterText) return;
+            const formatted = `${String(stepNum).padStart(2, '0')} / ${String(totalSteps).padStart(2, '0')}`;
+            if (this.stepCounterText.textContent !== formatted) {
+                this.stepCounter.classList.add('fade-out');
+                setTimeout(() => {
+                    this.stepCounterText.textContent = formatted;
+                    this.stepCounter.classList.remove('fade-out');
+                }, 120);
             }
         }
 
-        updateSteps(progress) {
-            if (!this.textSteps.length) return;
+        renderTick() {
+            const scrollY = window.scrollY || window.pageYOffset || 0;
+            const vh = window.innerHeight || 1;
 
-            // Handle crossfade text opacity smoothly via CSS classes without touching positioning
-            if (this.fadeExit && this.textContainer) {
-                if (progress >= 0.80) {
-                    const textFade = Math.max(0, 1 - (progress - 0.80) / 0.05);
-                    this.textContainer.style.opacity = textFade.toFixed(3);
-                } else {
-                    this.textContainer.style.opacity = '';
-                }
-            }
+            const seq1Total = this.getFrameCount(this.seq1Config);
+            const seq2Total = this.getFrameCount(this.seq2Config);
 
-            if (this.fadeEntry && this.textContainer) {
-                if (progress < 0.15) {
-                    this.textContainer.style.opacity = '0';
-                } else {
-                    const textFade = Math.min(1, (progress - 0.15) / 0.05);
-                    this.textContainer.style.opacity = textFade.toFixed(3);
-                }
-            }
+            // Scroll Timeline Definitions:
+            // Zone 1: 0 to 2.60 * vh (Sequence 1 Scrub)
+            // Zone 2: 2.60 * vh to 3.20 * vh (60vh Cross-Dissolve Zone)
+            // Zone 3: 3.20 * vh to 5.60 * vh (240vh Sequence 2 Scrub)
+            // Zone 4: > 5.60 * vh (Unpinning into Case Studies)
 
-            let newStep = 0;
-            if (this.stepRanges.length === 2) {
-                // 3 Steps
-                if (progress < this.stepRanges[0]) {
-                    newStep = 0;
-                } else if (progress < this.stepRanges[1]) {
-                    newStep = 1;
-                } else {
-                    newStep = 2;
-                }
-            } else if (this.stepRanges.length === 1) {
-                // 2 Steps
-                if (progress < this.stepRanges[0]) {
-                    newStep = 0;
-                } else {
-                    newStep = 1;
-                }
-            }
+            const zone1End = 2.60 * vh;
+            const zone2Start = 2.60 * vh;
+            const zone2End = 3.20 * vh;
+            const zone2Duration = 0.60 * vh;
+            const zone3Start = 3.20 * vh;
+            const zone3End = 5.60 * vh;
+            const zone3Duration = 2.40 * vh;
 
-            if (newStep !== this.currentStep) {
-                this.currentStep = newStep;
+            const w = this.canvas.width;
+            const h = this.canvas.height;
+            this.ctx.clearRect(0, 0, w, h);
 
-                this.textSteps.forEach((stepEl, idx) => {
-                    if (idx === newStep) {
-                        stepEl.classList.add('active');
-                        stepEl.classList.remove('prev');
-                    } else if (idx < newStep) {
-                        stepEl.classList.remove('active');
-                        stepEl.classList.add('prev');
-                    } else {
-                        stepEl.classList.remove('active');
-                        stepEl.classList.remove('prev');
-                    }
-                });
+            if (scrollY < zone1End) {
+                // ==========================================
+                // ZONE 1: SEQUENCE 1 SCRUB
+                // ==========================================
+                const p1 = Math.min(1.0, Math.max(0, scrollY / zone1End));
+                const targetIdx = Math.min(seq1Total - 1, Math.max(0, Math.round(p1 * (seq1Total - 1))));
 
-                if (this.stepDots.length) {
-                    this.stepDots.forEach((dotEl, idx) => {
-                        dotEl.classList.toggle('active', idx === newStep);
+                const img = this.getFallbackFrame(this.seq1Frames, targetIdx, seq1Total);
+                this.ctx.globalAlpha = 1.0;
+                if (img) this.drawCover(img, this.seq1Config.focalX, this.seq1Config.focalY);
+
+                // Update Sequence 1 Steps
+                let step1 = 0;
+                if (p1 < this.seq1Config.stepRanges[0]) step1 = 0;
+                else if (p1 < this.seq1Config.stepRanges[1]) step1 = 1;
+                else step1 = 2;
+
+                if (step1 !== this.seq1CurrentStep) {
+                    this.seq1CurrentStep = step1;
+                    this.seq1Steps.forEach((el, idx) => {
+                        el.classList.toggle('active', idx === step1);
+                        el.classList.toggle('prev', idx < step1);
                     });
+                    this.stepDots.forEach((dot, idx) => dot.classList.toggle('active', idx === step1));
+                    this.updateStepCounter(step1 + 1, 3);
                 }
 
-                if (this.scrollIndicator) {
-                    this.scrollIndicator.classList.toggle('hidden', progress >= 0.80 || newStep === (this.textSteps.length - 1));
-                }
-
-                if (this.onStepChange) {
-                    this.onStepChange(newStep, this.currentStep);
-                }
-            }
-        }
-
-        updateScroll() {
-            const rect = this.wrapper.getBoundingClientRect();
-            const scrollDistance = this.wrapper.offsetHeight - window.innerHeight;
-
-            // Active when section intersects viewport
-            this.isVisible = (rect.bottom > 0 && rect.top < window.innerHeight);
-
-            let progress = 0;
-            if (scrollDistance > 0) {
-                progress = Math.min(Math.max(-rect.top / scrollDistance, 0), 1);
-            }
-
-            this.pendingProgress = progress;
-        }
-
-        renderTick(isReducedMotion) {
-            if (!this.isVisible) return; // Pause draw loop completely when inactive
-
-            this.updateSteps(this.pendingProgress);
-
-            // Handle Crossfade & Scaling Transforms on Canvas elements only
-            if (!isReducedMotion) {
-                if (this.fadeExit) {
-                    if (this.pendingProgress >= 0.85) {
-                        // Last 15%: fade opacity 1 -> 0, scale 1.0 -> 1.12
-                        const fadeNorm = (this.pendingProgress - 0.85) / 0.15;
-                        const opacity = Math.max(0, 1 - fadeNorm);
-                        const scale = 1 + (0.12 * fadeNorm);
-                        this.canvas.style.opacity = opacity.toFixed(3);
-                        this.canvas.style.transform = `scale(${scale.toFixed(3)})`;
+                // Sequence 1 Text Exit Fade (0.94 -> 1.00)
+                if (this.seq1TextBlock) {
+                    if (p1 >= 0.94) {
+                        const fade = Math.max(0, 1 - (p1 - 0.94) / 0.06);
+                        this.seq1TextBlock.style.opacity = fade.toFixed(3);
                     } else {
-                        this.canvas.style.opacity = '';
-                        this.canvas.style.transform = '';
+                        this.seq1TextBlock.style.opacity = '1';
                     }
                 }
 
-                if (this.fadeEntry) {
-                    if (this.pendingProgress <= 0.15) {
-                        // First 15%: fade opacity 0 -> 1, scale 1.12 -> 1.0
-                        const fadeNorm = this.pendingProgress / 0.15;
-                        const opacity = Math.min(1, Math.max(0, fadeNorm));
-                        const scale = 1.12 - (0.12 * fadeNorm);
-                        this.canvas.style.opacity = opacity.toFixed(3);
-                        this.canvas.style.transform = `scale(${scale.toFixed(3)})`;
-                    } else {
-                        this.canvas.style.opacity = '';
-                        this.canvas.style.transform = '';
-                    }
+                // Hide Sequence 2 Text & reset stats
+                if (this.seq2Container) this.seq2Container.style.opacity = '0';
+                if (this.seq2Steps.length) {
+                    this.seq2Steps.forEach(el => { el.classList.remove('active'); el.classList.remove('prev'); });
+                    this.seq2CurrentStep = -1;
                 }
+                if (this.stepCounter) this.stepCounter.style.opacity = '1';
+                if (this.gradientOverlay) this.gradientOverlay.classList.remove('seq2-mode');
+                if (this.wrapper) this.wrapper.classList.remove('step-stats-active');
+                animateSeq2Stats(false);
 
-                const maxFrame = this.frameCount - 1;
-                const targetFrameIdx = Math.min(maxFrame, Math.max(0, Math.round(this.pendingProgress * maxFrame)));
+            } else if (scrollY >= zone2Start && scrollY < zone2End) {
+                // ==========================================
+                // ZONE 2: SINGLE-CANVAS CROSS-DISSOLVE (60vh)
+                // ==========================================
+                const dissolveP = Math.min(1.0, Math.max(0, (scrollY - zone2Start) / zone2Duration));
 
-                this.ensureFramesStreamed(targetFrameIdx);
+                const img1 = this.getFallbackFrame(this.seq1Frames, seq1Total - 1, seq1Total);
+                const img2 = this.getFallbackFrame(this.seq2Frames, 0, seq2Total);
 
-                if (targetFrameIdx !== this.lastDrawnFrame) {
-                    this.drawFrame(targetFrameIdx);
+                // Base Layer: Sequence 1 Final Frame
+                this.ctx.globalAlpha = 1.0;
+                if (img1) this.drawCover(img1, this.seq1Config.focalX, this.seq1Config.focalY);
+
+                // Dissolving Layer: Sequence 2 Initial Frame
+                this.ctx.globalAlpha = dissolveP;
+                if (img2) this.drawCover(img2, this.seq2Config.focalX, this.seq2Config.focalY);
+                this.ctx.globalAlpha = 1.0;
+
+                // Text Blocks: Both hidden during pure visual dissolve
+                if (this.seq1TextBlock) this.seq1TextBlock.style.opacity = '0';
+                if (this.seq2Container) this.seq2Container.style.opacity = '0';
+                if (this.stepCounter) this.stepCounter.style.opacity = '0';
+
+                // Overlay mode transitions seamlessly at midpoint
+                if (this.gradientOverlay) {
+                    this.gradientOverlay.classList.toggle('seq2-mode', dissolveP >= 0.50);
+                }
+                if (this.wrapper) this.wrapper.classList.remove('step-stats-active');
+                animateSeq2Stats(false);
+
+            } else {
+                // ==========================================
+                // ZONE 3 & 4: SEQUENCE 2 SCRUB & PIN
+                // ==========================================
+                const p2 = Math.min(1.0, Math.max(0, (scrollY - zone3Start) / zone3Duration));
+                const targetIdx = Math.min(seq2Total - 1, Math.max(0, Math.round(p2 * (seq2Total - 1))));
+
+                const img = this.getFallbackFrame(this.seq2Frames, targetIdx, seq2Total);
+                this.ctx.globalAlpha = 1.0;
+                if (img) this.drawCover(img, this.seq2Config.focalX, this.seq2Config.focalY);
+
+                // Hide Sequence 1 Text
+                if (this.seq1TextBlock) this.seq1TextBlock.style.opacity = '0';
+                if (this.seq2Container) this.seq2Container.style.opacity = '1';
+                if (this.stepCounter) this.stepCounter.style.opacity = '1';
+                if (this.gradientOverlay) this.gradientOverlay.classList.add('seq2-mode');
+
+                // Update Sequence 2 Steps
+                let step2 = 0;
+                if (p2 < this.seq2Config.stepRanges[0]) step2 = 0;
+                else if (p2 < this.seq2Config.stepRanges[1]) step2 = 1;
+                else step2 = 2;
+
+                if (step2 !== this.seq2CurrentStep) {
+                    this.seq2CurrentStep = step2;
+                    this.seq2Steps.forEach((el, idx) => {
+                        el.classList.toggle('active', idx === step2);
+                        el.classList.toggle('prev', idx < step2);
+                    });
+                    this.updateStepCounter(step2 + 1, 3);
+
+                    if (this.wrapper) {
+                        this.wrapper.classList.toggle('step-stats-active', step2 === 1);
+                    }
+                    if (step2 === 1) {
+                        animateSeq2Stats(true);
+                    } else {
+                        animateSeq2Stats(false);
+                    }
                 }
             }
         }
     }
-
-    // Initialize Sequence 1 (Hero - 140 frames landscape / 90 frames portrait)
-    const heroSequence = new ScrollSequenceController({
-        wrapperSelector: '#hero-scroll-wrapper',
-        canvasSelector: '#scroll-canvas',
-        textContainerSelector: '#hero-text-block',
-        loaderSelector: '#hero-loader',
-        loaderBarFillSelector: '#loader-bar-fill',
-        loaderTextSelector: '#loader-text',
-        textStepSelector: '#hero-scroll-wrapper .text-step',
-        stepDotsSelector: '.step-dot',
-        scrollIndicatorSelector: '#scroll-indicator',
-        landscapeFrames: 140,
-        portraitFrames: 90,
-        startFrame: 1,
-        landscapeBase: 'images',
-        portraitBase: 'images-portrait',
-        filePrefix: 'frame_',
-        focalX: 0.50,
-        focalY: 0.40,
-        stepRanges: [0.33, 0.67], // 3 Steps: 0.00-0.30, 0.36-0.64, 0.70-0.82
-        lazyPreload: false,
-        fadeExit: true // Enables 15% exit crossfade and 1 -> 1.12 scale
-    });
 
     // Helper function for Sequence 2 Proof Stats count-up animation (~800ms ease-out)
     function animateSeq2Stats(isActive) {
@@ -509,7 +459,6 @@
 
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                // Ease-out cubic curve
                 const easeOut = 1 - Math.pow(1 - progress, 3);
                 const currentVal = Math.round(easeOut * targetVal);
 
@@ -527,38 +476,109 @@
         });
     }
 
-    // Initialize Sequence 2 (Capabilities & Proof Stats - 150 frames landscape / 96 frames portrait)
-    const seq2Sequence = new ScrollSequenceController({
-        wrapperSelector: '#seq2-scroll-wrapper',
-        canvasSelector: '#seq2-scroll-canvas',
-        textContainerSelector: '#seq2-text-container',
-        loaderSelector: '#seq2-loader',
-        loaderBarFillSelector: '#seq2-loader-bar-fill',
-        loaderTextSelector: '#seq2-loader-text',
-        textStepSelector: '#seq2-scroll-wrapper .seq2-step',
-        landscapeFrames: 150,
-        portraitFrames: 96,
-        startFrame: 1,
-        landscapeBase: 'images-2',
-        portraitBase: 'images-2-portrait',
-        filePrefix: 'frame_',
-        focalX: 0.50,
-        focalY: 0.40,
-        stepRanges: [0.34, 0.67], // 3 Steps: 0.00-0.34 (Services), 0.34-0.67 (Proof Stats), 0.67-1.00 (Business Types)
-        lazyPreload: true,
-        fadeEntry: true, // Enables 15% entry crossfade and 1.12 -> 1 scale
-        onStepChange: (newStep, oldStep) => {
-            const wrapper = document.querySelector('#seq2-scroll-wrapper');
-            if (wrapper) {
-                wrapper.classList.toggle('step-stats-active', newStep === 1);
-            }
-            if (newStep === 1) {
-                animateSeq2Stats(true);
+    // Initialize the Unified Single-Canvas Stage Controller
+    const stageController = new StageSequenceController();
+    window.stageController = stageController;
+
+    /**
+     * CaseStudiesScrollController
+     * Controls the pinned scroll-driven cinematic progression across 3 case studies:
+     * - Stage 01: Siddhi Dental Clinic (Image Left / Content Right)
+     * - Stage 02: Dental Reforms (Content Left / Image Right)
+     * - Stage 03: Global Computer Solutions (Image Left / Content Right)
+     *
+     * Invariants:
+     * - Physical entry/exit transforms (translateX, scale, opacity)
+     * - Alternating motion vectors
+     * - Minimal progress indicator update ("01 / 03")
+     * - Editorial backdrop number update ("01", "02", "03")
+     * - 100% reversible scroll behavior
+     * - Zero impact on hero frame sequences or unrelated DOM elements
+     */
+    class CaseStudiesScrollController {
+        constructor() {
+            this.wrapper = document.getElementById('work');
+            this.stages = this.wrapper ? this.wrapper.querySelectorAll('.case-study-stage') : [];
+            this.progressText = this.wrapper ? this.wrapper.querySelector('.case-studies-progress-text') : null;
+            this.dots = this.wrapper ? this.wrapper.querySelectorAll('.case-studies-dots .cs-dot') : [];
+            this.editorialNum = this.wrapper ? this.wrapper.querySelector('.case-studies-editorial-num') : null;
+
+            this.currentStage = -1;
+            this.totalStages = 3;
+            this.wrapperTop = 0;
+            this.wrapperHeight = 0;
+
+            if (!this.wrapper || !this.stages.length) return;
+
+            this.updateMeasurements();
+        }
+
+        updateMeasurements() {
+            if (!this.wrapper) return;
+            const rect = this.wrapper.getBoundingClientRect();
+            const scrollY = window.scrollY || window.pageYOffset || 0;
+            this.wrapperTop = rect.top + scrollY;
+            this.wrapperHeight = this.wrapper.offsetHeight;
+        }
+
+        renderTick() {
+            if (prefersReducedMotion || !this.wrapper || !this.stages.length) return;
+
+            const scrollY = window.scrollY || window.pageYOffset || 0;
+            const vh = window.innerHeight || 1;
+            const pinDistance = this.wrapperHeight - vh;
+
+            if (pinDistance <= 0) return;
+
+            const relativeScroll = scrollY - this.wrapperTop;
+            const rawProgress = relativeScroll / pinDistance;
+            const progress = Math.min(1.0, Math.max(0.0, rawProgress));
+
+            // Stage Partitioning across progress [0.0, 1.0]:
+            // Stage 1 Active: 0.00 -> 0.33
+            // Stage 2 Active: 0.33 -> 0.67
+            // Stage 3 Active: 0.67 -> 1.00
+            let activeStage = 0;
+            if (progress < 0.35) {
+                activeStage = 0;
+            } else if (progress < 0.68) {
+                activeStage = 1;
             } else {
-                animateSeq2Stats(false);
+                activeStage = 2;
+            }
+
+            // Update Active & Exit Classes
+            this.stages.forEach((stage, idx) => {
+                const isActive = idx === activeStage;
+                const isPast = idx < activeStage;
+                stage.classList.toggle('active', isActive);
+                stage.classList.toggle('exit-prev', isPast);
+            });
+
+            // Update Progress Indicator & Editorial Number
+            if (this.currentStage !== activeStage) {
+                this.currentStage = activeStage;
+                if (this.progressText) {
+                    this.progressText.textContent = `${String(activeStage + 1).padStart(2, '0')} / 03`;
+                }
+                this.dots.forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === activeStage);
+                });
+                if (this.editorialNum) {
+                    this.editorialNum.style.opacity = '0';
+                    setTimeout(() => {
+                        if (this.editorialNum) {
+                            this.editorialNum.textContent = String(activeStage + 1).padStart(2, '0');
+                            this.editorialNum.style.opacity = '';
+                        }
+                    }, 150);
+                }
             }
         }
-    });
+    }
+
+    const caseStudiesController = new CaseStudiesScrollController();
+    window.caseStudiesController = caseStudiesController;
 
     // Fixed Navbar Management
     const siteHeader = document.getElementById('site-header');
@@ -593,26 +613,28 @@
     // Master Scroll Handler
     function onScroll() {
         updateNavbar();
-        heroSequence.updateScroll();
-        seq2Sequence.updateScroll();
+        stageController.renderTick();
+        caseStudiesController.renderTick();
 
         if (!rafScheduled) {
             rafScheduled = true;
             requestAnimationFrame(renderTick);
         }
     }
+    window.onScroll = onScroll;
 
     // Master rAF Tick
     function renderTick() {
         rafScheduled = false;
-        heroSequence.renderTick(prefersReducedMotion);
-        seq2Sequence.renderTick(prefersReducedMotion);
+        stageController.renderTick();
+        caseStudiesController.renderTick();
     }
 
     // Global Resize Handler
     function onResize() {
-        heroSequence.resize();
-        seq2Sequence.resize();
+        stageController.resize();
+        caseStudiesController.updateMeasurements();
+        caseStudiesController.renderTick();
     }
 
     // Scroll-triggered Reveal Observer for Case Studies & Honesty Section
@@ -632,13 +654,67 @@
 
         scrollRevealElements.forEach(el => revealObserver.observe(el));
     } else {
-        // Fallback or reduced motion
         scrollRevealElements.forEach(el => el.classList.add('in-view'));
     }
 
+    // URL Query & Hash-based scroll position supporter for automated testing & deep-linking
+    function checkUrlScroll() {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const scrollParam = urlParams.get('scroll');
+            const stepParam = urlParams.get('step');
+
+            if (scrollParam !== null || stepParam !== null) {
+                const vh = window.innerHeight || 1;
+                let targetY = 0;
+
+                if (scrollParam !== null) {
+                    targetY = parseInt(scrollParam);
+                    if (isNaN(targetY)) targetY = 0;
+                } else if (stepParam !== null) {
+                    const stepScrollMap = {
+                        '0': 0,
+                        '1': vh * 1.30,
+                        '2': vh * 2.15,
+                        'dissolve': vh * 2.90,
+                        '3': vh * 2.90,
+                        'services': vh * 3.60,
+                        '4': vh * 3.60,
+                        'stats': vh * 4.40,
+                        '5': vh * 4.40,
+                        'clients': vh * 5.20,
+                        '6': vh * 5.20,
+                        'case1': vh * 4.80,
+                        'case2': vh * 6.00,
+                        'case3': vh * 7.20
+                    };
+                    targetY = stepScrollMap[stepParam] !== undefined ? stepScrollMap[stepParam] : 0;
+                }
+
+                window.scrollTo(0, targetY);
+                updateNavbar();
+                stageController.renderTick();
+                caseStudiesController.renderTick();
+                return;
+            }
+
+            if (window.location.hash && window.location.hash.startsWith('#scroll-')) {
+                const targetY = parseInt(window.location.hash.replace('#scroll-', ''));
+                if (!isNaN(targetY)) {
+                    window.scrollTo(0, targetY);
+                    onScroll();
+                }
+            }
+        } catch (e) {
+            console.error('Error applying URL scroll:', e);
+        }
+    }
+
+    window.addEventListener('hashchange', checkUrlScroll);
     window.addEventListener('resize', onResize, { passive: true });
     window.addEventListener('scroll', onScroll, { passive: true });
 
     // Initial pass
     onScroll();
+    checkUrlScroll();
 })();
