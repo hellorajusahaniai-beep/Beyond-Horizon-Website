@@ -11,7 +11,7 @@
     let rafScheduled = false;
 
     // In-Browser Measurement Function for Measured Verification of EDITORIAL BREATHE System
-    window.measureEditorialSystem = function() {
+    window.measureEditorialSystem = function () {
         const vw = window.innerWidth;
         const vh = window.innerHeight;
         const isMob = vw < 768;
@@ -723,7 +723,7 @@
 
                         try {
                             history.pushState(null, null, href);
-                        } catch (err) {}
+                        } catch (err) { }
                     }
                 });
             });
@@ -963,7 +963,7 @@
     }
 
     // Expose measurement function for browser console verification
-    window.measureEditorialSystem = function() {
+    window.measureEditorialSystem = function () {
         const reveals = document.querySelectorAll('.reveal');
         const revealGroups = document.querySelectorAll('.reveal-group');
         const workRows = document.querySelectorAll('.work-editorial-row.reveal');
@@ -999,9 +999,11 @@
 
     window.addEventListener('hashchange', checkUrlScroll);
     window.addEventListener('resize', onResize, { passive: true });
+    window.addEventListener('orientationchange', onResize, { passive: true });
     window.addEventListener('scroll', onScroll, { passive: true });
 
     // Initial pass
+    onResize();
     onScroll();
     checkUrlScroll();
 })();

@@ -165,6 +165,16 @@ html, body {
     z-index: 60;
 }
 
+@media (min-width: 769px) {
+    .nav-desktop {
+        display: flex !important;
+    }
+
+    .nav-hamburger {
+        display: none !important;
+    }
+}
+
 .hamburger-bar {
     width: 22px;
     height: 2px;
@@ -1884,19 +1894,19 @@ a.info-value:hover {
 }
 
 /* ==========================================================================
-   Mobile & Portrait Media Query (< 768px)
+   Mobile & Portrait Media Query (<= 768px)
    ========================================================================== */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
     .nav-container {
         padding: 0 6vw;
     }
 
     .nav-desktop {
-        display: none;
+        display: none !important;
     }
 
     .nav-hamburger {
-        display: flex;
+        display: flex !important;
     }
 
     /* Switch hero gradient to top-to-bottom for mobile portrait readability */
