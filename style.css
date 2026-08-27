@@ -25,7 +25,8 @@ html {
 }
 
 /* Ensure html & body NEVER establish a clipping scroll container that breaks position: sticky */
-html, body {
+html,
+body {
     width: 100%;
     min-height: 100%;
     background-color: #000000;
@@ -120,7 +121,8 @@ html, body {
 
 .nav-link {
     text-decoration: none;
-    color: #f3f4f6; /* gray-100 */
+    color: #f3f4f6;
+    /* gray-100 */
     font-family: var(--font-body);
     font-size: 0.85rem;
     font-weight: 500;
@@ -249,10 +251,10 @@ html, body {
 }
 
 /* ==========================================================================
-   Unified Stage: 800vh Single-Canvas Viewport Stage (Dissolve Transition)
+   Unified Stage: 680vh Single-Canvas Viewport Stage (Dissolve Transition)
    ========================================================================== */
 .stage-scroll-wrapper {
-    height: 800vh;
+    height: 680vh;
     position: relative;
     width: 100%;
     z-index: 1;
@@ -290,27 +292,23 @@ html, body {
     inset: 0;
     z-index: 10;
     pointer-events: none;
-    background: linear-gradient(
-        to right,
-        rgba(0, 0, 0, var(--hero-overlay-opacity)) 0%,
-        rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.8)) 30%,
-        rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.3)) 58%,
-        transparent 100%
-    );
+    background: linear-gradient(to right,
+            rgba(0, 0, 0, var(--hero-overlay-opacity)) 0%,
+            rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.8)) 30%,
+            rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.3)) 58%,
+            transparent 100%);
     transition: opacity 350ms ease, background 350ms ease;
 }
 
 /* Dynamic Symmetric Dual-Side Gradient Overlay when in Sequence 2 mode */
 .stage-gradient-overlay.seq2-mode {
-    background: linear-gradient(
-        to right,
-        rgba(0, 0, 0, var(--hero-overlay-opacity)) 0%,
-        rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.75)) 22%,
-        transparent 38%,
-        transparent 62%,
-        rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.75)) 78%,
-        rgba(0, 0, 0, var(--hero-overlay-opacity)) 100%
-    );
+    background: linear-gradient(to right,
+            rgba(0, 0, 0, var(--hero-overlay-opacity)) 0%,
+            rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.75)) 22%,
+            transparent 38%,
+            transparent 62%,
+            rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.75)) 78%,
+            rgba(0, 0, 0, var(--hero-overlay-opacity)) 100%);
 }
 
 /* Static Fine Film Grain Overlay Across Full Screen (4.5% Opacity, Overlay Blend) */
@@ -320,8 +318,10 @@ html, body {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 15; /* Sits above canvas (z-0) and gradient overlays (z-10), below text (z-20) */
-    opacity: 0.045; /* 4.5% subtle film texture to mask gradient banding */
+    z-index: 15;
+    /* Sits above canvas (z-0) and gradient overlays (z-10), below text (z-20) */
+    opacity: 0.045;
+    /* 4.5% subtle film texture to mask gradient banding */
     mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     background-repeat: repeat;
@@ -359,8 +359,8 @@ html, body {
     pointer-events: none;
     visibility: hidden;
     transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
-                visibility 450ms step-end;
+        transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
+        visibility 450ms step-end;
     will-change: opacity, transform;
 }
 
@@ -371,8 +371,8 @@ html, body {
     pointer-events: auto;
     visibility: visible;
     transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
-                visibility 0ms;
+        transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
+        visibility 0ms;
 }
 
 /* Outgoing Step: Fades out + translateY(-24px) */
@@ -382,8 +382,8 @@ html, body {
     pointer-events: none;
     visibility: hidden;
     transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
-                visibility 450ms step-end;
+        transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
+        visibility 450ms step-end;
 }
 
 /* Heading: White, Bold, Uppercase, Tight Line-Height 0.85 on Desktop */
@@ -412,7 +412,8 @@ html, body {
     font-size: clamp(0.7rem, 1.1vw, 0.95rem);
     font-weight: 500;
     letter-spacing: 0.28em;
-    color: #e5e7eb; /* gray-200 */
+    color: #e5e7eb;
+    /* gray-200 */
     text-transform: uppercase;
     text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85), 0 0 3px rgba(0, 0, 0, 0.6);
     margin: 0;
@@ -444,8 +445,8 @@ html, body {
     border-radius: 9999px;
     box-shadow: 0 4px 24px rgba(255, 255, 255, 0.15), 0 2px 8px rgba(0, 0, 0, 0.4);
     transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
-                background-color 200ms ease,
-                box-shadow 250ms ease;
+        background-color 200ms ease,
+        box-shadow 250ms ease;
     cursor: pointer;
 }
 
@@ -474,7 +475,8 @@ html, body {
     font-size: 0.84rem;
     font-weight: 500;
     letter-spacing: 0.05em;
-    color: #e5e7eb; /* gray-200 */
+    color: #e5e7eb;
+    /* gray-200 */
     text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85), 0 0 3px rgba(0, 0, 0, 0.6);
     margin: 0;
 }
@@ -551,6 +553,7 @@ html, body {
     0% {
         transform: translateY(-100%);
     }
+
     100% {
         transform: translateY(200%);
     }
@@ -608,15 +611,13 @@ html, body {
     inset: 0;
     z-index: 10;
     pointer-events: none;
-    background: linear-gradient(
-        to right,
-        rgba(0, 0, 0, var(--hero-overlay-opacity)) 0%,
-        rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.75)) 22%,
-        transparent 38%,
-        transparent 62%,
-        rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.75)) 78%,
-        rgba(0, 0, 0, var(--hero-overlay-opacity)) 100%
-    );
+    background: linear-gradient(to right,
+            rgba(0, 0, 0, var(--hero-overlay-opacity)) 0%,
+            rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.75)) 22%,
+            transparent 38%,
+            transparent 62%,
+            rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.75)) 78%,
+            rgba(0, 0, 0, var(--hero-overlay-opacity)) 100%);
 }
 
 .seq2-text-container {
@@ -633,7 +634,7 @@ html, body {
     inset: 0;
     pointer-events: none;
     visibility: hidden;
-    transition: visibility 380ms step-end;
+    transition: visibility 800ms step-end;
 }
 
 .seq2-step.active {
@@ -647,7 +648,7 @@ html, body {
     position: absolute;
     top: calc(48% - (var(--seq2-vertical-offset) / 2));
     left: var(--seq2-side-padding);
-    transform: translateY(-50%) translateX(-24px);
+    transform: translateY(-50%) translateX(-32px);
     max-width: var(--seq2-block-max-width);
     width: var(--seq2-block-max-width);
     opacity: 0;
@@ -655,8 +656,8 @@ html, body {
     flex-direction: column;
     align-items: flex-start;
     gap: 14px;
-    transition: opacity 380ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity, transform;
 }
 
@@ -667,7 +668,7 @@ html, body {
 
 .seq2-step.prev .seq2-left-block {
     opacity: 0;
-    transform: translateY(-50%) translateX(-24px);
+    transform: translateY(-50%) translateX(-32px);
 }
 
 /* Right Block: Sits slightly lower on desktop */
@@ -675,7 +676,7 @@ html, body {
     position: absolute;
     top: calc(48% + (var(--seq2-vertical-offset) / 2));
     right: var(--seq2-side-padding);
-    transform: translateY(-50%) translateX(24px);
+    transform: translateY(-50%) translateX(32px);
     max-width: var(--seq2-block-max-width);
     width: var(--seq2-block-max-width);
     opacity: 0;
@@ -684,8 +685,8 @@ html, body {
     flex-direction: column;
     align-items: flex-end;
     gap: 14px;
-    transition: opacity 380ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity, transform;
 }
 
@@ -696,7 +697,7 @@ html, body {
 
 .seq2-step.prev .seq2-right-block {
     opacity: 0;
-    transform: translateY(-50%) translateX(24px);
+    transform: translateY(-50%) translateX(32px);
 }
 
 /* Headings */
@@ -753,7 +754,7 @@ html, body {
     opacity: 0;
     transform: translateX(24px);
     transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 450ms cubic-bezier(0.16, 1, 0.3, 1);
+        transform 450ms cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity, transform;
     transition-delay: 0ms;
 }
@@ -822,7 +823,7 @@ html, body {
     opacity: 0;
     transform: translateX(24px);
     transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 450ms cubic-bezier(0.16, 1, 0.3, 1);
+        transform 450ms cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity, transform;
     transition-delay: 0ms;
 }
@@ -843,7 +844,8 @@ html, body {
     font-size: clamp(0.68rem, 0.85vw, 0.82rem);
     font-weight: 600;
     letter-spacing: 0.22em;
-    color: #e5e7eb; /* gray-200 */
+    color: #e5e7eb;
+    /* gray-200 */
     text-transform: uppercase;
     text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85), 0 0 3px rgba(0, 0, 0, 0.6);
     margin-top: 4px;
@@ -1038,6 +1040,7 @@ html, body {
     0% {
         transform: translateX(0);
     }
+
     100% {
         transform: translateX(-50%);
     }
@@ -1114,39 +1117,39 @@ html, body {
 }
 
 /* Staggered Entrance for .reveal-group Children */
-.reveal-group > .reveal:nth-child(1),
-.reveal-group > .scroll-reveal:nth-child(1),
-.reveal-group > .reveal-on-scroll:nth-child(1) {
+.reveal-group>.reveal:nth-child(1),
+.reveal-group>.scroll-reveal:nth-child(1),
+.reveal-group>.reveal-on-scroll:nth-child(1) {
     transition-delay: 0.1s;
 }
 
-.reveal-group > .reveal:nth-child(2),
-.reveal-group > .scroll-reveal:nth-child(2),
-.reveal-group > .reveal-on-scroll:nth-child(2) {
+.reveal-group>.reveal:nth-child(2),
+.reveal-group>.scroll-reveal:nth-child(2),
+.reveal-group>.reveal-on-scroll:nth-child(2) {
     transition-delay: 0.2s;
 }
 
-.reveal-group > .reveal:nth-child(3),
-.reveal-group > .scroll-reveal:nth-child(3),
-.reveal-group > .reveal-on-scroll:nth-child(3) {
+.reveal-group>.reveal:nth-child(3),
+.reveal-group>.scroll-reveal:nth-child(3),
+.reveal-group>.reveal-on-scroll:nth-child(3) {
     transition-delay: 0.3s;
 }
 
-.reveal-group > .reveal:nth-child(4),
-.reveal-group > .scroll-reveal:nth-child(4),
-.reveal-group > .reveal-on-scroll:nth-child(4) {
+.reveal-group>.reveal:nth-child(4),
+.reveal-group>.scroll-reveal:nth-child(4),
+.reveal-group>.reveal-on-scroll:nth-child(4) {
     transition-delay: 0.4s;
 }
 
-.reveal-group > .reveal:nth-child(5),
-.reveal-group > .scroll-reveal:nth-child(5),
-.reveal-group > .reveal-on-scroll:nth-child(5) {
+.reveal-group>.reveal:nth-child(5),
+.reveal-group>.scroll-reveal:nth-child(5),
+.reveal-group>.reveal-on-scroll:nth-child(5) {
     transition-delay: 0.5s;
 }
 
-.reveal-group > .reveal:nth-child(n+6),
-.reveal-group > .scroll-reveal:nth-child(n+6),
-.reveal-group > .reveal-on-scroll:nth-child(n+6) {
+.reveal-group>.reveal:nth-child(n+6),
+.reveal-group>.scroll-reveal:nth-child(n+6),
+.reveal-group>.reveal-on-scroll:nth-child(n+6) {
     transition-delay: 0.5s;
 }
 
@@ -1911,14 +1914,12 @@ a.info-value:hover {
 
     /* Switch hero gradient to top-to-bottom for mobile portrait readability */
     .hero-gradient-overlay {
-        background: linear-gradient(
-            to bottom,
-            rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 1.42)) 0%,
-            rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.8)) 25%,
-            transparent 55%,
-            transparent 85%,
-            rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.7)) 100%
-        );
+        background: linear-gradient(to bottom,
+                rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 1.42)) 0%,
+                rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.8)) 25%,
+                transparent 55%,
+                transparent 85%,
+                rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.7)) 100%);
     }
 
     .hero-text-block {
@@ -1940,7 +1941,8 @@ a.info-value:hover {
     .hero-subtext {
         font-size: clamp(0.65rem, 2.8vw, 0.92rem);
         letter-spacing: 0.22em;
-        color: #e5e7eb; /* gray-200 */
+        color: #e5e7eb;
+        /* gray-200 */
         text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85), 0 0 3px rgba(0, 0, 0, 0.6);
     }
 
@@ -2007,15 +2009,15 @@ a.info-value:hover {
     /* ==========================================================================
        Stage Mobile Rebuild: Safe-Area Anchoring & Unified Stack
        ========================================================================== */
-    /* Bottom-anchored gradient for Sequence 2 on mobile: reduced opacity, restricted to bottom text area only */
+    /* Bottom-anchored gradient for Sequence 2 on mobile: rich contrast for bottom text */
     .stage-gradient-overlay.seq2-mode {
         background: linear-gradient(
             to top,
-            rgba(0, 0, 0, 0.70) 0%,
-            rgba(0, 0, 0, 0.55) 18%,
-            rgba(0, 0, 0, 0.20) 30%,
-            transparent 40%,
-            transparent 100%
+            rgba(0, 0, 0, 0.92) 0%,
+            rgba(0, 0, 0, 0.82) 35%,
+            rgba(0, 0, 0, 0.38) 58%,
+            transparent 78%,
+            rgba(0, 0, 0, 0.40) 100%
         );
         transition: background 400ms ease;
     }
@@ -2025,11 +2027,11 @@ a.info-value:hover {
     .stage-sticky-panel:has(.seq2-step-stats.active) .stage-gradient-overlay {
         background: linear-gradient(
             to top,
-            rgba(0, 0, 0, 0.72) 0%,
-            rgba(0, 0, 0, 0.55) 20%,
-            rgba(0, 0, 0, 0.20) 32%,
-            transparent 42%,
-            transparent 100%
+            rgba(0, 0, 0, 0.94) 0%,
+            rgba(0, 0, 0, 0.84) 38%,
+            rgba(0, 0, 0, 0.40) 60%,
+            transparent 80%,
+            rgba(0, 0, 0, 0.40) 100%
         );
     }
 
@@ -2039,14 +2041,6 @@ a.info-value:hover {
         width: 100%;
         height: 100vh;
         height: 100dvh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding-top: calc(var(--nav-height, 70px) + 24px);
-        padding-bottom: 96px;
-        padding-left: 6vw;
-        padding-right: 6vw;
-        box-sizing: border-box;
         pointer-events: none;
         user-select: none;
         z-index: 20;
@@ -2054,10 +2048,10 @@ a.info-value:hover {
 
     .seq2-step {
         position: absolute;
-        top: calc(var(--nav-height, 70px) + 16px);
-        bottom: 84px;
+        bottom: 56px;
         left: 6vw;
         right: 6vw;
+        top: auto;
         height: auto !important;
         width: auto;
         max-width: 100%;
@@ -2065,7 +2059,7 @@ a.info-value:hover {
         flex-direction: column;
         align-items: flex-start;
         justify-content: flex-end;
-        gap: 0;
+        gap: 8px;
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
@@ -2115,12 +2109,13 @@ a.info-value:hover {
     }
 
     .seq2-heading {
-        font-size: clamp(1.9rem, 8.5vw, 2.6rem);
-        line-height: 1.0;
+        font-size: clamp(2.3rem, 9.5vw, 3.2rem);
+        line-height: 0.92;
         letter-spacing: 0.02em;
         margin: 0;
         text-align: left !important;
         display: block;
+        text-shadow: 0 4px 24px rgba(0, 0, 0, 0.95), 0 2px 8px rgba(0, 0, 0, 0.85);
     }
 
     .seq2-heading-break {
@@ -2141,86 +2136,45 @@ a.info-value:hover {
         text-align: left !important;
     }
 
-    /* Sequence 2 Step 1 & Step 3 on Mobile: Top Headline + Bottom Services List */
+    /* Sequence 2 Step 1 & Step 3 on Mobile: Unified Stack in Safe Bottom Area */
     .seq2-step-services,
     .seq2-step-stats {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        justify-content: flex-start !important;
-        gap: 0;
-    }
-
-    .seq2-step-services .seq2-left-block,
-    .seq2-step-stats .seq2-left-block {
-        position: static !important;
-        align-self: flex-start;
-        text-align: left !important;
-        padding-top: 4px;
-        margin-top: 0 !important;
-        margin-bottom: auto !important;
-    }
-
-    .seq2-step-services .seq2-heading,
-    .seq2-step-stats .seq2-heading {
-        font-size: clamp(1.9rem, 8.5vw, 2.6rem);
-        line-height: 1.0;
-        text-shadow: 0 3px 20px rgba(0, 0, 0, 0.95), 0 1px 6px rgba(0, 0, 0, 0.85);
-    }
-
-    .seq2-step-services .seq2-right-block,
-    .seq2-step-stats .seq2-right-block {
-        align-self: flex-start;
-        text-align: left !important;
-        align-items: flex-start !important;
-        width: 100%;
-        margin-top: auto !important;
-        margin-bottom: 4px !important;
+        justify-content: flex-end !important;
+        gap: 6px;
     }
 
     .seq2-step-services .seq2-services-list {
-        margin-top: clamp(6px, 1vh, 10px);
-        margin-bottom: clamp(4px, 0.8vh, 8px);
+        margin-top: 8px;
+        margin-bottom: 4px;
         display: flex;
         flex-direction: column;
-        gap: clamp(6px, 1.2vh, 12px);
+        gap: 5px;
         width: 100%;
     }
 
     .seq2-step-services .seq2-service-item {
+        font-family: var(--font-display);
+        font-size: clamp(1.1rem, 4.6vw, 1.4rem);
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        line-height: 1.15;
+        color: #ffffff;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin: 0;
-        padding: 0;
-    }
-
-    .seq2-step-services .seq2-service-num {
-        font-family: var(--font-display);
-        font-size: clamp(0.7rem, 2.8vw, 0.85rem);
-        color: #ffffff;
-        letter-spacing: 0.15em;
-        line-height: 1;
-        opacity: 0.7;
-    }
-
-    .seq2-step-services .seq2-service-name {
-        font-family: var(--font-display);
-        font-size: clamp(0.85rem, 3.8vw, 1.08rem);
-        color: #ffffff;
-        letter-spacing: 0.08em;
-        line-height: 1.1;
-        text-transform: uppercase;
+        gap: 8px;
     }
 
     .seq2-step-stats .seq2-stats-list {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        margin-top: clamp(8px, 1.2vh, 14px);
-        margin-bottom: clamp(6px, 1vh, 12px);
-        gap: clamp(8px, 1.4vh, 16px);
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
         width: 100%;
+        margin-top: 10px;
+        margin-bottom: 4px;
     }
 
     .seq2-step-stats .seq2-stat-item {
@@ -2228,9 +2182,7 @@ a.info-value:hover {
         flex-direction: column;
         align-items: flex-start;
         text-align: left;
-        gap: 6px;
-        margin: 0;
-        padding: 0;
+        gap: 2px;
         width: 100%;
     }
 
@@ -2243,11 +2195,11 @@ a.info-value:hover {
 
     .seq2-step-stats .seq2-stat-num {
         font-family: var(--font-display);
-        font-size: clamp(2.2rem, 9vw, 3rem);
+        font-size: clamp(1.85rem, 7.8vw, 2.4rem);
         line-height: 1.0;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.02em;
         color: #ffffff;
-        text-align: left;
+        text-shadow: 0 3px 16px rgba(0, 0, 0, 0.95);
         margin: 0;
         padding: 0;
         display: block;
@@ -2255,16 +2207,38 @@ a.info-value:hover {
 
     .seq2-step-stats .seq2-stat-label {
         font-family: var(--font-body);
-        font-size: clamp(0.65rem, 2.8vw, 0.8rem);
-        letter-spacing: 0.18em;
-        line-height: 1.4;
-        color: #e5e7eb; /* gray-200 */
-        text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85), 0 0 3px rgba(0, 0, 0, 0.6);
+        font-size: clamp(0.52rem, 2.1vw, 0.65rem);
+        letter-spacing: 0.12em;
+        line-height: 1.35;
+        color: #d1d5db;
         text-transform: uppercase;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
         margin: 0;
         padding: 0;
         text-align: left;
         display: block;
+    }
+
+    /* Sequence 2 Step 3 (Clients Grid on Mobile: 2-column compact layout) */
+    .seq2-step-clients .seq2-clients-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 16px;
+        row-gap: 5px;
+        width: 100%;
+        margin-top: 8px;
+        margin-bottom: 4px;
+    }
+
+    .seq2-step-clients .seq2-service-item {
+        font-family: var(--font-display);
+        font-size: clamp(1.0rem, 4.2vw, 1.25rem);
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        line-height: 1.2;
+        color: #ffffff;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+        white-space: nowrap;
     }
 
     .seq2-subtext-desktop {
@@ -2274,12 +2248,13 @@ a.info-value:hover {
     .seq2-subtext-mobile {
         display: block !important;
         font-family: var(--font-body);
-        font-size: clamp(0.65rem, 2.8vw, 0.82rem);
-        letter-spacing: 0.22em;
+        font-size: clamp(0.64rem, 2.6vw, 0.78rem);
+        letter-spacing: 0.20em;
         line-height: 1.4;
-        color: #e5e7eb; /* gray-200 */
-        text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85), 0 0 3px rgba(0, 0, 0, 0.6);
+        color: #e5e7eb;
+        text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95), 0 0 4px rgba(0, 0, 0, 0.8);
         margin: 0;
+        margin-top: 4px;
         text-align: left !important;
     }
 
@@ -2425,7 +2400,8 @@ a.info-value:hover {
     }
 
     .service-row-number {
-        font-size: 48px; /* max 64px on mobile */
+        font-size: 48px;
+        /* max 64px on mobile */
         opacity: 0.15;
         line-height: 1;
         text-align: left;
@@ -2543,6 +2519,7 @@ textarea:focus-visible,
    Prefers Reduced Motion: Immediate Display & Disabled Transitions
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
@@ -2586,4 +2563,3 @@ textarea:focus-visible,
         scrollbar-width: none;
     }
 }
-
