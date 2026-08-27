@@ -730,39 +730,40 @@
         }
 
         initScrollRevealObserver() {
-            const revealElements = document.querySelectorAll('.reveal-on-scroll, .section-header');
+            const revealElements = document.querySelectorAll('.reveal, .scroll-reveal, .reveal-on-scroll');
             if (!revealElements.length) return;
 
-            const isMobile = window.innerWidth < 768;
-            const thresholdVal = isMobile ? 0.10 : 0.15; // 0.15 threshold desktop / 0.10 mobile
-
-            if ('IntersectionObserver' in window && !prefersReducedMotion) {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            const el = entry.target;
-                            el.classList.add('in-view');
-
-                            // If it's a case study row, trigger stat count-up
-                            if (el.classList.contains('work-editorial-row')) {
-                                el.classList.add('is-active');
-                                const rowIdx = parseInt(el.dataset.row, 10) - 1;
-                                this.triggerStatAnimation(rowIdx);
-                            }
-
-                            observer.unobserve(el);
-                        }
-                    });
-                }, { threshold: thresholdVal });
-
-                revealElements.forEach(el => observer.observe(el));
-                console.log(`[SCROLL_REVEAL_OBSERVER] Initialized observer for ${revealElements.length} post-hero elements (threshold: ${thresholdVal})`);
-            } else {
+            if (prefersReducedMotion || !('IntersectionObserver' in window)) {
                 revealElements.forEach(el => {
-                    el.classList.add('in-view');
+                    el.classList.add('is-visible', 'in-view');
                     if (el.classList.contains('work-editorial-row')) el.classList.add('is-active');
                 });
+                return;
             }
+
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        el.classList.add('is-visible', 'in-view');
+
+                        // If it's a case study row, trigger stat count-up
+                        if (el.classList.contains('work-editorial-row')) {
+                            el.classList.add('is-active');
+                            const rowIdx = parseInt(el.dataset.row, 10) - 1;
+                            this.triggerStatAnimation(rowIdx);
+                        }
+
+                        obs.unobserve(el);
+                    }
+                });
+            }, {
+                threshold: 0.15,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            revealElements.forEach(el => observer.observe(el));
+            console.log(`[SCROLL_REVEAL] Observing ${revealElements.length} elements (threshold: 0.15, rootMargin: '0px 0px -50px 0px')`);
         }
 
         triggerStatAnimation(rowIdx) {
@@ -901,26 +902,6 @@
         renderTick();
     }
 
-    // Scroll-triggered Reveal Observer for Editorial Breathe sections & staggered headers
-    const scrollRevealElements = document.querySelectorAll('.section-header, .reveal-on-scroll');
-    if (scrollRevealElements.length && 'IntersectionObserver' in window && !prefersReducedMotion) {
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('in-view');
-                    revealObserver.unobserve(entry.target);
-                }
-            });
-        }, {
-            rootMargin: '0px 0px -50px 0px',
-            threshold: 0.10
-        });
-
-        scrollRevealElements.forEach(el => revealObserver.observe(el));
-    } else {
-        scrollRevealElements.forEach(el => el.classList.add('in-view'));
-    }
-
     // URL Query & Hash-based scroll position supporter for deep-linking
     function checkUrlScroll() {
         try {
@@ -980,6 +961,41 @@
             console.error('Error applying URL scroll:', e);
         }
     }
+
+    // Expose measurement function for browser console verification
+    window.measureEditorialSystem = function() {
+        const reveals = document.querySelectorAll('.reveal');
+        const revealGroups = document.querySelectorAll('.reveal-group');
+        const workRows = document.querySelectorAll('.work-editorial-row.reveal');
+        const serviceRows = document.querySelectorAll('.service-editorial-row.reveal');
+        const processSteps = document.querySelectorAll('.process-step-item.reveal');
+        const testimonials = document.querySelectorAll('.testimonial-item.reveal');
+        const faqItems = document.querySelectorAll('.faq-item.reveal');
+        const contactBlocks = document.querySelectorAll('.contact-form-side.reveal, .contact-info-side.reveal');
+
+        console.log('==============================================');
+        console.log('       SCROLL REVEAL VERIFICATION REPORT      ');
+        console.log('==============================================');
+        console.log(`Total .reveal elements count: ${reveals.length} (Requirement: > 15)`);
+        console.log(`Total .reveal-group containers: ${revealGroups.length}`);
+        console.log(`- Selected Work rows:     ${workRows.length}`);
+        console.log(`- Services rows (01-04):  ${serviceRows.length}`);
+        console.log(`- Process steps (01-03):  ${processSteps.length}`);
+        console.log(`- Testimonials:           ${testimonials.length}`);
+        console.log(`- FAQ accordion rows:     ${faqItems.length}`);
+        console.log(`- Contact form & details: ${contactBlocks.length}`);
+
+        return {
+            totalReveals: reveals.length,
+            revealGroups: revealGroups.length,
+            workRows: workRows.length,
+            serviceRows: serviceRows.length,
+            processSteps: processSteps.length,
+            testimonials: testimonials.length,
+            faqItems: faqItems.length,
+            contactBlocks: contactBlocks.length
+        };
+    };
 
     window.addEventListener('hashchange', checkUrlScroll);
     window.addEventListener('resize', onResize, { passive: true });
