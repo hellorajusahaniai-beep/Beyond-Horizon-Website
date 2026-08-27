@@ -681,7 +681,7 @@
         init() {
             this.initFaqAccordion();
             this.initSmoothScroll();
-            this.initWorkObserver();
+            this.initScrollRevealObserver();
             this.initContactForm();
         }
 
@@ -729,25 +729,39 @@
             });
         }
 
-        initWorkObserver() {
-            if (!this.workRows.length) return;
+        initScrollRevealObserver() {
+            const revealElements = document.querySelectorAll('.reveal-on-scroll, .section-header');
+            if (!revealElements.length) return;
+
+            const isMobile = window.innerWidth < 768;
+            const thresholdVal = isMobile ? 0.10 : 0.15; // 0.15 threshold desktop / 0.10 mobile
 
             if ('IntersectionObserver' in window && !prefersReducedMotion) {
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
-                            const row = entry.target;
-                            row.classList.add('is-active');
-                            const rowIdx = parseInt(row.dataset.row, 10) - 1;
-                            this.triggerStatAnimation(rowIdx);
-                            observer.unobserve(row);
+                            const el = entry.target;
+                            el.classList.add('in-view');
+
+                            // If it's a case study row, trigger stat count-up
+                            if (el.classList.contains('work-editorial-row')) {
+                                el.classList.add('is-active');
+                                const rowIdx = parseInt(el.dataset.row, 10) - 1;
+                                this.triggerStatAnimation(rowIdx);
+                            }
+
+                            observer.unobserve(el);
                         }
                     });
-                }, { threshold: 0.20 });
+                }, { threshold: thresholdVal });
 
-                this.workRows.forEach(row => observer.observe(row));
+                revealElements.forEach(el => observer.observe(el));
+                console.log(`[SCROLL_REVEAL_OBSERVER] Initialized observer for ${revealElements.length} post-hero elements (threshold: ${thresholdVal})`);
             } else {
-                this.workRows.forEach(row => row.classList.add('is-active'));
+                revealElements.forEach(el => {
+                    el.classList.add('in-view');
+                    if (el.classList.contains('work-editorial-row')) el.classList.add('is-active');
+                });
             }
         }
 

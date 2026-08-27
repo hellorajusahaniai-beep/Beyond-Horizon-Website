@@ -1113,18 +1113,98 @@ html, body {
 }
 
 /* ==========================================================================
-   Scroll Reveal Transition (IntersectionObserver Gated)
+   Scroll-Triggered Reveal Animations (IntersectionObserver Gated)
    ========================================================================== */
 .reveal-on-scroll {
     opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
-    transition-delay: 300ms;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity, transform;
 }
 
 .reveal-on-scroll.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Selected Work Case Study Rows: fade in + translateY(40px -> 0) */
+.work-editorial-row.reveal-on-scroll {
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.work-editorial-row.reveal-on-scroll.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Services: Staggered entrance from bottom */
+.service-editorial-row.reveal-on-scroll {
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.service-editorial-row.reveal-on-scroll:nth-child(1) { transition-delay: 0ms; }
+.service-editorial-row.reveal-on-scroll:nth-child(2) { transition-delay: 120ms; }
+.service-editorial-row.reveal-on-scroll:nth-child(3) { transition-delay: 240ms; }
+.service-editorial-row.reveal-on-scroll:nth-child(4) { transition-delay: 360ms; }
+
+.service-editorial-row.reveal-on-scroll.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Process: Staggered entrance left-to-right */
+.process-step-item.reveal-on-scroll {
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.process-step-item.reveal-on-scroll:nth-child(1) { transition-delay: 0ms; }
+.process-step-item.reveal-on-scroll:nth-child(2) { transition-delay: 140ms; }
+.process-step-item.reveal-on-scroll:nth-child(3) { transition-delay: 280ms; }
+
+.process-step-item.reveal-on-scroll.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Testimonials: Fade in */
+.testimonial-item.reveal-on-scroll {
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.testimonial-item.reveal-on-scroll.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* FAQ: Accordion rows fade in */
+.faq-item.reveal-on-scroll {
+    transform: translateY(24px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.faq-item.reveal-on-scroll.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Contact Grid: Fade in */
+.contact-editorial-grid.reveal-on-scroll {
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.contact-editorial-grid.reveal-on-scroll.in-view {
     opacity: 1;
     transform: translateY(0);
 }
@@ -2276,6 +2356,29 @@ a.info-value:hover {
 
     .scroll-line {
         height: 18px;
+    }
+
+    /* Mobile Scroll Reveal Overrides (0.6s, translateY 20px) */
+    .reveal-on-scroll,
+    .work-editorial-row.reveal-on-scroll,
+    .service-editorial-row.reveal-on-scroll,
+    .process-step-item.reveal-on-scroll,
+    .testimonial-item.reveal-on-scroll,
+    .faq-item.reveal-on-scroll,
+    .contact-editorial-grid.reveal-on-scroll {
+        transform: translateY(20px);
+        transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal-on-scroll.in-view,
+    .work-editorial-row.reveal-on-scroll.in-view,
+    .service-editorial-row.reveal-on-scroll.in-view,
+    .process-step-item.reveal-on-scroll.in-view,
+    .testimonial-item.reveal-on-scroll.in-view,
+    .faq-item.reveal-on-scroll.in-view,
+    .contact-editorial-grid.reveal-on-scroll.in-view {
+        transform: translateY(0);
     }
 
     /* Post-Hero Editorial Mobile Rules */
