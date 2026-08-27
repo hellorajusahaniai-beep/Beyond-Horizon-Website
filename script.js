@@ -277,8 +277,8 @@
             this.zone2End = 3.40 * this.cachedVh;
             this.zone2Duration = 1.00 * this.cachedVh;
             this.zone3Start = 3.40 * this.cachedVh;
-            this.zone3End = 5.80 * this.cachedVh;
-            this.zone3Duration = 2.40 * this.cachedVh;
+            this.zone3End = 7.00 * this.cachedVh;
+            this.zone3Duration = 3.60 * this.cachedVh;
             this.zoneOutroThreshold = this.zone3End + (0.5 * this.cachedVh);
 
             this.seq1Total = this.cachedIsPortrait ? this.seq1Config.portraitFrames : this.seq1Config.landscapeFrames;
@@ -466,8 +466,8 @@
             this.zone2End = 3.40 * this.cachedVh;
             this.zone2Duration = 1.00 * this.cachedVh;
             this.zone3Start = 3.40 * this.cachedVh;
-            this.zone3End = 5.80 * this.cachedVh;
-            this.zone3Duration = 2.40 * this.cachedVh;
+            this.zone3End = 7.00 * this.cachedVh;
+            this.zone3Duration = 3.60 * this.cachedVh;
             this.zoneOutroThreshold = this.zone3End + (0.5 * this.cachedVh);
 
             this.seq1Total = this.cachedIsPortrait ? this.seq1Config.portraitFrames : this.seq1Config.landscapeFrames;
@@ -1028,12 +1028,12 @@
                         '2': vh * 2.15,
                         'dissolve': vh * 2.90,
                         '3': vh * 2.90,
-                        'services': vh * 3.60,
-                        '4': vh * 3.60,
-                        'stats': vh * 4.40,
-                        '5': vh * 4.40,
-                        'clients': vh * 5.20,
-                        '6': vh * 5.20
+                        'services': vh * 4.00,
+                        '4': vh * 4.00,
+                        'stats': vh * 5.20,
+                        '5': vh * 5.20,
+                        'clients': vh * 6.40,
+                        '6': vh * 6.40
                     };
                     targetY = stepScrollMap[stepParam] !== undefined ? stepScrollMap[stepParam] : 0;
                 }

@@ -249,10 +249,10 @@ html, body {
 }
 
 /* ==========================================================================
-   Unified Stage: 680vh Single-Canvas Viewport Stage (Dissolve Transition)
+   Unified Stage: 800vh Single-Canvas Viewport Stage (Dissolve Transition)
    ========================================================================== */
 .stage-scroll-wrapper {
-    height: 680vh;
+    height: 800vh;
     position: relative;
     width: 100%;
     z-index: 1;
@@ -633,7 +633,7 @@ html, body {
     inset: 0;
     pointer-events: none;
     visibility: hidden;
-    transition: visibility 800ms step-end;
+    transition: visibility 380ms step-end;
 }
 
 .seq2-step.active {
@@ -647,7 +647,7 @@ html, body {
     position: absolute;
     top: calc(48% - (var(--seq2-vertical-offset) / 2));
     left: var(--seq2-side-padding);
-    transform: translateY(-50%) translateX(-32px);
+    transform: translateY(-50%) translateX(-24px);
     max-width: var(--seq2-block-max-width);
     width: var(--seq2-block-max-width);
     opacity: 0;
@@ -655,8 +655,8 @@ html, body {
     flex-direction: column;
     align-items: flex-start;
     gap: 14px;
-    transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 380ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity, transform;
 }
 
@@ -667,7 +667,7 @@ html, body {
 
 .seq2-step.prev .seq2-left-block {
     opacity: 0;
-    transform: translateY(-50%) translateX(-32px);
+    transform: translateY(-50%) translateX(-24px);
 }
 
 /* Right Block: Sits slightly lower on desktop */
@@ -675,7 +675,7 @@ html, body {
     position: absolute;
     top: calc(48% + (var(--seq2-vertical-offset) / 2));
     right: var(--seq2-side-padding);
-    transform: translateY(-50%) translateX(32px);
+    transform: translateY(-50%) translateX(24px);
     max-width: var(--seq2-block-max-width);
     width: var(--seq2-block-max-width);
     opacity: 0;
@@ -684,8 +684,8 @@ html, body {
     flex-direction: column;
     align-items: flex-end;
     gap: 14px;
-    transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 380ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity, transform;
 }
 
@@ -696,7 +696,7 @@ html, body {
 
 .seq2-step.prev .seq2-right-block {
     opacity: 0;
-    transform: translateY(-50%) translateX(32px);
+    transform: translateY(-50%) translateX(24px);
 }
 
 /* Headings */
@@ -2070,9 +2070,9 @@ a.info-value:hover {
         visibility: hidden;
         pointer-events: none;
         transform: translateY(16px);
-        transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
-                    transform 800ms cubic-bezier(0.16, 1, 0.3, 1),
-                    visibility 800ms step-end;
+        transition: opacity 380ms cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 380ms cubic-bezier(0.16, 1, 0.3, 1),
+                    visibility 380ms step-end;
     }
 
     .seq2-step.active {
@@ -2080,8 +2080,8 @@ a.info-value:hover {
         visibility: visible;
         pointer-events: auto;
         transform: translateY(0);
-        transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
-                    transform 800ms cubic-bezier(0.16, 1, 0.3, 1),
+        transition: opacity 380ms cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 380ms cubic-bezier(0.16, 1, 0.3, 1),
                     visibility 0ms;
     }
 
@@ -2090,9 +2090,9 @@ a.info-value:hover {
         visibility: hidden;
         pointer-events: none;
         transform: translateY(-16px);
-        transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
-                    transform 800ms cubic-bezier(0.16, 1, 0.3, 1),
-                    visibility 800ms step-end;
+        transition: opacity 380ms cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 380ms cubic-bezier(0.16, 1, 0.3, 1),
+                    visibility 380ms step-end;
     }
 
     .seq2-left-block,
