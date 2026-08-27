@@ -918,67 +918,17 @@
 
         initContactForm() {
             if (!this.contactForm) return;
-            const statusEl = document.getElementById('contact-form-status');
-            const submitBtn = this.contactForm.querySelector('.editorial-submit-btn');
-
-            this.contactForm.addEventListener('submit', async (e) => {
+            this.contactForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                if (!submitBtn) return;
-
-                const originalBtnHtml = submitBtn.innerHTML;
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = `<span>SENDING...</span>`;
-                if (statusEl) {
-                    statusEl.style.display = 'none';
-                    statusEl.textContent = '';
-                }
-
-                try {
-                    const formData = new FormData(this.contactForm);
-                    const response = await fetch(this.contactForm.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-
-                    if (response.ok) {
-                        submitBtn.innerHTML = `<span>MESSAGE SENT ✓</span>`;
-                        submitBtn.style.color = '#ffffff';
-                        if (statusEl) {
-                            statusEl.style.display = 'block';
-                            statusEl.style.color = '#10b981'; // green-500
-                            statusEl.textContent = 'Thank you! Your message has been sent successfully. We will get back to you within 24 business hours.';
-                        }
+                const submitBtn = this.contactForm.querySelector('.editorial-submit-btn');
+                if (submitBtn) {
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = `MESSAGE SENT ✓`;
+                    submitBtn.style.color = '#ffffff';
+                    setTimeout(() => {
                         this.contactForm.reset();
-                        setTimeout(() => {
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML = originalBtnHtml;
-                            submitBtn.style.color = '';
-                        }, 6000);
-                    } else {
-                        const data = await response.json();
-                        let errorMsg = 'Oops! There was a problem submitting your form.';
-                        if (data && data.errors && data.errors.length) {
-                            errorMsg = data.errors.map(err => err.message).join(', ');
-                        }
-                        if (statusEl) {
-                            statusEl.style.display = 'block';
-                            statusEl.style.color = '#ef4444'; // red-500
-                            statusEl.textContent = errorMsg;
-                        }
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalBtnHtml;
-                    }
-                } catch (error) {
-                    if (statusEl) {
-                        statusEl.style.display = 'block';
-                        statusEl.style.color = '#ef4444';
-                        statusEl.textContent = 'Network error. Please check your connection and try again.';
-                    }
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnHtml;
+                        submitBtn.innerHTML = originalText;
+                    }, 4000);
                 }
             });
         }
