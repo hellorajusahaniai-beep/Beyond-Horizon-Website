@@ -1090,7 +1090,7 @@ html, body {
 .scroll-reveal,
 .reveal-on-scroll {
     opacity: 0;
-    transform: translateY(40px);
+    transform: translateY(30px);
     transition: opacity 0.8s ease-out, transform 0.8s ease-out;
     will-change: opacity, transform;
 }
