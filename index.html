@@ -83,16 +83,135 @@
         </div>
     </header>
 
-    <!-- Static Fine Film Grain Overlay (Fixed Full-Screen, 4.5% Opacity, Overlay Blend) -->
-    <div class="film-grain-overlay" aria-hidden="true"></div>
-
-    <!-- Single Viewport Pinned Scroll Stage (Sequence 1 & Sequence 2 via Single Canvas Dissolve) -->
+    <!-- Single Viewport Pinned Scroll Stage (Sequence 1 & Sequence 2 with Slide Handoff) -->
     <div class="stage-scroll-wrapper" id="stage-scroll-wrapper">
         <!-- Pinned Sticky Panel (100vh) -->
         <section class="stage-sticky-panel" id="stage-sticky-panel">
-            <!-- Full-Bleed Unified Canvas (z-0) -->
-            <canvas id="stage-canvas" class="stage-canvas"></canvas>
+            <!-- Sequence 1 Panel (Pinned Base Layer, z-1) -->
+            <div class="stage-panel stage-panel-seq1" id="stage-panel-seq1">
+                <canvas id="stage-canvas-1" class="stage-canvas"></canvas>
+                <!-- Sequence 1 Text Block: Left-Aligned Steps -->
+                <div class="hero-text-block seq1-text-block" id="hero-text-block">
+                    <!-- Step 1: Beyond Horizon (0.00 - 0.30) -->
+                    <div class="text-step" data-step="0">
+                        <h1 class="hero-heading">
+                            <span>BEYOND</span>
+                            <span>HORIZON</span>
+                        </h1>
+                        <p class="hero-subtext">DIGITAL MARKETING &amp; CREATIVE AGENCY</p>
+                    </div>
 
+                    <!-- Step 2: Raju Sahani (0.36 - 0.64) -->
+                    <div class="text-step" data-step="1">
+                        <h1 class="hero-heading single-line">
+                            <span>RAJU SAHANI</span>
+                        </h1>
+                        <p class="hero-subtext">FOUNDER OF BEYOND HORIZON</p>
+                    </div>
+
+                    <!-- Step 3: Brands That Refuse To Blend In (0.70 - 0.82) -->
+                    <div class="text-step" data-step="2">
+                        <h1 class="hero-heading">
+                            <span>BRANDS THAT REFUSE</span>
+                            <span>TO BLEND IN</span>
+                        </h1>
+                        <p class="hero-subtext">WE BUILD THEM. LET'S BUILD YOURS.</p>
+
+                        <div class="hero-cta-wrapper">
+                            <a href="#contact" class="hero-cta-btn">
+                                <span>START A PROJECT</span>
+                                <svg class="cta-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </a>
+                            <p class="hero-cta-note">Let's grow your business</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sequence 2 Panel (Sliding Layer, z-2, opaque #000) -->
+            <div class="stage-panel stage-panel-seq2" id="stage-panel-seq2">
+                <canvas id="stage-canvas-2" class="stage-canvas"></canvas>
+                <!-- Sequence 2 Text Container: Split Left-Right Composition (Slides with Panel) -->
+                <div class="seq2-text-container" id="seq2-text-container">
+                    <!-- Step 1: WHAT WE DO & Services List -->
+                    <div class="seq2-step seq2-step-services" data-seq2-step="0">
+                        <div class="seq2-left-block">
+                            <h2 class="seq2-heading seq2-heading-left">WHAT WE DO</h2>
+                            <p class="hero-subtext seq2-subtext-desktop">EVERYTHING YOUR BRAND NEEDS. NOTHING IT DOESN'T.
+                            </p>
+                        </div>
+                        <div class="seq2-right-block">
+                            <ul class="seq2-services-list" aria-label="Services List">
+                                <li class="seq2-service-item">BRAND STRATEGY</li>
+                                <li class="seq2-service-item">PERFORMANCE MARKETING</li>
+                                <li class="seq2-service-item">WEB DESIGN</li>
+                                <li class="seq2-service-item">CONTENT PRODUCTION</li>
+                            </ul>
+                        </div>
+                        <p class="hero-subtext seq2-subtext-mobile">EVERYTHING YOUR BRAND NEEDS. NOTHING IT DOESN'T.</p>
+                    </div>
+
+                    <!-- Step 2: Proof Stats -->
+                    <div class="seq2-step seq2-step-stats" data-seq2-step="1">
+                        <div class="seq2-left-block">
+                            <h2 class="seq2-heading seq2-heading-left">
+                                <span class="seq2-heading-line">REAL BUSINESSES.</span><br class="seq2-heading-break"><span
+                                    class="seq2-heading-line">REAL REVENUE.</span>
+                            </h2>
+                            <p class="hero-subtext seq2-subtext-desktop">NO VANITY METRICS. PROVEN RESULTS.</p>
+                        </div>
+                        <div class="seq2-right-block">
+                            <div class="seq2-stats-list" aria-label="Key Performance Proof Stats">
+                                <div class="seq2-stat-item" data-target="12" data-suffix="">
+                                    <div class="seq2-stat-num-wrapper">
+                                        <span class="seq2-stat-num">12</span>
+                                    </div>
+                                    <span class="seq2-stat-label">LOCAL BUSINESSES GROWN</span>
+                                </div>
+                                <div class="seq2-stat-item" data-target="3" data-suffix="X">
+                                    <div class="seq2-stat-num-wrapper">
+                                        <span class="seq2-stat-num">3X</span>
+                                    </div>
+                                    <span class="seq2-stat-label">AVERAGE INCREASE IN ENQUIRIES</span>
+                                </div>
+                                <div class="seq2-stat-item" data-target="100" data-suffix="%">
+                                    <div class="seq2-stat-num-wrapper">
+                                        <span class="seq2-stat-num">100%</span>
+                                    </div>
+                                    <span class="seq2-stat-label">CLIENTS STILL WITH US</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="hero-subtext seq2-subtext-mobile">NO VANITY METRICS. PROVEN RESULTS.</p>
+                    </div>
+
+                    <!-- Step 3: WHO WE WORK WITH & Business Types -->
+                    <div class="seq2-step seq2-step-services seq2-step-clients" data-seq2-step="2">
+                        <div class="seq2-left-block">
+                            <h2 class="seq2-heading seq2-heading-left">WHO WE WORK WITH</h2>
+                            <p class="hero-subtext seq2-subtext-desktop">LOCAL BUSINESSES THAT WANT TO BE THE OBVIOUS
+                                CHOICE.</p>
+                        </div>
+                        <div class="seq2-right-block">
+                            <ul class="seq2-services-list seq2-clients-list" aria-label="Business Types List">
+                                <li class="seq2-service-item">SALONS</li>
+                                <li class="seq2-service-item">GYMS</li>
+                                <li class="seq2-service-item">CAFES</li>
+                                <li class="seq2-service-item">CLINICS</li>
+                                <li class="seq2-service-item">BOUTIQUES</li>
+                                <li class="seq2-service-item">RESTAURANTS</li>
+                                <li class="seq2-service-item">COACHING</li>
+                            </ul>
+                        </div>
+                        <p class="hero-subtext seq2-subtext-mobile">LOCAL BUSINESSES THAT WANT TO BE THE OBVIOUS CHOICE.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Single Shared UI Layers (z-10, z-15, z-20, z-25) -->
             <!-- Dynamic Readability Gradient Overlay (z-10) -->
             <div class="stage-gradient-overlay" id="stage-gradient-overlay"></div>
 
@@ -102,122 +221,6 @@
             <!-- Unified Rotated Desktop Step Indicator (z-20) -->
             <div class="seq-step-counter" id="stage-step-counter" aria-hidden="true">
                 <span class="seq-counter-text" id="stage-counter-text">01 / 03</span>
-            </div>
-
-            <!-- Sequence 1 Text Block: Left-Aligned Steps (z-20) -->
-            <div class="hero-text-block seq1-text-block" id="hero-text-block">
-                <!-- Step 1: Beyond Horizon (0.00 - 0.30) -->
-                <div class="text-step" data-step="0">
-                    <h1 class="hero-heading">
-                        <span>BEYOND</span>
-                        <span>HORIZON</span>
-                    </h1>
-                    <p class="hero-subtext">DIGITAL MARKETING &amp; CREATIVE AGENCY</p>
-                </div>
-
-                <!-- Step 2: Raju Sahani (0.36 - 0.64) -->
-                <div class="text-step" data-step="1">
-                    <h1 class="hero-heading single-line">
-                        <span>RAJU SAHANI</span>
-                    </h1>
-                    <p class="hero-subtext">FOUNDER OF BEYOND HORIZON</p>
-                </div>
-
-                <!-- Step 3: Brands That Refuse To Blend In (0.70 - 0.82) -->
-                <div class="text-step" data-step="2">
-                    <h1 class="hero-heading">
-                        <span>BRANDS THAT REFUSE</span>
-                        <span>TO BLEND IN</span>
-                    </h1>
-                    <p class="hero-subtext">WE BUILD THEM. LET'S BUILD YOURS.</p>
-
-                    <div class="hero-cta-wrapper">
-                        <a href="#contact" class="hero-cta-btn">
-                            <span>START A PROJECT</span>
-                            <svg class="cta-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
-                        </a>
-                        <p class="hero-cta-note">Let's grow your business</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sequence 2 Text Container: Split Left-Right Composition (z-20) -->
-            <div class="seq2-text-container" id="seq2-text-container">
-                <!-- Step 1: WHAT WE DO & Services List -->
-                <div class="seq2-step seq2-step-services" data-seq2-step="0">
-                    <div class="seq2-left-block">
-                        <h2 class="seq2-heading seq2-heading-left">WHAT WE DO</h2>
-                        <p class="hero-subtext seq2-subtext-desktop">EVERYTHING YOUR BRAND NEEDS. NOTHING IT DOESN'T.
-                        </p>
-                    </div>
-                    <div class="seq2-right-block">
-                        <ul class="seq2-services-list" aria-label="Services List">
-                            <li class="seq2-service-item">BRAND STRATEGY</li>
-                            <li class="seq2-service-item">PERFORMANCE MARKETING</li>
-                            <li class="seq2-service-item">WEB DESIGN</li>
-                            <li class="seq2-service-item">CONTENT PRODUCTION</li>
-                        </ul>
-                    </div>
-                    <p class="hero-subtext seq2-subtext-mobile">EVERYTHING YOUR BRAND NEEDS. NOTHING IT DOESN'T.</p>
-                </div>
-
-                <!-- Step 2: Proof Stats -->
-                <div class="seq2-step seq2-step-stats" data-seq2-step="1">
-                    <div class="seq2-left-block">
-                        <h2 class="seq2-heading seq2-heading-left">
-                            <span class="seq2-heading-line">REAL BUSINESSES.</span><br class="seq2-heading-break"><span
-                                class="seq2-heading-line">REAL REVENUE.</span>
-                        </h2>
-                        <p class="hero-subtext seq2-subtext-desktop">NO VANITY METRICS. PROVEN RESULTS.</p>
-                    </div>
-                    <div class="seq2-right-block">
-                        <div class="seq2-stats-list" aria-label="Key Performance Proof Stats">
-                            <div class="seq2-stat-item" data-target="12" data-suffix="">
-                                <div class="seq2-stat-num-wrapper">
-                                    <span class="seq2-stat-num">12</span>
-                                </div>
-                                <span class="seq2-stat-label">LOCAL BUSINESSES GROWN</span>
-                            </div>
-                            <div class="seq2-stat-item" data-target="3" data-suffix="X">
-                                <div class="seq2-stat-num-wrapper">
-                                    <span class="seq2-stat-num">3X</span>
-                                </div>
-                                <span class="seq2-stat-label">AVERAGE INCREASE IN ENQUIRIES</span>
-                            </div>
-                            <div class="seq2-stat-item" data-target="100" data-suffix="%">
-                                <div class="seq2-stat-num-wrapper">
-                                    <span class="seq2-stat-num">100%</span>
-                                </div>
-                                <span class="seq2-stat-label">CLIENTS STILL WITH US</span>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="hero-subtext seq2-subtext-mobile">NO VANITY METRICS. PROVEN RESULTS.</p>
-                </div>
-
-                <!-- Step 3: WHO WE WORK WITH & Business Types -->
-                <div class="seq2-step seq2-step-services seq2-step-clients" data-seq2-step="2">
-                    <div class="seq2-left-block">
-                        <h2 class="seq2-heading seq2-heading-left">WHO WE WORK WITH</h2>
-                        <p class="hero-subtext seq2-subtext-desktop">LOCAL BUSINESSES THAT WANT TO BE THE OBVIOUS
-                            CHOICE.</p>
-                    </div>
-                    <div class="seq2-right-block">
-                        <ul class="seq2-services-list seq2-clients-list" aria-label="Business Types List">
-                            <li class="seq2-service-item">SALONS</li>
-                            <li class="seq2-service-item">GYMS</li>
-                            <li class="seq2-service-item">CAFES</li>
-                            <li class="seq2-service-item">CLINICS</li>
-                            <li class="seq2-service-item">BOUTIQUES</li>
-                            <li class="seq2-service-item">RESTAURANTS</li>
-                            <li class="seq2-service-item">COACHING</li>
-                        </ul>
-                    </div>
-                    <p class="hero-subtext seq2-subtext-mobile">LOCAL BUSINESSES THAT WANT TO BE THE OBVIOUS CHOICE.</p>
-                </div>
             </div>
 
             <!-- Bottom-Left Scroll Indicator with Step Dots (z-25) -->

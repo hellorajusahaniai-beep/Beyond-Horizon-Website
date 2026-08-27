@@ -207,7 +207,10 @@
         constructor() {
             this.wrapper = document.getElementById('stage-scroll-wrapper');
             this.stickyPanel = document.getElementById('stage-sticky-panel');
-            this.canvas = document.getElementById('stage-canvas');
+            this.panelSeq1 = document.getElementById('stage-panel-seq1');
+            this.panelSeq2 = document.getElementById('stage-panel-seq2');
+            this.canvas1 = document.getElementById('stage-canvas-1');
+            this.canvas2 = document.getElementById('stage-canvas-2');
             this.gradientOverlay = document.getElementById('stage-gradient-overlay');
             this.stepCounter = document.getElementById('stage-step-counter');
             this.stepCounterText = document.getElementById('stage-counter-text');
@@ -224,7 +227,8 @@
             this.seq2Container = document.getElementById('seq2-text-container');
             this.seq2Steps = this.seq2Container ? Array.from(this.seq2Container.querySelectorAll('.seq2-step')) : [];
 
-            this.ctx = this.canvas ? this.canvas.getContext('2d', { alpha: true }) : null;
+            this.ctx1 = this.canvas1 ? this.canvas1.getContext('2d', { alpha: true }) : null;
+            this.ctx2 = this.canvas2 ? this.canvas2.getContext('2d', { alpha: true }) : null;
 
             // Frame Configurations
             this.seq1Config = {
@@ -261,7 +265,7 @@
 
             this.seq1CurrentStep = -1;
             this.seq2CurrentStep = -1;
-            this.activeZone = 1; // 1: Seq1, 2: Dissolve, 3: Seq2, 4: Outro
+            this.activeZone = 1; // 1: Seq1, 2: Slide Handoff, 3: Seq2, 4: Outro
 
             // Cached Timeline & Geometry (Computed on resize / orientationchange)
             this.cachedVw = window.innerWidth || 1;
@@ -272,13 +276,18 @@
             this.canvasW = 0;
             this.canvasH = 0;
 
+            // Timeline Bounds:
+            // Zone 1 (Seq 1 Scrub): 0 -> 2.40vh
+            // Zone 2 (Slide Handoff ~70vh): 2.40vh -> 3.10vh (Midpoint at 2.75vh)
+            // Zone 3 (Seq 2 Scrub): 3.10vh -> 6.70vh (3.60vh duration)
             this.zone1End = 2.40 * this.cachedVh;
             this.zone2Start = 2.40 * this.cachedVh;
-            this.zone2End = 3.40 * this.cachedVh;
-            this.zone2Duration = 1.00 * this.cachedVh;
-            this.zone3Start = 3.40 * this.cachedVh;
-            this.zone3End = 5.80 * this.cachedVh;
-            this.zone3Duration = 2.40 * this.cachedVh;
+            this.zone2Duration = 0.70 * this.cachedVh;
+            this.zone2End = this.zone2Start + this.zone2Duration; // 3.10vh
+            this.zone2Midpoint = this.zone2Start + (this.zone2Duration / 2); // 2.75vh
+            this.zone3Start = this.zone2End; // 3.10vh
+            this.zone3Duration = 3.60 * this.cachedVh;
+            this.zone3End = this.zone3Start + this.zone3Duration; // 6.70vh
             this.zoneOutroThreshold = this.zone3End + (0.5 * this.cachedVh);
 
             this.seq1Total = this.cachedIsPortrait ? this.seq1Config.portraitFrames : this.seq1Config.landscapeFrames;
@@ -291,7 +300,7 @@
             this.lastDrawnSeq2Idx = -1;
             this.lastRenderedZone = 0;
 
-            if (!this.wrapper || !this.canvas || !this.ctx) return;
+            if (!this.wrapper || !this.canvas1 || !this.ctx1) return;
 
             this.init();
         }
@@ -452,22 +461,39 @@
             this.canvasW = Math.round(this.cachedVw * this.effectiveDpr);
             this.canvasH = Math.round(this.cachedVh * this.effectiveDpr);
 
-            this.canvas.width = this.canvasW;
-            this.canvas.height = this.canvasH;
-            this.canvas.style.width = `${this.cachedVw}px`;
-            this.canvas.style.height = `${this.cachedVh}px`;
+            if (this.canvas1) {
+                this.canvas1.width = this.canvasW;
+                this.canvas1.height = this.canvasH;
+                this.canvas1.style.width = `${this.cachedVw}px`;
+                this.canvas1.style.height = `${this.cachedVh}px`;
+            }
 
-            this.ctx.imageSmoothingEnabled = true;
-            this.ctx.imageSmoothingQuality = 'high';
+            if (this.canvas2) {
+                this.canvas2.width = this.canvasW;
+                this.canvas2.height = this.canvasH;
+                this.canvas2.style.width = `${this.cachedVw}px`;
+                this.canvas2.style.height = `${this.cachedVh}px`;
+            }
+
+            if (this.ctx1) {
+                this.ctx1.imageSmoothingEnabled = true;
+                this.ctx1.imageSmoothingQuality = 'high';
+            }
+
+            if (this.ctx2) {
+                this.ctx2.imageSmoothingEnabled = true;
+                this.ctx2.imageSmoothingQuality = 'high';
+            }
 
             // Cache Timeline Zone Distances
             this.zone1End = 2.40 * this.cachedVh;
             this.zone2Start = 2.40 * this.cachedVh;
-            this.zone2End = 3.40 * this.cachedVh;
-            this.zone2Duration = 1.00 * this.cachedVh;
-            this.zone3Start = 3.40 * this.cachedVh;
-            this.zone3End = 5.80 * this.cachedVh;
-            this.zone3Duration = 2.40 * this.cachedVh;
+            this.zone2Duration = 0.70 * this.cachedVh;
+            this.zone2End = this.zone2Start + this.zone2Duration; // 3.10vh
+            this.zone2Midpoint = this.zone2Start + (this.zone2Duration / 2); // 2.75vh
+            this.zone3Start = this.zone2End; // 3.10vh
+            this.zone3Duration = 3.60 * this.cachedVh;
+            this.zone3End = this.zone3Start + this.zone3Duration; // 6.70vh
             this.zoneOutroThreshold = this.zone3End + (0.5 * this.cachedVh);
 
             this.seq1Total = this.cachedIsPortrait ? this.seq1Config.portraitFrames : this.seq1Config.landscapeFrames;
@@ -485,9 +511,9 @@
             this.renderTick();
         }
 
-        drawCoverWithRect(img, rect) {
-            if (!img || !img.complete || img.naturalWidth === 0) return;
-            this.ctx.drawImage(img, rect.drawX, rect.drawY, rect.drawW, rect.drawH);
+        drawCoverWithRect(ctx, img, rect) {
+            if (!ctx || !img || !img.complete || img.naturalWidth === 0) return;
+            ctx.drawImage(img, rect.drawX, rect.drawY, rect.drawW, rect.drawH);
         }
 
         getFallbackFrame(arr, index, total, seqId = 1) {
@@ -517,11 +543,7 @@
             if (!this.stepCounter || !this.stepCounterText) return;
             const formatted = `${String(stepNum).padStart(2, '0')} / ${String(totalSteps).padStart(2, '0')}`;
             if (this.stepCounterText.textContent !== formatted) {
-                this.stepCounter.classList.add('fade-out');
-                setTimeout(() => {
-                    this.stepCounterText.textContent = formatted;
-                    this.stepCounter.classList.remove('fade-out');
-                }, 120);
+                this.stepCounterText.textContent = formatted;
             }
         }
 
@@ -545,19 +567,36 @@
                 window._targetFrame = targetIdx;
                 window._targetFrameSeq1 = targetIdx;
 
+                if (this.panelSeq1) {
+                    this.panelSeq1.style.transform = 'translateY(0%)';
+                    this.panelSeq1.style.opacity = '1';
+                }
+                if (this.panelSeq2) {
+                    this.panelSeq2.style.transform = 'translateY(100%)';
+                }
+
                 // Draw frame if frame changed or coming from another zone
                 if (targetIdx !== this.lastDrawnSeq1Idx || this.lastRenderedZone !== 1) {
                     this.lastDrawnSeq1Idx = targetIdx;
                     this.lastRenderedZone = 1;
 
                     const img = this.getFallbackFrame(this.seq1Frames, targetIdx, this.seq1Total, 1);
-                    const isFallback = img && this.seq1Frames[targetIdx] !== img;
-                    if (isFallback) {
-                        console.log(`[STAGE_FRAME] Seq 1 | Frame: ${targetIdx + 1}/${this.seq1Total} | Loaded: ${this.seq1LoadedCount} | Fallback used: YES`);
+                    if (this.ctx1) {
+                        this.ctx1.clearRect(0, 0, w, h);
+                        this.ctx1.globalAlpha = 1.0;
+                        if (img) this.drawCoverWithRect(this.ctx1, img, this.seq1DrawRect);
                     }
-                    this.ctx.clearRect(0, 0, w, h);
-                    this.ctx.globalAlpha = 1.0;
-                    if (img) this.drawCoverWithRect(img, this.seq1DrawRect);
+                }
+
+                // Pre-draw Frame 0 on Canvas 2 so it is immediately ready when sliding up
+                if (this.lastDrawnSeq2Idx !== 0 && this.seq2LoadedCount > 0) {
+                    const img2 = this.getFallbackFrame(this.seq2Frames, 0, this.seq2Total, 2);
+                    if (this.ctx2 && img2) {
+                        this.ctx2.clearRect(0, 0, w, h);
+                        this.ctx2.globalAlpha = 1.0;
+                        this.drawCoverWithRect(this.ctx2, img2, this.seq2DrawRect);
+                        this.lastDrawnSeq2Idx = 0;
+                    }
                 }
 
                 // Update Sequence 1 Steps
@@ -576,25 +615,14 @@
                     this.updateStepCounter(step1 + 1, 3);
                 }
 
-                // Sequence 1 Text Exit Fade (0.88 -> 0.98) - desktop only style, mobile uses CSS class
-                if (this.seq1TextBlock) {
-                    if (!this.cachedIsMobile) {
-                        if (p1 >= 0.88) {
-                            const fade = Math.max(0, 1 - (p1 - 0.88) / 0.10);
-                            this.seq1TextBlock.style.opacity = fade.toFixed(3);
-                        } else {
-                            this.seq1TextBlock.style.opacity = '1';
-                        }
-                    } else {
-                        this.seq1TextBlock.style.opacity = p1 >= 0.95 ? '0' : '1';
-                    }
-                }
-
-                // Hide Sequence 2 Text & reset stats
-                if (this.seq2Container) this.seq2Container.style.opacity = '0';
-                if (this.seq2Steps.length && this.seq2CurrentStep !== -1) {
-                    this.seq2Steps.forEach(el => { el.classList.remove('active', 'prev'); });
-                    this.seq2CurrentStep = -1;
+                if (this.seq1TextBlock) this.seq1TextBlock.style.opacity = '1';
+                if (this.seq2Container) this.seq2Container.style.opacity = '1';
+                if (this.seq2Steps.length) {
+                    this.seq2Steps.forEach((el, idx) => {
+                        el.classList.toggle('active', idx === 0);
+                        el.classList.remove('prev');
+                    });
+                    this.seq2CurrentStep = 0;
                 }
                 if (this.stepCounter) this.stepCounter.style.opacity = '1';
                 if (this.gradientOverlay) this.gradientOverlay.classList.remove('seq2-mode');
@@ -603,45 +631,99 @@
 
             } else if (scrollY >= this.zone2Start && scrollY < this.zone2End) {
                 // ==========================================
-                // ZONE 2: SINGLE-CANVAS CROSS-DISSOLVE (100vh)
+                // ZONE 2: SLIDE HANDOFF (2.40vh -> 3.10vh, 70vh duration)
                 // ==========================================
-                const dissolveP = Math.min(1.0, Math.max(0, (scrollY - this.zone2Start) / this.zone2Duration));
+                const slideP = Math.min(1.0, Math.max(0.0, (scrollY - this.zone2Start) / this.zone2Duration));
                 this.lastRenderedZone = 2;
 
-                const img1 = this.getFallbackFrame(this.seq1Frames, this.seq1Total - 1, this.seq1Total, 1);
-                const img2 = this.getFallbackFrame(this.seq2Frames, 0, this.seq2Total, 2);
-
-                this.ctx.clearRect(0, 0, w, h);
-
-                // Base Layer: Sequence 1 Final Frame
-                this.ctx.globalAlpha = 1.0;
-                if (img1) this.drawCoverWithRect(img1, this.seq1DrawRect);
-
-                // Dissolving Layer: Sequence 2 Initial Frame
-                this.ctx.globalAlpha = dissolveP;
-                if (img2) this.drawCoverWithRect(img2, this.seq2DrawRect);
-                this.ctx.globalAlpha = 1.0;
-
-                // Text Blocks: Both hidden during pure visual dissolve
-                if (this.seq1TextBlock) this.seq1TextBlock.style.opacity = '0';
-                if (this.seq2Container) this.seq2Container.style.opacity = '0';
-                if (this.stepCounter) this.stepCounter.style.opacity = '0';
-
-                // Overlay mode transitions seamlessly at midpoint
-                if (this.gradientOverlay) {
-                    this.gradientOverlay.classList.toggle('seq2-mode', dissolveP >= 0.50);
+                // Ensure Panel 1 remains at opacity 1, translateY 0
+                if (this.panelSeq1) {
+                    this.panelSeq1.style.transform = 'translateY(0%)';
+                    this.panelSeq1.style.opacity = '1';
                 }
+
+                // Apply translateY on Panel 2
+                if (this.panelSeq2) {
+                    if (prefersReducedMotion) {
+                        this.panelSeq2.style.transform = slideP < 0.50 ? 'translateY(100%)' : 'translateY(0%)';
+                    } else {
+                        const translateY = (1.0 - slideP) * 100;
+                        this.panelSeq2.style.transform = `translateY(${translateY.toFixed(3)}%)`;
+                    }
+                }
+
+                // Ensure final frame drawn on Canvas 1
+                if (this.lastDrawnSeq1Idx !== this.seq1Total - 1) {
+                    this.lastDrawnSeq1Idx = this.seq1Total - 1;
+                    const img1 = this.getFallbackFrame(this.seq1Frames, this.seq1Total - 1, this.seq1Total, 1);
+                    if (this.ctx1) {
+                        this.ctx1.clearRect(0, 0, w, h);
+                        this.ctx1.globalAlpha = 1.0;
+                        if (img1) this.drawCoverWithRect(this.ctx1, img1, this.seq1DrawRect);
+                    }
+                }
+
+                // Ensure frame 0 drawn on Canvas 2
+                if (this.lastDrawnSeq2Idx !== 0) {
+                    this.lastDrawnSeq2Idx = 0;
+                    const img2 = this.getFallbackFrame(this.seq2Frames, 0, this.seq2Total, 2);
+                    if (this.ctx2) {
+                        this.ctx2.clearRect(0, 0, w, h);
+                        this.ctx2.globalAlpha = 1.0;
+                        if (img2) this.drawCoverWithRect(this.ctx2, img2, this.seq2DrawRect);
+                    }
+                }
+
+                // Sequence 1 Step 3 and Sequence 2 Step 0 active
+                if (this.seq1Steps.length) {
+                    this.seq1Steps.forEach((el, idx) => {
+                        el.classList.toggle('active', idx === 2);
+                        el.classList.toggle('prev', idx < 2);
+                    });
+                    this.seq1CurrentStep = 2;
+                }
+                if (this.seq2Steps.length) {
+                    this.seq2Steps.forEach((el, idx) => {
+                        el.classList.toggle('active', idx === 0);
+                        el.classList.remove('prev');
+                    });
+                    this.seq2CurrentStep = 0;
+                }
+
+                if (this.seq1TextBlock) this.seq1TextBlock.style.opacity = '1';
+                if (this.seq2Container) this.seq2Container.style.opacity = '1';
+                if (this.stepCounter) this.stepCounter.style.opacity = '1';
+
+                // Single shared overlay and counter switch at midpoint (>= 50%)
+                if (slideP < 0.50) {
+                    if (this.gradientOverlay) this.gradientOverlay.classList.remove('seq2-mode');
+                    this.updateStepCounter(3, 3);
+                    this.stepDots.forEach((dot, idx) => dot.classList.toggle('active', idx === 2));
+                } else {
+                    if (this.gradientOverlay) this.gradientOverlay.classList.add('seq2-mode');
+                    this.updateStepCounter(1, 3);
+                    this.stepDots.forEach((dot, idx) => dot.classList.toggle('active', idx === 0));
+                }
+
                 if (this.wrapper) this.wrapper.classList.remove('step-stats-active');
                 animateSeq2Stats(false);
 
             } else {
                 // ==========================================
-                // ZONE 3 & 4: SEQUENCE 2 SCRUB & PIN (3.40vh -> 5.80vh)
+                // ZONE 3: SEQUENCE 2 SCRUB & PIN (3.10vh -> 6.70vh)
                 // ==========================================
-                const p2 = Math.min(1.0, Math.max(0, (scrollY - this.zone3Start) / this.zone3Duration));
+                const p2 = Math.min(1.0, Math.max(0.0, (scrollY - this.zone3Start) / this.zone3Duration));
                 const targetIdx = Math.min(this.seq2Total - 1, Math.max(0, Math.round(p2 * (this.seq2Total - 1))));
                 window._targetFrame = targetIdx;
                 window._targetFrameSeq2 = targetIdx;
+
+                if (this.panelSeq1) {
+                    this.panelSeq1.style.transform = 'translateY(0%)';
+                    this.panelSeq1.style.opacity = '1';
+                }
+                if (this.panelSeq2) {
+                    this.panelSeq2.style.transform = 'translateY(0%)';
+                }
 
                 // Draw frame if frame changed or coming from another zone
                 if (targetIdx !== this.lastDrawnSeq2Idx || this.lastRenderedZone !== 3) {
@@ -649,17 +731,13 @@
                     this.lastRenderedZone = 3;
 
                     const img = this.getFallbackFrame(this.seq2Frames, targetIdx, this.seq2Total, 2);
-                    const isFallback = img && this.seq2Frames[targetIdx] !== img;
-                    if (isFallback) {
-                        console.log(`[STAGE_FRAME] Seq 2 | Frame: ${targetIdx + 1}/${this.seq2Total} | Loaded: ${this.seq2LoadedCount} | Fallback used: YES`);
+                    if (this.ctx2) {
+                        this.ctx2.clearRect(0, 0, w, h);
+                        this.ctx2.globalAlpha = 1.0;
+                        if (img) this.drawCoverWithRect(this.ctx2, img, this.seq2DrawRect);
                     }
-                    this.ctx.clearRect(0, 0, w, h);
-                    this.ctx.globalAlpha = 1.0;
-                    if (img) this.drawCoverWithRect(img, this.seq2DrawRect);
                 }
 
-                // Hide Sequence 1 Text
-                if (this.seq1TextBlock) this.seq1TextBlock.style.opacity = '0';
                 if (this.seq2Container) this.seq2Container.style.opacity = '1';
                 if (this.stepCounter) this.stepCounter.style.opacity = '1';
                 if (this.gradientOverlay) this.gradientOverlay.classList.add('seq2-mode');
@@ -676,6 +754,7 @@
                         el.classList.toggle('active', idx === step2);
                         el.classList.toggle('prev', idx < step2);
                     });
+                    this.stepDots.forEach((dot, idx) => dot.classList.toggle('active', idx === step2));
                     this.updateStepCounter(step2 + 1, 3);
 
                     if (this.wrapper) {
