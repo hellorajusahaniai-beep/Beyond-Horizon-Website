@@ -241,7 +241,7 @@
                 filePrefix: 'frame_',
                 focalX: 0.50,
                 focalY: 0.40,
-                stepRanges: [0.34, 0.67] // Steps: 0.00-0.34 (Services), 0.34-0.67 (Stats), 0.67-1.00 (Clients)
+                stepRanges: [0.333, 0.667] // Steps: 0.00-0.333 (Services), 0.333-0.667 (Stats), 0.667-1.00 (Clients) - ~33.3% equal allocation
             };
 
             this.seq1Frames = [];
@@ -450,19 +450,19 @@
             const seq2Total = this.getFrameCount(this.seq2Config);
 
             // Scroll Timeline Definitions:
-            // Total container height: 600vh. Pin travel: 500vh (600vh - 100vh)
-            // Zone 1: 0 to 2.40 * vh (Sequence 1 Scrub)
-            // Zone 2: 2.40 * vh to 3.40 * vh (100vh Cross-Dissolve Zone)
-            // Zone 3: 3.40 * vh to 5.00 * vh (160vh Sequence 2 Scrub)
-            // Zone 4: > 5.00 * vh (Unpinning into Case Studies)
+            // Total container height: 680vh. Pin travel: 580vh (680vh - 100vh)
+            // Zone 1: 0 to 2.40 * vh (Sequence 1 Scrub - untouched)
+            // Zone 2: 2.40 * vh to 3.40 * vh (100vh Cross-Dissolve Zone - untouched)
+            // Zone 3: 3.40 * vh to 5.80 * vh (240vh Sequence 2 Scrub: +50% slower transitions)
+            // Zone 4: > 5.80 * vh (Unpinning into Case Studies)
 
             const zone1End = 2.40 * vh;
             const zone2Start = 2.40 * vh;
             const zone2End = 3.40 * vh;
             const zone2Duration = 1.00 * vh;
             const zone3Start = 3.40 * vh;
-            const zone3End = 5.00 * vh;
-            const zone3Duration = 1.60 * vh;
+            const zone3End = 5.80 * vh;
+            const zone3Duration = 2.40 * vh;
 
             // Performance Optimization: If stage is scrolled past viewport, skip canvas rendering
             if (scrollY > (zone3End + 0.5 * vh)) {

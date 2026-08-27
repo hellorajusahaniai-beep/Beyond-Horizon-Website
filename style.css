@@ -239,10 +239,10 @@ html, body {
 }
 
 /* ==========================================================================
-   Unified Stage: 600vh Single-Canvas Viewport Stage (Dissolve Transition)
+   Unified Stage: 680vh Single-Canvas Viewport Stage (Dissolve Transition)
    ========================================================================== */
 .stage-scroll-wrapper {
-    height: 600vh;
+    height: 680vh;
     position: relative;
     width: 100%;
     z-index: 1;
@@ -623,7 +623,7 @@ html, body {
     inset: 0;
     pointer-events: none;
     visibility: hidden;
-    transition: visibility 450ms step-end;
+    transition: visibility 800ms step-end;
 }
 
 .seq2-step.active {
@@ -645,8 +645,8 @@ html, body {
     flex-direction: column;
     align-items: flex-start;
     gap: 14px;
-    transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 450ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity, transform;
 }
 
@@ -674,8 +674,8 @@ html, body {
     flex-direction: column;
     align-items: flex-end;
     gap: 14px;
-    transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 450ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity, transform;
 }
 
@@ -2049,9 +2049,9 @@ a.info-value:hover {
         visibility: hidden;
         pointer-events: none;
         transform: translateY(16px);
-        transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
-                    transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
-                    visibility 450ms step-end;
+        transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 800ms cubic-bezier(0.16, 1, 0.3, 1),
+                    visibility 800ms step-end;
     }
 
     .seq2-step.active {
@@ -2059,8 +2059,8 @@ a.info-value:hover {
         visibility: visible;
         pointer-events: auto;
         transform: translateY(0);
-        transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
-                    transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
+        transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 800ms cubic-bezier(0.16, 1, 0.3, 1),
                     visibility 0ms;
     }
 
@@ -2069,9 +2069,9 @@ a.info-value:hover {
         visibility: hidden;
         pointer-events: none;
         transform: translateY(-16px);
-        transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
-                    transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
-                    visibility 450ms step-end;
+        transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 800ms cubic-bezier(0.16, 1, 0.3, 1),
+                    visibility 800ms step-end;
     }
 
     .seq2-left-block,
