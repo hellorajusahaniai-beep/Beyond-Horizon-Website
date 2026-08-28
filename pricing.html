@@ -45,25 +45,26 @@
         .pricing-header-block .section-title { margin: 16px 0 20px; max-width: 1000px; }
         .pricing-header-subtext { font-family: var(--font-body); font-size: clamp(16px, 1.2vw, 19px); line-height: 1.6; color: #aaaaaa; max-width: 720px; margin: 0; }
         .nav-link.active, .mobile-nav-link.active { color: #ffffff !important; border-bottom: 2px solid #ffffff; }
-        .pricing-section-group { margin-bottom: 90px; }
-        .pricing-section-header { margin-bottom: 36px; }
+        .pricing-section-group { margin-bottom: 80px; }
+        .pricing-section-header { margin-bottom: 28px; }
         .pricing-section-header .section-title { margin: 12px 0 0; font-size: clamp(32px, 3.5vw, 48px); }
-        .pricing-editorial-row { display: grid; grid-template-columns: 1.35fr 1fr; gap: 40px; padding: 36px 0; border-bottom: 1px solid rgba(255,255,255,0.15); align-items: baseline; }
+        .pricing-category-title { font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #9ca3af; padding-bottom: 14px; margin-top: 48px; border-bottom: 1px solid rgba(255,255,255,0.15); }
+        .pricing-editorial-row { display: grid; grid-template-columns: 1.35fr 1fr; gap: 40px; padding: 32px 0; border-bottom: 1px solid rgba(255,255,255,0.15); align-items: baseline; }
         .pricing-editorial-row.is-featured { border-left: 2px solid #ffffff; padding-left: 24px; }
-        .pricing-bundle-name, .pricing-service-name { font-family: var(--font-display); font-size: clamp(28px, 3vw, 42px); font-weight: 900; letter-spacing: 0.03em; text-transform: uppercase; color: #ffffff; line-height: 1.05; margin: 0; }
-        .pricing-bundle-popular { display: inline-block; font-family: var(--font-body); font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #ffffff; border-bottom: 1px solid #ffffff; margin-bottom: 8px; }
+        .pricing-bundle-name, .pricing-service-name { font-family: var(--font-display); font-size: clamp(26px, 2.8vw, 40px); font-weight: 900; letter-spacing: 0.03em; text-transform: uppercase; color: #ffffff; line-height: 1.05; margin: 0; }
         .pricing-bundle-includes, .pricing-service-desc { font-family: var(--font-body); font-size: clamp(15px, 1.05vw, 17px); line-height: 1.65; color: #cccccc; margin: 10px 0 8px; }
         .pricing-bundle-tag { font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #9ca3af; }
+        .pricing-meta-note { font-family: var(--font-body); font-size: 12px; line-height: 1.5; color: #888888; letter-spacing: 0.04em; margin-top: 8px; }
         .pricing-row-price-col { text-align: right; }
-        .pricing-price-text { font-family: var(--font-display); font-size: clamp(26px, 2.6vw, 38px); font-weight: 900; letter-spacing: 0.03em; text-transform: uppercase; color: #ffffff; line-height: 1.1; margin: 0; }
+        .pricing-price-text { font-family: var(--font-display); font-size: clamp(24px, 2.4vw, 36px); font-weight: 900; letter-spacing: 0.03em; text-transform: uppercase; color: #ffffff; line-height: 1.1; margin: 0; }
         .pricing-cta-wrap { display: flex; justify-content: flex-start; padding: 20px 0 100px; }
         @media (max-width: 767px) {
             .pricing-header-block { padding-top: calc(var(--nav-height) + 40px); padding-bottom: 30px; }
-            .pricing-editorial-row { grid-template-columns: 1fr; gap: 14px; padding: 28px 0; }
+            .pricing-editorial-row { grid-template-columns: 1fr; gap: 12px; padding: 24px 0; }
             .pricing-editorial-row.is-featured { padding-left: 16px; }
             .pricing-row-price-col { text-align: left; }
             .pricing-bundle-includes, .pricing-service-desc { font-size: 15px; }
-            .pricing-price-text { font-size: clamp(22px, 6vw, 30px); }
+            .pricing-price-text { font-size: clamp(20px, 5.5vw, 28px); }
         }
     </style>
 </head>
@@ -114,21 +115,21 @@
         <!-- Content Container -->
         <div class="editorial-container" id="pricing-content-area">
 
-            <!-- Page Header / Section 1: Growth Packages Intro -->
+            <!-- Section 1: Growth Packages Intro -->
             <section class="pricing-header-block">
                 <span class="section-tag">GROWTH PACKAGES</span>
                 <h1 class="section-title">EVERYTHING YOUR BUSINESS NEEDS. ONE INVESTMENT.</h1>
                 <p class="pricing-header-subtext">Bundles designed for local businesses ready to grow. Pick what fits your stage.</p>
             </section>
 
-            <!-- Section 1: Growth Packages Rows -->
+            <!-- Section 1: Growth Packages (3 Bundled Rows) -->
             <section class="pricing-section-group" aria-label="Growth Packages">
                 <!-- 1. Starter Bundle -->
                 <!-- PRICES VERIFIED BY BUSINESS OWNER -->
                 <div class="pricing-editorial-row">
                     <div class="pricing-row-left-col">
                         <h2 class="pricing-bundle-name">STARTER</h2>
-                        <p class="pricing-bundle-includes">Basic website · 12 social posts · Basic SEO · Monthly report</p>
+                        <p class="pricing-bundle-includes">Basic website · Content Only (you provide footage) · Basic SEO · Monthly report</p>
                         <div class="pricing-bundle-tag">BEST FOR: NEW BUSINESSES &amp; FIRST-TIMERS</div>
                     </div>
                     <div class="pricing-row-price-col">
@@ -140,9 +141,8 @@
                 <!-- PRICES VERIFIED BY BUSINESS OWNER -->
                 <div class="pricing-editorial-row is-featured">
                     <div class="pricing-row-left-col">
-                        <span class="pricing-bundle-popular">MOST POPULAR</span>
                         <h2 class="pricing-bundle-name">GROWTH</h2>
-                        <p class="pricing-bundle-includes">Clean website · Meta Ads management · SEO · 8 reels/posts · Google Business setup</p>
+                        <p class="pricing-bundle-includes">Clean website · Meta Ads management · Content + Shoot (monthly visit) · SEO · Google Business setup</p>
                         <div class="pricing-bundle-tag">MOST POPULAR — BEST FOR: SALONS · GYMS · CLINICS</div>
                     </div>
                     <div class="pricing-row-price-col">
@@ -155,7 +155,7 @@
                 <div class="pricing-editorial-row">
                     <div class="pricing-row-left-col">
                         <h2 class="pricing-bundle-name">DOMINATE</h2>
-                        <p class="pricing-bundle-includes">Pro website · Meta Ads · Google Ads · SEO · 15 reels/posts · Monthly strategy call</p>
+                        <p class="pricing-bundle-includes">Pro website · Meta Ads · Google Ads · Content Pro (bi-weekly visits) · SEO · Monthly strategy call</p>
                         <div class="pricing-bundle-tag">BEST FOR: BUSINESSES READY TO OWN THEIR MARKET</div>
                     </div>
                     <div class="pricing-row-price-col">
@@ -164,12 +164,15 @@
                 </div>
             </section>
 
-            <!-- Section 2: Individual Services (À La Carte) -->
+            <!-- Section 2: Individual Services (13 À La Carte Rows) -->
             <section class="pricing-section-group" aria-label="Individual Services">
                 <div class="pricing-section-header">
                     <span class="section-tag">INDIVIDUAL SERVICES</span>
                     <h2 class="section-title">NEED SOMETHING SPECIFIC?</h2>
                 </div>
+
+                <!-- Category: Websites (3 Rows) -->
+                <div class="pricing-category-title">WEBSITES</div>
 
                 <!-- 1. Basic Website -->
                 <!-- PRICES VERIFIED BY BUSINESS OWNER -->
@@ -207,39 +210,130 @@
                     </div>
                 </div>
 
-                <!-- 4. Meta Ads Management -->
+                <!-- Category: Video Production (3 Rows) -->
+                <div class="pricing-category-title">VIDEO PRODUCTION</div>
+
+                <!-- 4. Basic Video -->
+                <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                <div class="pricing-editorial-row">
+                    <div class="pricing-row-left-col">
+                        <h3 class="pricing-service-name">BASIC VIDEO</h3>
+                        <p class="pricing-service-desc">One-time · 1-day shoot · Basic edit · 1 video (60-90s) + 3 reels</p>
+                    </div>
+                    <div class="pricing-row-price-col">
+                        <div class="pricing-price-text">₹15,000</div>
+                    </div>
+                </div>
+
+                <!-- 5. Growth Video -->
+                <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                <div class="pricing-editorial-row">
+                    <div class="pricing-row-left-col">
+                        <h3 class="pricing-service-name">GROWTH VIDEO</h3>
+                        <p class="pricing-service-desc">One-time · 1-day shoot · Advanced edit + motion graphics · 1 video (2-3min) + 5 reels + 2 stories</p>
+                    </div>
+                    <div class="pricing-row-price-col">
+                        <div class="pricing-price-text">₹25,000</div>
+                    </div>
+                </div>
+
+                <!-- 6. Pro Video -->
+                <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                <div class="pricing-editorial-row">
+                    <div class="pricing-row-left-col">
+                        <h3 class="pricing-service-name">PRO VIDEO</h3>
+                        <p class="pricing-service-desc">One-time · 2-day shoot · Cinematic edit + color grade · 1 hero video (3-5min) + 8 reels + 4 stories</p>
+                    </div>
+                    <div class="pricing-row-price-col">
+                        <div class="pricing-price-text">₹40,000</div>
+                    </div>
+                </div>
+
+                <!-- Category: Monthly Services (7 Rows) -->
+                <div class="pricing-category-title">MONTHLY SERVICES</div>
+
+                <!-- 7. Meta Ads Management -->
                 <!-- PRICES VERIFIED BY BUSINESS OWNER -->
                 <div class="pricing-editorial-row">
                     <div class="pricing-row-left-col">
                         <h3 class="pricing-service-name">META ADS MANAGEMENT</h3>
-                        <p class="pricing-service-desc">Ad creatives · Targeting · A/B testing · Monthly report · Ad spend separate</p>
+                        <p class="pricing-service-desc">Ad creatives · Targeting · A/B testing · Monthly report</p>
+                        <div class="pricing-meta-note">Ad spend is separate and paid directly to Meta. We recommend ₹5,000–₹50,000/month ad budget for best results.</div>
                     </div>
                     <div class="pricing-row-price-col">
                         <div class="pricing-price-text">₹15,000 / MONTH</div>
                     </div>
                 </div>
 
-                <!-- 5. SEO -->
+                <!-- 8. SEO Setup -->
                 <!-- PRICES VERIFIED BY BUSINESS OWNER -->
                 <div class="pricing-editorial-row">
                     <div class="pricing-row-left-col">
-                        <h3 class="pricing-service-name">SEO</h3>
-                        <p class="pricing-service-desc">On-page · Technical · Local SEO · Monthly reporting</p>
+                        <h3 class="pricing-service-name">SEO SETUP</h3>
+                        <p class="pricing-service-desc">One-time · Audit · On-page fix · Google Business setup</p>
+                    </div>
+                    <div class="pricing-row-price-col">
+                        <div class="pricing-price-text">₹8,000</div>
+                    </div>
+                </div>
+
+                <!-- 9. SEO Growth -->
+                <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                <div class="pricing-editorial-row">
+                    <div class="pricing-row-left-col">
+                        <h3 class="pricing-service-name">SEO GROWTH</h3>
+                        <p class="pricing-service-desc">Keyword tracking · Content optimization · Local SEO · Monthly reporting</p>
                     </div>
                     <div class="pricing-row-price-col">
                         <div class="pricing-price-text">₹10,000 / MONTH</div>
                     </div>
                 </div>
 
-                <!-- 6. Content Production -->
+                <!-- 10. SEO + Reputation -->
                 <!-- PRICES VERIFIED BY BUSINESS OWNER -->
                 <div class="pricing-editorial-row">
                     <div class="pricing-row-left-col">
-                        <h3 class="pricing-service-name">CONTENT PRODUCTION</h3>
-                        <p class="pricing-service-desc">Reels · Photos · Captions · 8-12 deliverables</p>
+                        <h3 class="pricing-service-name">SEO + REPUTATION</h3>
+                        <p class="pricing-service-desc">All SEO services · Review management · Monthly reputation report</p>
                     </div>
                     <div class="pricing-row-price-col">
-                        <div class="pricing-price-text">₹10,000 / MONTH</div>
+                        <div class="pricing-price-text">₹15,000 / MONTH</div>
+                    </div>
+                </div>
+
+                <!-- 11. Content Only -->
+                <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                <div class="pricing-editorial-row">
+                    <div class="pricing-row-left-col">
+                        <h3 class="pricing-service-name">CONTENT ONLY</h3>
+                        <p class="pricing-service-desc">You provide footage · We edit, caption, post &amp; manage · 8 reels + 6 posts + 4 stories</p>
+                    </div>
+                    <div class="pricing-row-price-col">
+                        <div class="pricing-price-text">₹8,000 / MONTH</div>
+                    </div>
+                </div>
+
+                <!-- 12. Content + Shoot -->
+                <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                <div class="pricing-editorial-row">
+                    <div class="pricing-row-left-col">
+                        <h3 class="pricing-service-name">CONTENT + SHOOT</h3>
+                        <p class="pricing-service-desc">Monthly visit included · Shoot, edit, caption, post &amp; manage · 12 reels + 8 posts + 6 stories + strategy call</p>
+                    </div>
+                    <div class="pricing-row-price-col">
+                        <div class="pricing-price-text">₹15,000 / MONTH</div>
+                    </div>
+                </div>
+
+                <!-- 13. Content Pro -->
+                <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                <div class="pricing-editorial-row">
+                    <div class="pricing-row-left-col">
+                        <h3 class="pricing-service-name">CONTENT PRO</h3>
+                        <p class="pricing-service-desc">Bi-weekly visits included · Shoot, edit, strategy, hashtags · 16 reels + 10 posts + 8 stories</p>
+                    </div>
+                    <div class="pricing-row-price-col">
+                        <div class="pricing-price-text">₹25,000 / MONTH</div>
                     </div>
                 </div>
             </section>
