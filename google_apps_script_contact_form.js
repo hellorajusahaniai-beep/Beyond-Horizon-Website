@@ -65,7 +65,7 @@ function doPost(e) {
     var budget = data.budget || "";
     var message = data.message || data.goals || "";
     
-    // Append row
+    // Append row (Order: Timestamp, Name, Email, Phone, Business, Budget, Message)
     sheet.appendRow([
       timestamp,
       name,
