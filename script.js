@@ -1060,14 +1060,14 @@
                     } else {
                         if (statusMsg) {
                             statusMsg.className = 'form-status-msg is-error';
-                            statusMsg.textContent = "Something went wrong. Please email us directly at contact@beyondhorizon.com";
+                            statusMsg.textContent = "Something went wrong. Please email us directly at growwithbeyondhorizon@gmail.com";
                         }
                     }
                 } catch (err) {
                     console.error('[CONTACT_FORM] Submission error:', err);
                     if (statusMsg) {
                         statusMsg.className = 'form-status-msg is-error';
-                        statusMsg.textContent = "Something went wrong. Please email us directly at contact@beyondhorizon.com";
+                        statusMsg.textContent = "Something went wrong. Please email us directly at growwithbeyondhorizon@gmail.com";
                     }
                 } finally {
                     isSubmitting = false;

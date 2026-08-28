@@ -210,6 +210,65 @@ body {
     transform: scale(1.03);
 }
 
+.nav-whatsapp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: #25D366;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: transform 200ms ease, background-color 200ms ease, border-color 200ms ease;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.nav-whatsapp-btn:hover {
+    background: rgba(37, 211, 102, 0.18);
+    border-color: rgba(37, 211, 102, 0.5);
+    transform: scale(1.06);
+}
+
+.floating-whatsapp-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background-color: #25D366;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99;
+    text-decoration: none;
+    transition: transform 200ms ease, opacity 200ms ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.floating-whatsapp-btn:hover {
+    transform: scale(1.08);
+}
+
+.floating-whatsapp-btn:active {
+    transform: scale(0.96);
+}
+
+@media (max-width: 768px) {
+    .floating-whatsapp-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 48px;
+        height: 48px;
+    }
+    .nav-whatsapp-btn {
+        display: none !important;
+    }
+}
+
 /* Mobile Hamburger Button */
 .nav-hamburger {
     display: none;
