@@ -1016,6 +1016,7 @@
 
                 const nameValue = (this.contactForm.querySelector('[name="name"]') || {}).value || '';
                 const emailValue = (this.contactForm.querySelector('[name="email"]') || {}).value || '';
+                const phoneValue = (this.contactForm.querySelector('[name="phone"]') || {}).value || '';
                 const businessValue = (this.contactForm.querySelector('[name="business"]') || {}).value || '';
                 const budgetValue = (this.contactForm.querySelector('[name="budget"]') || {}).value || '';
                 const messageValue = (this.contactForm.querySelector('[name="message"]') || {}).value || '';
@@ -1023,6 +1024,7 @@
                 const formData = new FormData();
                 formData.append('name', nameValue);
                 formData.append('email', emailValue);
+                formData.append('phone', phoneValue);
                 formData.append('business', businessValue);
                 formData.append('budget', budgetValue);
                 formData.append('message', messageValue);

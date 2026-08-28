@@ -33,7 +33,7 @@ function getTargetSheet() {
     } else {
       ss = SpreadsheetApp.create("Beyond Horizon Leads");
       var newSheet = ss.getActiveSheet();
-      newSheet.appendRow(["Timestamp", "Name", "Email", "Business", "Budget", "Message"]);
+      newSheet.appendRow(["Timestamp", "Name", "Email", "Phone", "Business", "Budget", "Message"]);
     }
   }
   
@@ -60,6 +60,7 @@ function doPost(e) {
     var timestamp = new Date();
     var name = data.name || data.fullname || "";
     var email = data.email || "";
+    var phone = data.phone || data.phonenumber || data.mobile || "";
     var business = data.business || data.brand || "";
     var budget = data.budget || "";
     var message = data.message || data.goals || "";
@@ -69,6 +70,7 @@ function doPost(e) {
       timestamp,
       name,
       email,
+      phone,
       business,
       budget,
       message
