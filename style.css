@@ -1540,13 +1540,13 @@ body {
     grid-template-columns: repeat(3, 1fr);
     gap: 40px;
     position: relative;
-    margin-top: 20px;
+    margin-top: 50px;
 }
 
 .process-steps-grid::before {
     content: '';
     position: absolute;
-    top: 48px;
+    top: 0;
     left: 0;
     right: 0;
     height: 1px;
@@ -1561,7 +1561,7 @@ body {
     text-align: center;
     position: relative;
     z-index: 1;
-    padding-top: 16px;
+    padding-top: 32px;
 }
 
 .process-step-num {
@@ -2551,11 +2551,7 @@ a.info-value:hover {
     }
 
     .process-steps-grid::before {
-        top: 0;
-        bottom: 0;
-        left: 20px;
-        width: 1px;
-        height: 100%;
+        display: none;
     }
 
     /* Testimonials Mobile */
