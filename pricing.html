@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing &amp; Investment | Beyond Horizon Marketing Agency</title>
+    <meta name="description"
+        content="Transparent baseline investment for marketing, branding, web design, and content production. Real results, no vanity metrics.">
+    <meta name="keywords"
+        content="digital marketing agency pricing, creative agency rates, web design pricing, performance marketing cost, India marketing agency retainer">
+    <meta name="author" content="Beyond Horizon">
+    <meta name="robots" content="index, follow">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <!-- Open Graph (og:) Meta Tags -->
+    <meta property="og:title" content="Pricing &amp; Investment | Beyond Horizon">
+    <meta property="og:description"
+        content="Transparent baseline investment for marketing, branding, web design, and content production.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://beyondhorizon.com/pricing.html">
+    <meta property="og:image" content="https://beyondhorizon.com/og-image.jpg">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Pricing &amp; Investment | Beyond Horizon">
+    <meta name="twitter:description"
+        content="Transparent baseline investment for marketing, branding, web design, and content production.">
+    <meta name="twitter:image" content="https://beyondhorizon.com/og-image.jpg">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Oswald:wght@700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .pricing-hero {
+            padding-top: calc(var(--nav-height) + 100px);
+            padding-bottom: 70px;
+            text-align: center;
+        }
+        .pricing-hero .section-title {
+            margin: 16px auto 24px;
+            max-width: 960px;
+        }
+        .pricing-hero-subtext {
+            font-family: var(--font-body);
+            font-size: clamp(16px, 1.2vw, 19px);
+            line-height: 1.65;
+            color: #aaaaaa;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        .nav-link.active,
+        .mobile-nav-link.active {
+            color: #ffffff !important;
+            border-bottom: 2px solid #ffffff;
+        }
+        .pricing-page-group {
+            margin-bottom: 70px;
+        }
+        .pricing-category-title {
+            font-family: var(--font-body);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #9ca3af;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .pricing-page-row {
+            display: grid;
+            grid-template-columns: 1fr 1.25fr;
+            gap: 48px;
+            padding: 36px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            align-items: flex-start;
+        }
+        .pricing-page-row-name {
+            font-family: var(--font-display);
+            font-size: clamp(28px, 3vw, 42px);
+            font-weight: 900;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            color: #ffffff;
+            line-height: 1.05;
+            margin: 0;
+        }
+        .pricing-page-row-tag {
+            font-family: var(--font-body);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin-top: 8px;
+        }
+        .pricing-page-starting {
+            font-family: var(--font-body);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #9ca3af;
+        }
+        .pricing-page-amount {
+            font-family: var(--font-display);
+            font-size: clamp(22px, 2.2vw, 32px);
+            font-weight: 900;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            color: #ffffff;
+            line-height: 1.1;
+            margin: 4px 0 10px;
+        }
+        .pricing-page-desc {
+            font-family: var(--font-body);
+            font-size: clamp(15px, 1.05vw, 17px);
+            line-height: 1.65;
+            color: #aaaaaa;
+            margin: 0;
+        }
+        .pricing-page-cta {
+            display: flex;
+            justify-content: center;
+            padding: 30px 0 90px;
+        }
+        @media (max-width: 767px) {
+            .pricing-hero {
+                padding-top: calc(var(--nav-height) + 60px);
+                padding-bottom: 40px;
+                text-align: left;
+            }
+            .pricing-page-row {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                padding: 28px 0;
+            }
+            .pricing-page-amount {
+                font-size: clamp(20px, 5.5vw, 26px);
+            }
+            .pricing-page-desc {
+                font-size: 15px;
+            }
+            .pricing-page-cta {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Fixed Navigation Bar (z-50) -->
+    <header class="site-header" id="site-header">
+        <div class="nav-container">
+            <!-- Wordmark Logo -->
+            <a href="index.html" class="nav-logo" aria-label="Beyond Horizon Home">
+                <span class="logo-text">BEYOND HORIZON</span>
+                <span class="logo-dot"></span>
+            </a>
+
+            <!-- Desktop Navigation Links -->
+            <nav class="nav-desktop" aria-label="Main Navigation">
+                <a href="index.html#work" class="nav-link">Work</a>
+                <a href="index.html#services" class="nav-link">Services</a>
+                <a href="pricing.html" class="nav-link active" aria-current="page">Pricing</a>
+                <a href="index.html#process" class="nav-link">Process</a>
+                <a href="index.html#testimonials" class="nav-link">Testimonials</a>
+                <a href="index.html#faq" class="nav-link">FAQ</a>
+                <a href="index.html#contact" class="nav-cta-btn">LET'S TALK</a>
+            </nav>
+
+            <!-- Mobile Hamburger Button -->
+            <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+        </div>
+
+        <!-- Mobile Fullscreen Overlay Menu -->
+        <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+            <nav class="mobile-nav-links" aria-label="Mobile Navigation">
+                <a href="index.html#work" class="mobile-nav-link">Work</a>
+                <a href="index.html#services" class="mobile-nav-link">Services</a>
+                <a href="pricing.html" class="mobile-nav-link active" aria-current="page">Pricing</a>
+                <a href="index.html#process" class="mobile-nav-link">Process</a>
+                <a href="index.html#testimonials" class="mobile-nav-link">Testimonials</a>
+                <a href="index.html#faq" class="mobile-nav-link">FAQ</a>
+                <a href="index.html#contact" class="mobile-nav-cta">LET'S TALK</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="pricing-hero">
+            <div class="editorial-container">
+                <span class="section-tag">INVESTMENT</span>
+                <h1 class="section-title">STARTING FROM. FINAL QUOTE DEPENDS ON SCOPE.</h1>
+                <p class="pricing-hero-subtext">Every business is different. These are baseline numbers — your final quote depends on goals, competition, and timeline.</p>
+            </div>
+        </section>
+
+        <!-- Pricing Content Section -->
+        <section class="editorial-section" style="padding-top: 0; border-top: none;">
+            <div class="editorial-container">
+
+                <!-- Engagement Models -->
+                <div class="pricing-page-group">
+                    <div class="pricing-category-title">ENGAGEMENT MODELS</div>
+
+                    <!-- 1. Retainer -->
+                    <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                    <div class="pricing-page-row">
+                        <div class="pricing-page-row-left">
+                            <h2 class="pricing-page-row-name">RETAINER</h2>
+                            <div class="pricing-page-row-tag">BEST FOR: SALONS · GYMS · CLINICS</div>
+                        </div>
+                        <div class="pricing-page-row-right">
+                            <div class="pricing-page-rate">
+                                <div class="pricing-page-starting">STARTING FROM</div>
+                                <div class="pricing-page-amount">₹15,000 / MONTH</div>
+                            </div>
+                            <p class="pricing-page-desc">Ongoing social media, Meta &amp; Google Ads, monthly strategy calls, and performance reporting.</p>
+                        </div>
+                    </div>
+
+                    <!-- 2. Project -->
+                    <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                    <div class="pricing-page-row">
+                        <div class="pricing-page-row-left">
+                            <h2 class="pricing-page-row-name">PROJECT</h2>
+                            <div class="pricing-page-row-tag">BEST FOR: NEW BUSINESSES &amp; REBRANDS</div>
+                        </div>
+                        <div class="pricing-page-row-right">
+                            <div class="pricing-page-rate">
+                                <div class="pricing-page-starting">STARTING FROM</div>
+                                <div class="pricing-page-amount">₹25,000</div>
+                            </div>
+                            <p class="pricing-page-desc">Website design, brand identity kit, campaign setup — one-time deliverables.</p>
+                        </div>
+                    </div>
+
+                    <!-- 3. Partner -->
+                    <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                    <div class="pricing-page-row">
+                        <div class="pricing-page-row-left">
+                            <h2 class="pricing-page-row-name">PARTNER</h2>
+                            <div class="pricing-page-row-tag">BEST FOR: BUSINESSES READY TO SCALE</div>
+                        </div>
+                        <div class="pricing-page-row-right">
+                            <div class="pricing-page-rate">
+                                <div class="pricing-page-starting">STARTING FROM</div>
+                                <div class="pricing-page-amount">CUSTOM QUOTE</div>
+                            </div>
+                            <p class="pricing-page-desc">Full-funnel strategy, multi-channel execution, dedicated support, quarterly planning.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Individual Services -->
+                <div class="pricing-page-group">
+                    <div class="pricing-category-title">INDIVIDUAL SERVICES</div>
+
+                    <!-- 1. Brand Strategy -->
+                    <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                    <div class="pricing-page-row">
+                        <div class="pricing-page-row-left">
+                            <h2 class="pricing-page-row-name">BRAND STRATEGY</h2>
+                        </div>
+                        <div class="pricing-page-row-right">
+                            <div class="pricing-page-rate">
+                                <div class="pricing-page-starting">STARTING FROM</div>
+                                <div class="pricing-page-amount">₹8,000</div>
+                            </div>
+                            <p class="pricing-page-desc">One-time brand positioning, messaging framework, and competitor audit.</p>
+                        </div>
+                    </div>
+
+                    <!-- 2. Performance Marketing -->
+                    <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                    <div class="pricing-page-row">
+                        <div class="pricing-page-row-left">
+                            <h2 class="pricing-page-row-name">PERFORMANCE MARKETING</h2>
+                        </div>
+                        <div class="pricing-page-row-right">
+                            <div class="pricing-page-rate">
+                                <div class="pricing-page-starting">STARTING FROM</div>
+                                <div class="pricing-page-amount">₹12,000 / MONTH</div>
+                            </div>
+                            <p class="pricing-page-desc">Ad campaign management across Meta &amp; Google with monthly optimization.</p>
+                        </div>
+                    </div>
+
+                    <!-- 3. Web Design -->
+                    <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                    <div class="pricing-page-row">
+                        <div class="pricing-page-row-left">
+                            <h2 class="pricing-page-row-name">WEB DESIGN</h2>
+                        </div>
+                        <div class="pricing-page-row-right">
+                            <div class="pricing-page-rate">
+                                <div class="pricing-page-starting">STARTING FROM</div>
+                                <div class="pricing-page-amount">₹25,000</div>
+                            </div>
+                            <p class="pricing-page-desc">Responsive site design focused on turning visitors into bookings.</p>
+                        </div>
+                    </div>
+
+                    <!-- 4. Content Production -->
+                    <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                    <div class="pricing-page-row">
+                        <div class="pricing-page-row-left">
+                            <h2 class="pricing-page-row-name">CONTENT PRODUCTION</h2>
+                        </div>
+                        <div class="pricing-page-row-right">
+                            <div class="pricing-page-rate">
+                                <div class="pricing-page-starting">STARTING FROM</div>
+                                <div class="pricing-page-amount">₹10,000 / MONTH</div>
+                            </div>
+                            <p class="pricing-page-desc">Reels, photos, and captions that actually look like your business.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom CTA -->
+                <div class="pricing-page-cta">
+                    <a href="index.html#contact" class="hero-cta-btn">
+                        <span>LET'S TALK</span>
+                        <svg class="cta-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M4 8H12M12 8L8 4M12 8L8 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="editorial-container">
+            <div class="footer-wordmark-wrapper">
+                <span class="footer-huge-wordmark">BEYOND HORIZON</span>
+            </div>
+            <div class="footer-nav-row">
+                <nav class="footer-links" aria-label="Footer Navigation">
+                    <a href="index.html#work">Work</a>
+                    <a href="index.html#services">Services</a>
+                    <a href="pricing.html">Pricing</a>
+                    <a href="index.html#process">Process</a>
+                    <a href="index.html#testimonials">Testimonials</a>
+                    <a href="index.html#faq">FAQ</a>
+                    <a href="index.html#contact">Contact</a>
+                </nav>
+                <div class="footer-social-links">
+                    <a href="mailto:contact@beyondhorizon.com" class="footer-social-link">Email</a>
+                    <a href="#" class="footer-social-link" target="_blank" rel="noopener">LinkedIn</a>
+                    <a href="#" class="footer-social-link" target="_blank" rel="noopener">Instagram</a>
+                </div>
+            </div>
+            <div class="footer-bottom-divider"></div>
+            <div class="footer-copyright-row">
+                <p>&copy; 2026 Beyond Horizon. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Hamburger toggle for standalone pricing page
+        const hamburger = document.getElementById('nav-hamburger');
+        const overlay = document.getElementById('mobile-nav-overlay');
+        if (hamburger && overlay) {
+            hamburger.addEventListener('click', () => {
+                const isOpen = overlay.classList.toggle('open');
+                hamburger.classList.toggle('active', isOpen);
+                hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+
+            // Close overlay on link click
+            overlay.querySelectorAll('.mobile-nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    overlay.classList.remove('open');
+                    hamburger.classList.remove('active');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
