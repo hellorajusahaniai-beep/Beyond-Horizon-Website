@@ -1021,6 +1021,13 @@
                 const budgetValue = (this.contactForm.querySelector('[name="budget"]') || {}).value || '';
                 const messageValue = (this.contactForm.querySelector('[name="message"]') || {}).value || '';
 
+                console.log('Name:', nameValue);
+                console.log('Email:', emailValue);
+                console.log('Phone:', phoneValue);
+                console.log('Business:', businessValue);
+                console.log('Budget:', budgetValue);
+                console.log('Message:', messageValue);
+
                 const formData = new FormData();
                 formData.append('name', nameValue);
                 formData.append('email', emailValue);
@@ -1028,6 +1035,10 @@
                 formData.append('business', businessValue);
                 formData.append('budget', budgetValue);
                 formData.append('message', messageValue);
+
+                for (let pair of formData.entries()) {
+                    console.log(pair[0] + ': ' + pair[1]);
+                }
 
                 try {
                     const response = await fetch(GOOGLE_SCRIPT_URL, {
