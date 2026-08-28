@@ -96,6 +96,7 @@
             <!-- Sequence 1 Panel (Pinned Base Layer, z-1) -->
             <div class="stage-panel stage-panel-seq1" id="stage-panel-seq1">
                 <canvas id="stage-canvas-1" class="stage-canvas"></canvas>
+                <div class="stage-gradient-overlay stage-gradient-seq1" id="stage-gradient-overlay"></div>
                 <!-- Sequence 1 Text Block: Left-Aligned Steps -->
                 <div class="hero-text-block seq1-text-block" id="hero-text-block">
                     <!-- Step 1: Beyond Horizon (0.00 - 0.30) -->
@@ -140,6 +141,7 @@
             <!-- Sequence 2 Panel (Sliding Layer, z-2, opaque #000) -->
             <div class="stage-panel stage-panel-seq2" id="stage-panel-seq2">
                 <canvas id="stage-canvas-2" class="stage-canvas"></canvas>
+                <div class="stage-gradient-overlay seq2-mode stage-gradient-seq2" id="stage-gradient-overlay-2"></div>
                 <!-- Sequence 2 Text Container: Split Left-Right Composition (Slides with Panel) -->
                 <div class="seq2-text-container" id="seq2-text-container">
                     <!-- Step 1: WHAT WE DO & Services List -->
@@ -217,10 +219,7 @@
                 </div>
             </div>
 
-            <!-- Single Shared UI Layers (z-10, z-15, z-20, z-25) -->
-            <!-- Dynamic Readability Gradient Overlay (z-10) -->
-            <div class="stage-gradient-overlay" id="stage-gradient-overlay"></div>
-
+            <!-- Single Shared UI Layers (z-15, z-20, z-25) -->
             <!-- Static Fine Film Grain Overlay (z-15) -->
             <div class="film-grain-overlay" aria-hidden="true"></div>
 

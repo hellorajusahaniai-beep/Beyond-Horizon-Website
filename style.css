@@ -425,11 +425,11 @@ body {
     opacity: 1 !important;
 }
 
-/* Dynamic Readability Gradient Overlay (z-10, Left-to-Right by default) */
+/* Dynamic Readability Gradient Overlay (z-5, placed between canvas and text inside panels) */
 .stage-gradient-overlay {
     position: absolute;
     inset: 0;
-    z-index: 10;
+    z-index: 5;
     pointer-events: none;
     background: linear-gradient(to right,
             rgba(0, 0, 0, var(--hero-overlay-opacity)) 0%,
@@ -440,7 +440,8 @@ body {
 }
 
 /* Dynamic Symmetric Dual-Side Gradient Overlay when in Sequence 2 mode */
-.stage-gradient-overlay.seq2-mode {
+.stage-gradient-overlay.seq2-mode,
+.stage-gradient-seq2 {
     background: linear-gradient(to right,
             rgba(0, 0, 0, var(--hero-overlay-opacity)) 0%,
             rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.75)) 22%,
@@ -2202,29 +2203,41 @@ a.info-value:hover {
     /* ==========================================================================
        Stage Mobile Rebuild: Safe-Area Anchoring & Unified Stack
        ========================================================================== */
-    /* Bottom-anchored gradient for Sequence 2 on mobile: rich contrast for bottom text */
+    /* Sequence 1 gradient: top-to-bottom for mobile portrait text at top */
+    .stage-gradient-seq1,
+    .hero-gradient-overlay {
+        background: linear-gradient(to bottom,
+                rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 1.42)) 0%,
+                rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.8)) 25%,
+                transparent 55%,
+                transparent 85%,
+                rgba(0, 0, 0, calc(var(--hero-overlay-opacity) * 0.7)) 100%);
+    }
+
+    /* Bottom-anchored gradient for Sequence 2 on mobile: rich dark backdrop behind bottom text */
+    .stage-gradient-seq2,
     .stage-gradient-overlay.seq2-mode {
         background: linear-gradient(
             to top,
-            rgba(0, 0, 0, 0.92) 0%,
-            rgba(0, 0, 0, 0.82) 35%,
-            rgba(0, 0, 0, 0.38) 58%,
+            rgba(0, 0, 0, 0.96) 0%,
+            rgba(0, 0, 0, 0.88) 35%,
+            rgba(0, 0, 0, 0.45) 58%,
             transparent 78%,
-            rgba(0, 0, 0, 0.40) 100%
+            rgba(0, 0, 0, 0.35) 100%
         );
         transition: background 400ms ease;
     }
 
     /* Bottom-anchored readability gradient for Stats step on mobile: restricted to bottom text */
-    .stage-scroll-wrapper.step-stats-active .stage-gradient-overlay,
-    .stage-sticky-panel:has(.seq2-step-stats.active) .stage-gradient-overlay {
+    .stage-scroll-wrapper.step-stats-active .stage-gradient-seq2,
+    .stage-sticky-panel:has(.seq2-step-stats.active) .stage-gradient-seq2 {
         background: linear-gradient(
             to top,
-            rgba(0, 0, 0, 0.94) 0%,
-            rgba(0, 0, 0, 0.84) 38%,
-            rgba(0, 0, 0, 0.40) 60%,
+            rgba(0, 0, 0, 0.98) 0%,
+            rgba(0, 0, 0, 0.90) 38%,
+            rgba(0, 0, 0, 0.50) 60%,
             transparent 80%,
-            rgba(0, 0, 0, 0.40) 100%
+            rgba(0, 0, 0, 0.35) 100%
         );
     }
 
@@ -2308,6 +2321,7 @@ a.info-value:hover {
         margin: 0;
         text-align: left !important;
         display: block;
+        color: #ffffff !important;
         text-shadow: 0 4px 24px rgba(0, 0, 0, 0.95), 0 2px 8px rgba(0, 0, 0, 0.85);
     }
 
@@ -2354,8 +2368,8 @@ a.info-value:hover {
         font-weight: 800;
         letter-spacing: 0.05em;
         line-height: 1.15;
-        color: #ffffff;
-        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+        color: #ffffff !important;
+        text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95), 0 0 4px rgba(0, 0, 0, 0.8);
         display: flex;
         align-items: center;
         gap: 8px;
@@ -2391,7 +2405,7 @@ a.info-value:hover {
         font-size: clamp(1.85rem, 7.8vw, 2.4rem);
         line-height: 1.0;
         letter-spacing: 0.02em;
-        color: #ffffff;
+        color: #ffffff !important;
         text-shadow: 0 3px 16px rgba(0, 0, 0, 0.95);
         margin: 0;
         padding: 0;
@@ -2401,11 +2415,13 @@ a.info-value:hover {
     .seq2-step-stats .seq2-stat-label {
         font-family: var(--font-body);
         font-size: clamp(0.52rem, 2.1vw, 0.65rem);
+        font-weight: 600;
         letter-spacing: 0.12em;
         line-height: 1.35;
-        color: #d1d5db;
+        color: #ffffff !important;
+        opacity: 0.9;
         text-transform: uppercase;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95);
         margin: 0;
         padding: 0;
         text-align: left;
@@ -2429,8 +2445,8 @@ a.info-value:hover {
         font-weight: 800;
         letter-spacing: 0.05em;
         line-height: 1.2;
-        color: #ffffff;
-        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+        color: #ffffff !important;
+        text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95), 0 0 4px rgba(0, 0, 0, 0.8);
         white-space: nowrap;
     }
 
@@ -2444,10 +2460,14 @@ a.info-value:hover {
         font-size: clamp(0.64rem, 2.6vw, 0.78rem);
         letter-spacing: 0.20em;
         line-height: 1.4;
-        color: #e5e7eb;
+        color: #ffffff !important;
+        opacity: 0.9;
+        font-weight: 500;
         text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95), 0 0 4px rgba(0, 0, 0, 0.8);
         margin: 0;
         margin-top: 4px;
+        text-align: left !important;
+    }
         text-align: left !important;
     }
 
