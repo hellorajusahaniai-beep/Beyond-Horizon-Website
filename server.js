@@ -56,7 +56,7 @@ const server = http.createServer((req, res) => {
     });
 });
 
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, () => {
     const os = require('os');
     const nets = os.networkInterfaces();
     console.log(`\n  Local:   http://localhost:${PORT}`);
