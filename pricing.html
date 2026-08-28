@@ -39,6 +39,7 @@
         rel="stylesheet">
 
     <link rel="stylesheet" href="style.min.css">
+    <script src="script.min.js" defer></script>
 
     <style>
         .pricing-header-block { padding-top: calc(var(--nav-height) + 80px); padding-bottom: 50px; text-align: left; }
@@ -394,27 +395,6 @@
         </svg>
     </a>
 
-    <script>
-        // Hamburger toggle for standalone pricing page
-        const hamburger = document.getElementById('nav-hamburger');
-        const overlay = document.getElementById('mobile-nav-overlay');
-        if (hamburger && overlay) {
-            hamburger.addEventListener('click', () => {
-                const isOpen = overlay.classList.toggle('open');
-                hamburger.classList.toggle('active', isOpen);
-                hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-            });
-
-            // Close overlay on link click
-            overlay.querySelectorAll('.mobile-nav-link').forEach(link => {
-                link.addEventListener('click', () => {
-                    overlay.classList.remove('open');
-                    hamburger.classList.remove('active');
-                    hamburger.setAttribute('aria-expanded', 'false');
-                });
-            });
-        }
-    </script>
 </body>
 
 </html>

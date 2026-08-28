@@ -410,6 +410,7 @@
         }
 
         renderTick(customScrollY) {
+            if (!this.wrapper || !this.ctx1) return;
             const scrollY = typeof customScrollY === 'number' ? customScrollY : (window._targetScrollY || window.scrollY || window.pageYOffset || 0);
 
             // Performance Optimization: If stage is scrolled past viewport, skip canvas rendering
