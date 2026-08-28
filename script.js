@@ -997,17 +997,67 @@
 
         initContactForm() {
             if (!this.contactForm) return;
-            this.contactForm.addEventListener('submit', (e) => {
+            const submitBtn = this.contactForm.querySelector('.editorial-submit-btn');
+            const statusMsg = document.getElementById('form-status-msg');
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRXuGnMcYbm1Lx0QvMScJcfK3Ol_PeTWeDa7-2AZUc5UVKsxRxyH8OFaB5cSauQgxL/exec';
+
+            this.contactForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const submitBtn = this.contactForm.querySelector('.editorial-submit-btn');
+
+                const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '<span>SEND MESSAGE</span>';
                 if (submitBtn) {
-                    const originalText = submitBtn.innerHTML;
-                    submitBtn.innerHTML = `MESSAGE SENT ✓`;
-                    submitBtn.style.color = '#ffffff';
-                    setTimeout(() => {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span>SENDING...</span>';
+                }
+                if (statusMsg) {
+                    statusMsg.className = 'form-status-msg';
+                    statusMsg.textContent = '';
+                }
+
+                const nameValue = (this.contactForm.querySelector('[name="name"]') || {}).value || '';
+                const emailValue = (this.contactForm.querySelector('[name="email"]') || {}).value || '';
+                const businessValue = (this.contactForm.querySelector('[name="business"]') || {}).value || '';
+                const budgetValue = (this.contactForm.querySelector('[name="budget"]') || {}).value || '';
+                const messageValue = (this.contactForm.querySelector('[name="message"]') || {}).value || '';
+
+                const formData = new FormData();
+                formData.append('name', nameValue);
+                formData.append('email', emailValue);
+                formData.append('business', businessValue);
+                formData.append('budget', budgetValue);
+                formData.append('message', messageValue);
+
+                try {
+                    const response = await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result && result.status === 'success') {
+                        if (statusMsg) {
+                            statusMsg.className = 'form-status-msg is-success';
+                            statusMsg.textContent = "Thank you! Your message has been sent. We'll be in touch within 24 hours.";
+                        }
                         this.contactForm.reset();
-                        submitBtn.innerHTML = originalText;
-                    }, 4000);
+                    } else {
+                        if (statusMsg) {
+                            statusMsg.className = 'form-status-msg is-error';
+                            statusMsg.textContent = "Something went wrong. Please email us directly at contact@beyondhorizon.com";
+                        }
+                    }
+                } catch (err) {
+                    console.error('[CONTACT_FORM] Submission error:', err);
+                    if (statusMsg) {
+                        statusMsg.className = 'form-status-msg is-error';
+                        statusMsg.textContent = "Something went wrong. Please email us directly at contact@beyondhorizon.com";
+                    }
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnHtml;
+                    }
                 }
             });
         }
