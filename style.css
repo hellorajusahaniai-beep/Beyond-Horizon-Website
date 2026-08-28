@@ -22,6 +22,13 @@
 /* Enable smooth scrolling across the entire page for internal anchor links */
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: var(--nav-height);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
 }
 
 /* Ensure html & body NEVER establish a clipping scroll container that breaks position: sticky */
