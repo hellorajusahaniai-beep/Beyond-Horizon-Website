@@ -1244,7 +1244,6 @@
         const revealGroups = document.querySelectorAll('.reveal-group');
         const workRows = document.querySelectorAll('.work-editorial-row.reveal');
         const serviceRows = document.querySelectorAll('.service-editorial-row.reveal');
-        const pricingRows = document.querySelectorAll('.pricing-row.reveal');
         const processSteps = document.querySelectorAll('.process-step-item.reveal');
         const testimonials = document.querySelectorAll('.testimonial-item.reveal');
         const faqItems = document.querySelectorAll('.faq-item.reveal');
@@ -1257,7 +1256,6 @@
         console.log(`Total .reveal-group containers: ${revealGroups.length}`);
         console.log(`- Selected Work rows:     ${workRows.length}`);
         console.log(`- Services rows (01-04):  ${serviceRows.length}`);
-        console.log(`- Pricing rows (01-07):   ${pricingRows.length}`);
         console.log(`- Process steps (01-03):  ${processSteps.length}`);
         console.log(`- Testimonials:           ${testimonials.length}`);
         console.log(`- FAQ accordion rows:     ${faqItems.length}`);
@@ -1268,7 +1266,6 @@
             revealGroups: revealGroups.length,
             workRows: workRows.length,
             serviceRows: serviceRows.length,
-            pricingRows: pricingRows.length,
             processSteps: processSteps.length,
             testimonials: testimonials.length,
             faqItems: faqItems.length,
