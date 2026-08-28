@@ -999,7 +999,7 @@
             if (!this.contactForm) return;
             const submitBtn = this.contactForm.querySelector('.editorial-submit-btn');
             const statusMsg = document.getElementById('form-status-msg');
-            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRXuGnMcYbm1Lx0QvMScJcfK3Ol_PeTWeDa7-2AZUc5UVKsxRxyH8OFaB5cSauQgxL/exec';
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwaEn5yDnBHqfaEJ7td1puGItYzbaCGkQvG0mz8v1PIU1St_SD8f1aShPfBA9d9S973/exec';
 
             this.contactForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
