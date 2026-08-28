@@ -246,7 +246,7 @@
             this.seq2Config = {
                 landscapeFrames: 148,
                 portraitFrames: 95,
-                startFrame: 2,
+                startFrame: 1,
                 landscapeBase: 'images-2',
                 portraitBase: 'images-2-portrait',
                 filePrefix: 'frame_',
@@ -385,6 +385,8 @@
 
                 if (this.decodedCount >= targetInitial && !this.isLoaderDismissed) {
                     this.isLoaderDismissed = true;
+                    this.lastDrawnSeq1Idx = -1;
+                    this.lastDrawnSeq2Idx = -1;
                     if (this.loader) this.loader.classList.add('hidden');
                     this.renderTick();
                 }
@@ -577,25 +579,24 @@
 
                 // Draw frame if frame changed or coming from another zone
                 if (targetIdx !== this.lastDrawnSeq1Idx || this.lastRenderedZone !== 1) {
-                    this.lastDrawnSeq1Idx = targetIdx;
-                    this.lastRenderedZone = 1;
-
                     const img = this.getFallbackFrame(this.seq1Frames, targetIdx, this.seq1Total, 1);
-                    if (this.ctx1) {
+                    if (img && this.ctx1) {
+                        this.lastDrawnSeq1Idx = targetIdx;
+                        this.lastRenderedZone = 1;
                         this.ctx1.clearRect(0, 0, w, h);
                         this.ctx1.globalAlpha = 1.0;
-                        if (img) this.drawCoverWithRect(this.ctx1, img, this.seq1DrawRect);
+                        this.drawCoverWithRect(this.ctx1, img, this.seq1DrawRect);
                     }
                 }
 
                 // Pre-draw Frame 0 on Canvas 2 so it is immediately ready when sliding up
                 if (this.lastDrawnSeq2Idx !== 0 && this.seq2LoadedCount > 0) {
                     const img2 = this.getFallbackFrame(this.seq2Frames, 0, this.seq2Total, 2);
-                    if (this.ctx2 && img2) {
+                    if (img2 && this.ctx2) {
+                        this.lastDrawnSeq2Idx = 0;
                         this.ctx2.clearRect(0, 0, w, h);
                         this.ctx2.globalAlpha = 1.0;
                         this.drawCoverWithRect(this.ctx2, img2, this.seq2DrawRect);
-                        this.lastDrawnSeq2Idx = 0;
                     }
                 }
 
@@ -654,23 +655,23 @@
 
                 // Ensure final frame drawn on Canvas 1
                 if (this.lastDrawnSeq1Idx !== this.seq1Total - 1) {
-                    this.lastDrawnSeq1Idx = this.seq1Total - 1;
                     const img1 = this.getFallbackFrame(this.seq1Frames, this.seq1Total - 1, this.seq1Total, 1);
-                    if (this.ctx1) {
+                    if (img1 && this.ctx1) {
+                        this.lastDrawnSeq1Idx = this.seq1Total - 1;
                         this.ctx1.clearRect(0, 0, w, h);
                         this.ctx1.globalAlpha = 1.0;
-                        if (img1) this.drawCoverWithRect(this.ctx1, img1, this.seq1DrawRect);
+                        this.drawCoverWithRect(this.ctx1, img1, this.seq1DrawRect);
                     }
                 }
 
                 // Ensure frame 0 drawn on Canvas 2
                 if (this.lastDrawnSeq2Idx !== 0) {
-                    this.lastDrawnSeq2Idx = 0;
                     const img2 = this.getFallbackFrame(this.seq2Frames, 0, this.seq2Total, 2);
-                    if (this.ctx2) {
+                    if (img2 && this.ctx2) {
+                        this.lastDrawnSeq2Idx = 0;
                         this.ctx2.clearRect(0, 0, w, h);
                         this.ctx2.globalAlpha = 1.0;
-                        if (img2) this.drawCoverWithRect(this.ctx2, img2, this.seq2DrawRect);
+                        this.drawCoverWithRect(this.ctx2, img2, this.seq2DrawRect);
                     }
                 }
 
@@ -727,14 +728,13 @@
 
                 // Draw frame if frame changed or coming from another zone
                 if (targetIdx !== this.lastDrawnSeq2Idx || this.lastRenderedZone !== 3) {
-                    this.lastDrawnSeq2Idx = targetIdx;
-                    this.lastRenderedZone = 3;
-
                     const img = this.getFallbackFrame(this.seq2Frames, targetIdx, this.seq2Total, 2);
-                    if (this.ctx2) {
+                    if (img && this.ctx2) {
+                        this.lastDrawnSeq2Idx = targetIdx;
+                        this.lastRenderedZone = 3;
                         this.ctx2.clearRect(0, 0, w, h);
                         this.ctx2.globalAlpha = 1.0;
-                        if (img) this.drawCoverWithRect(this.ctx2, img, this.seq2DrawRect);
+                        this.drawCoverWithRect(this.ctx2, img, this.seq2DrawRect);
                     }
                 }
 
