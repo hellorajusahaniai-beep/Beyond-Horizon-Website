@@ -565,7 +565,7 @@
                 // ZONE 1: SEQUENCE 1 SCRUB (0 -> 2.40vh)
                 // ==========================================
                 const p1 = Math.min(1.0, Math.max(0, scrollY / this.zone1End));
-                const targetIdx = Math.min(this.seq1Total - 1, Math.max(0, Math.round(p1 * (this.seq1Total - 1))));
+                const targetIdx = prefersReducedMotion ? 0 : Math.min(this.seq1Total - 1, Math.max(0, Math.round(p1 * (this.seq1Total - 1))));
                 window._targetFrame = targetIdx;
                 window._targetFrameSeq1 = targetIdx;
 
@@ -714,7 +714,7 @@
                 // ZONE 3: SEQUENCE 2 SCRUB & PIN (3.10vh -> 6.70vh)
                 // ==========================================
                 const p2 = Math.min(1.0, Math.max(0.0, (scrollY - this.zone3Start) / this.zone3Duration));
-                const targetIdx = Math.min(this.seq2Total - 1, Math.max(1, 1 + Math.round(p2 * (this.seq2Total - 2))));
+                const targetIdx = prefersReducedMotion ? 1 : Math.min(this.seq2Total - 1, Math.max(1, 1 + Math.round(p2 * (this.seq2Total - 2))));
                 window._targetFrame = targetIdx;
                 window._targetFrameSeq2 = targetIdx;
 
