@@ -589,11 +589,11 @@
                     }
                 }
 
-                // Pre-draw Frame 0 on Canvas 2 so it is immediately ready when sliding up
-                if (this.lastDrawnSeq2Idx !== 0 && this.seq2LoadedCount > 0) {
-                    const img2 = this.getFallbackFrame(this.seq2Frames, 0, this.seq2Total, 2);
+                // Pre-draw Frame 1 on Canvas 2 so it is immediately ready when sliding up
+                if (this.lastDrawnSeq2Idx !== 1 && this.seq2LoadedCount > 0) {
+                    const img2 = this.getFallbackFrame(this.seq2Frames, 1, this.seq2Total, 2);
                     if (img2 && this.ctx2) {
-                        this.lastDrawnSeq2Idx = 0;
+                        this.lastDrawnSeq2Idx = 1;
                         this.ctx2.clearRect(0, 0, w, h);
                         this.ctx2.globalAlpha = 1.0;
                         this.drawCoverWithRect(this.ctx2, img2, this.seq2DrawRect);
@@ -664,11 +664,11 @@
                     }
                 }
 
-                // Ensure frame 0 drawn on Canvas 2
-                if (this.lastDrawnSeq2Idx !== 0) {
-                    const img2 = this.getFallbackFrame(this.seq2Frames, 0, this.seq2Total, 2);
+                // Ensure frame 1 drawn on Canvas 2
+                if (this.lastDrawnSeq2Idx !== 1) {
+                    const img2 = this.getFallbackFrame(this.seq2Frames, 1, this.seq2Total, 2);
                     if (img2 && this.ctx2) {
-                        this.lastDrawnSeq2Idx = 0;
+                        this.lastDrawnSeq2Idx = 1;
                         this.ctx2.clearRect(0, 0, w, h);
                         this.ctx2.globalAlpha = 1.0;
                         this.drawCoverWithRect(this.ctx2, img2, this.seq2DrawRect);
@@ -714,7 +714,7 @@
                 // ZONE 3: SEQUENCE 2 SCRUB & PIN (3.10vh -> 6.70vh)
                 // ==========================================
                 const p2 = Math.min(1.0, Math.max(0.0, (scrollY - this.zone3Start) / this.zone3Duration));
-                const targetIdx = Math.min(this.seq2Total - 1, Math.max(0, Math.round(p2 * (this.seq2Total - 1))));
+                const targetIdx = Math.min(this.seq2Total - 1, Math.max(1, 1 + Math.round(p2 * (this.seq2Total - 2))));
                 window._targetFrame = targetIdx;
                 window._targetFrameSeq2 = targetIdx;
 
