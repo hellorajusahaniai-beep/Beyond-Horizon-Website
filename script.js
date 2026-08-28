@@ -1000,9 +1000,12 @@
             const submitBtn = this.contactForm.querySelector('.editorial-submit-btn');
             const statusMsg = document.getElementById('form-status-msg');
             const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwaEn5yDnBHqfaEJ7td1puGItYzbaCGkQvG0mz8v1PIU1St_SD8f1aShPfBA9d9S973/exec';
+            let isSubmitting = false;
 
             this.contactForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                if (isSubmitting) return;
+                isSubmitting = true;
 
                 const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '<span>SEND MESSAGE</span>';
                 if (submitBtn) {
@@ -1067,6 +1070,7 @@
                         statusMsg.textContent = "Something went wrong. Please email us directly at contact@beyondhorizon.com";
                     }
                 } finally {
+                    isSubmitting = false;
                     if (submitBtn) {
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = originalBtnHtml;
