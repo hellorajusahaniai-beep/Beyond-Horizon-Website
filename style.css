@@ -1158,7 +1158,7 @@ body {
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: #ffffff;
-    opacity: 0.40;
+    opacity: 0.65;
     transition: opacity 250ms ease, color 250ms ease;
     cursor: default;
 }

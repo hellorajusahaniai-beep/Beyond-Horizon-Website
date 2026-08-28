@@ -39,7 +39,11 @@
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Oswald:wght@700&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css">
+    <!-- Preload Critical Hero Image Frame (Frame 1) -->
+    <link rel="preload" as="image" href="images-portrait-webp/frame_0001.webp" type="image/webp" media="(max-width: 767px)">
+    <link rel="preload" as="image" href="images-webp/frame_0001.webp" type="image/webp" media="(min-width: 768px)">
+
+    <link rel="stylesheet" href="style.min.css">
 </head>
 
 <body>
@@ -752,7 +756,7 @@
         </svg>
     </a>
 
-    <script src="script.js"></script>
+    <script src="script.min.js" defer></script>
 </body>
 
 </html>
