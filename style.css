@@ -307,13 +307,11 @@ body {
     transform: translateY(-4px) rotate(-45deg);
 }
 
-/* Mobile Fullscreen Overlay */
+/* Mobile Fullscreen Overlay (fully opaque: must never bleed page content through) */
 .mobile-nav-overlay {
     position: fixed;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.96);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    background-color: #000000;
     z-index: 55;
     display: flex;
     align-items: center;
@@ -1472,6 +1470,245 @@ body {
 }
 
 /* ==========================================================================
+   Selected Work: Premium Case Study Cards (Responsive Grid)
+   ========================================================================== */
+.work-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.work-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background-color: rgba(255, 255, 255, 0.015);
+    overflow: hidden;
+    transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 350ms ease,
+        box-shadow 450ms ease,
+        background-color 350ms ease;
+}
+
+.work-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(255, 255, 255, 0.35);
+    background-color: rgba(255, 255, 255, 0.025);
+    box-shadow: 0 28px 60px rgba(0, 0, 0, 0.55);
+}
+
+.work-card-visual {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background-color: #0a0a0a;
+}
+
+.work-card-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+}
+
+.work-card:hover .work-card-visual img {
+    transform: scale(1.06);
+}
+
+/* Bottom gradient for depth under the tag chip */
+.work-card-visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, transparent 38%);
+    pointer-events: none;
+}
+
+.work-card-tag {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 2;
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.65);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    padding: 7px 12px;
+}
+
+.work-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 28px 26px 30px;
+    flex: 1;
+}
+
+.work-card-title {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 1.8vw, 25px);
+    font-weight: 900;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0;
+}
+
+.work-card-desc {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.65;
+    color: #aaaaaa;
+    margin: 0;
+    transition: color 300ms ease;
+}
+
+.work-card:hover .work-card-desc {
+    color: #d1d5db;
+}
+
+.work-card-stat {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.work-card .work-stat-number {
+    font-size: clamp(34px, 3vw, 46px);
+}
+
+.work-card .work-stat-label {
+    font-size: 10px;
+}
+
+.work-card .editorial-text-link {
+    margin-top: 6px;
+}
+
+/* Tablet & below: cards stack full-width */
+@media (max-width: 1024px) {
+    .work-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .work-card-body {
+        padding: 24px 20px 26px;
+    }
+}
+
+/* ==========================================================================
+   Growth Package Bundle Cards (Shared: index + pricing pages)
+   ========================================================================== */
+.pricing-bundles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    align-items: stretch;
+}
+
+.pricing-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background-color: rgba(255, 255, 255, 0.015);
+    padding: 38px 30px 34px;
+    transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 350ms ease,
+        background-color 350ms ease,
+        box-shadow 400ms ease;
+}
+
+.pricing-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(255, 255, 255, 0.45);
+    background-color: rgba(255, 255, 255, 0.03);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+.pricing-card .pricing-price-text {
+    margin-top: auto;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.pricing-card-head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.pricing-card .pricing-popular-inline {
+    margin-left: 0;
+}
+
+/* Featured (GROWTH) card: inverted white — pops out from the row */
+.pricing-card.is-featured {
+    background-color: #ffffff;
+    border-color: #ffffff;
+    box-shadow: 0 0 0 1px #ffffff, 0 16px 50px rgba(255, 255, 255, 0.10);
+}
+
+.pricing-card.is-featured .pricing-bundle-name,
+.pricing-card.is-featured .pricing-price-text {
+    color: #000000;
+}
+
+.pricing-card.is-featured .pricing-bundle-includes {
+    color: #3f3f46;
+}
+
+.pricing-card.is-featured .pricing-bundle-tag {
+    color: #71717a;
+}
+
+.pricing-card.is-featured .pricing-price-text {
+    border-top-color: rgba(0, 0, 0, 0.15);
+}
+
+.pricing-card.is-featured .pricing-popular-inline {
+    color: #000000;
+}
+
+.pricing-card.is-featured .pricing-popular-inline::before {
+    background-color: #000000;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+}
+
+.pricing-card.is-featured:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0 0 1px #ffffff, 0 28px 70px rgba(255, 255, 255, 0.22);
+}
+
+/* Bundle cards on mobile */
+@media (max-width: 767px) {
+    .pricing-bundles-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .pricing-card {
+        padding: 28px 22px 26px;
+    }
+}
+
+/* ==========================================================================
    Services Section (What We Do - 1px Top Floor Separator)
    ========================================================================== */
 .services-section {
@@ -1940,6 +2177,18 @@ body {
 
 .editorial-submit-btn:hover .submit-arrow {
     transform: translateX(6px);
+}
+
+/* Honeypot Field: Hidden from humans, visible to bots (spam protection) */
+.hp-field {
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .form-status-msg {

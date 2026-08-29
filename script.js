@@ -66,7 +66,7 @@
 
             this.seq2Config = {
                 landscapeFrames: 148,
-                portraitFrames: 95,
+                portraitFrames: 96,
                 startFrame: 1,
                 landscapeBase: 'images-2',
                 portraitBase: 'images-2-portrait',
@@ -718,7 +718,7 @@
      */
     class EditorialBreatheController {
         constructor() {
-            this.workRows = document.querySelectorAll('.work-editorial-row');
+            this.workRows = document.querySelectorAll('.work-editorial-row, .work-card');
             this.faqButtons = document.querySelectorAll('.faq-question-btn');
             this.contactForm = document.getElementById('contact-form');
             this.anchorLinks = document.querySelectorAll('a[href^="#"]');
@@ -785,7 +785,7 @@
             if (prefersReducedMotion || !('IntersectionObserver' in window)) {
                 revealElements.forEach(el => {
                     el.classList.add('is-visible', 'in-view');
-                    if (el.classList.contains('work-editorial-row')) el.classList.add('is-active');
+                    if (el.classList.contains('work-editorial-row') || el.classList.contains('work-card')) el.classList.add('is-active');
                 });
                 return;
             }
@@ -796,8 +796,8 @@
                         const el = entry.target;
                         el.classList.add('is-visible', 'in-view');
 
-                        // If it's a case study row, trigger stat count-up
-                        if (el.classList.contains('work-editorial-row')) {
+                        // If it's a case study row/card, trigger stat count-up
+                        if (el.classList.contains('work-editorial-row') || el.classList.contains('work-card')) {
                             el.classList.add('is-active');
                             const rowIdx = parseInt(el.dataset.row, 10) - 1;
                             this.triggerStatAnimation(rowIdx);
@@ -897,13 +897,17 @@
                 const businessValue = (this.contactForm.querySelector('[name="business"]') || {}).value || '';
                 const budgetValue = (this.contactForm.querySelector('[name="budget"]') || {}).value || '';
                 const messageValue = (this.contactForm.querySelector('[name="message"]') || {}).value || '';
+                const websiteValue = (this.contactForm.querySelector('[name="website"]') || {}).value || '';
 
-                console.log('Name:', nameValue);
-                console.log('Email:', emailValue);
-                console.log('Phone:', phoneValue);
-                console.log('Business:', businessValue);
-                console.log('Budget:', budgetValue);
-                console.log('Message:', messageValue);
+                // Honeypot check: bots fill the hidden "website" field. Silently pretend success.
+                if (websiteValue) {
+                    if (statusMsg) {
+                        statusMsg.className = 'form-status-msg is-success';
+                        statusMsg.textContent = "Thank you! Your message has been sent. We'll be in touch within 24 hours.";
+                    }
+                    this.contactForm.reset();
+                    return;
+                }
 
                 const formData = new FormData();
                 formData.append('name', nameValue);
@@ -912,10 +916,6 @@
                 formData.append('business', businessValue);
                 formData.append('budget', budgetValue);
                 formData.append('message', messageValue);
-
-                for (let pair of formData.entries()) {
-                    console.log(pair[0] + ': ' + pair[1]);
-                }
 
                 try {
                     const response = await fetch(GOOGLE_SCRIPT_URL, {
@@ -985,6 +985,13 @@
     }
 
     if (navHamburger && mobileNavOverlay) {
+        const closeMobileNav = () => {
+            navHamburger.classList.remove('active');
+            mobileNavOverlay.classList.remove('open');
+            navHamburger.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        };
+
         navHamburger.addEventListener('click', () => {
             const isOpen = navHamburger.classList.toggle('active');
             mobileNavOverlay.classList.toggle('open', isOpen);
@@ -994,11 +1001,23 @@
 
         mobileNavLinks.forEach(link => {
             link.addEventListener('click', () => {
-                navHamburger.classList.remove('active');
-                mobileNavOverlay.classList.remove('open');
-                navHamburger.setAttribute('aria-expanded', 'false');
-                document.body.style.overflow = '';
+                closeMobileNav();
             });
+        });
+
+        // Close when tapping the dark overlay background (outside the links)
+        mobileNavOverlay.addEventListener('click', (e) => {
+            if (e.target === mobileNavOverlay) {
+                closeMobileNav();
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && mobileNavOverlay.classList.contains('open')) {
+                closeMobileNav();
+                navHamburger.focus();
+            }
         });
     }
 

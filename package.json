@@ -1,0 +1,15 @@
+{
+  "name": "beyond-horizon-website",
+  "version": "1.0.0",
+  "description": "Beyond Horizon Marketing Agency - official website and digital portfolio",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "build:css": "esbuild style.css --minify --outfile=style.min.css",
+    "build:js": "esbuild script.js --minify --outfile=script.min.js",
+    "build": "npm run build:css && npm run build:js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}

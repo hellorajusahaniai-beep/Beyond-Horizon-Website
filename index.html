@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+**/<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -11,10 +11,39 @@
         content="digital marketing agency, creative agency, brand strategy, performance marketing, web design, content production, local business growth, India">
     <meta name="author" content="Beyond Horizon">
     <meta name="robots" content="index, follow">
+    <!-- PLACEHOLDER: replace with real domain before launch -->
+    <link rel="canonical" href="https://beyondhorizon.com/">
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ProfessionalService",
+        "name": "Beyond Horizon",
+        "description": "Digital marketing and creative agency helping local Indian businesses grow with brand strategy, performance marketing, web design, and content production.",
+        "url": "https://beyondhorizon.com/",
+        "logo": "https://beyondhorizon.com/favicon.svg",
+        "image": "https://beyondhorizon.com/og-image.jpg",
+        "email": "growwithbeyondhorizon@gmail.com",
+        "telephone": "+91-81691-76182",
+        "areaServed": ["IN", "AE"],
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Mumbai",
+            "addressCountry": "IN"
+        },
+        "sameAs": [
+            "https://www.linkedin.com/in/rajusahani-ai",
+            "https://www.instagram.com/rajusahani.ai/"
+        ]
+    }
+    </script>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=2">
+    <link rel="shortcut icon" href="favicon.ico?v=2">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 
     <!-- Open Graph (og:) Meta Tags -->
     <meta property="og:title" content="Beyond Horizon | Digital Marketing &amp; Creative Agency">
@@ -43,8 +72,8 @@
     <link rel="preload" as="image" href="images-portrait-webp/frame_0001.webp" type="image/webp" media="(max-width: 767px)">
     <link rel="preload" as="image" href="images-webp/frame_0001.webp" type="image/webp" media="(min-width: 768px)">
 
-    <link rel="stylesheet" href="style.min.css">
-    <script src="script.min.js" defer></script>
+    <link rel="stylesheet" href="style.min.css?v=5">
+    <script src="script.min.js?v=4" defer></script>
 </head>
 
 <body>
@@ -79,20 +108,20 @@
                 <span class="hamburger-bar"></span>
             </button>
         </div>
-
-        <!-- Mobile Fullscreen Overlay Menu -->
-        <div class="mobile-nav-overlay" id="mobile-nav-overlay">
-            <nav class="mobile-nav-links" aria-label="Mobile Navigation">
-                <a href="#work" class="mobile-nav-link">Work</a>
-                <a href="#services" class="mobile-nav-link">Services</a>
-                <a href="pricing.html" class="mobile-nav-link">Pricing</a>
-                <a href="#process" class="mobile-nav-link">Process</a>
-                <a href="#testimonials" class="mobile-nav-link">Testimonials</a>
-                <a href="#faq" class="mobile-nav-link">FAQ</a>
-                <a href="#contact" class="mobile-nav-cta">LET'S TALK</a>
-            </nav>
-        </div>
     </header>
+
+    <!-- Mobile Fullscreen Overlay Menu (outside header so header's backdrop-filter never becomes its containing block) -->
+    <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+        <nav class="mobile-nav-links" aria-label="Mobile Navigation">
+            <a href="#work" class="mobile-nav-link">Work</a>
+            <a href="#services" class="mobile-nav-link">Services</a>
+            <a href="pricing.html" class="mobile-nav-link">Pricing</a>
+            <a href="#process" class="mobile-nav-link">Process</a>
+            <a href="#testimonials" class="mobile-nav-link">Testimonials</a>
+            <a href="#faq" class="mobile-nav-link">FAQ</a>
+            <a href="#contact" class="mobile-nav-cta">LET'S TALK</a>
+        </nav>
+    </div>
 
     <!-- Single Viewport Pinned Scroll Stage (Sequence 1 & Sequence 2 with Slide Handoff) -->
     <div class="stage-scroll-wrapper" id="stage-scroll-wrapper">
@@ -315,21 +344,21 @@
                     <h2 class="section-title">REAL STORIES. MEASURABLE GROWTH.</h2>
                 </div>
 
-                <div class="work-editorial-list">
-                    <!-- Case Study 1: Siddhi Dental Clinic (Image Left 50% / Content Right 50%) -->
-                    <article class="work-editorial-row reveal" data-row="1">
-                        <div class="work-row-visual">
-                            <img src="assets/case-study-siddhi.webp" class="work-editorial-img"
+                <div class="work-cards-grid reveal-group">
+                    <!-- Case Study Card 1: Siddhi Dental Clinic -->
+                    <article class="work-card reveal" data-row="1">
+                        <div class="work-card-visual">
+                            <img src="assets/case-study-siddhi.webp"
                                 alt="Siddhi Dental Care Case Study - Hyper-Local Dental Patient Acquisition"
-                                loading="eager" decoding="async">
+                                loading="lazy" decoding="async">
+                            <span class="work-card-tag">DENTAL CLINIC · HEALTHCARE</span>
                         </div>
-                        <div class="work-row-content">
-                            <span class="work-tag">DENTAL CLINIC · HEALTHCARE</span>
-                            <h3 class="work-headline">Inconsistent monthly patient footfall and high dependency on
+                        <div class="work-card-body">
+                            <h3 class="work-card-title">Inconsistent monthly patient footfall and high dependency on
                                 offline walk-ins.</h3>
-                            <p class="work-description">Structured hyper-local Google Search acquisition for dental
-                                implants &amp; smile correction, paired with geo-fenced doctor trust video reels.</p>
-                            <div class="work-stat-block">
+                            <p class="work-card-desc">Structured hyper-local Google Search acquisition for dental
+                                implants & smile correction, paired with geo-fenced doctor trust video reels.</p>
+                            <div class="work-card-stat">
                                 <span class="work-stat-number" data-stat="18-64">18 → 64</span>
                                 <span class="work-stat-label">MONTHLY NEW PATIENT BOOKINGS (+255%)</span>
                             </div>
@@ -344,23 +373,22 @@
                         </div>
                     </article>
 
-                    <!-- Case Study 2: Dental Reforms (Content Left 50% / Image Right 50%) -->
-                    <article class="work-editorial-row work-row-reverse reveal" data-row="2">
-                        <div class="work-row-visual">
-                            <img src="assets/case-study-dental-reforms.webp" class="work-editorial-img"
+                    <!-- Case Study Card 2: Dental Reforms -->
+                    <article class="work-card reveal" data-row="2">
+                        <div class="work-card-visual">
+                            <img src="assets/case-study-dental-reforms.webp"
                                 alt="Dental Reforms Clinical Academy Case Study - High-Intent Smile Makeover and Academy Cohort Funnels"
-                                loading="eager" decoding="async">
+                                loading="lazy" decoding="async">
+                            <span class="work-card-tag">ADVANCED DENTISTRY & ACADEMY</span>
                         </div>
-                        <div class="work-row-content">
-                            <span class="work-tag">ADVANCED DENTISTRY &amp; ACADEMY</span>
-                            <h3 class="work-headline">High-ticket cosmetic treatments &amp; clinical academy cohorts
+                        <div class="work-card-body">
+                            <h3 class="work-card-title">High-ticket cosmetic treatments & clinical academy cohorts
                                 seeing high drop-off from unvetted leads.</h3>
-                            <p class="work-description">Re-architected the patient consultation funnel with interactive
+                            <p class="work-card-desc">Re-architected the patient consultation funnel with interactive
                                 smile makeover assessments and high-intent clinical academy enrollment flows.</p>
-                            <div class="work-stat-block">
+                            <div class="work-card-stat">
                                 <span class="work-stat-number work-stat-static" data-stat="4.8X">4.8X</span>
-                                <span class="work-stat-label">4.8X boost in qualified leads, makeover &amp; academy
-                                    enrollment</span>
+                                <span class="work-stat-label">4.8X BOOST IN QUALIFIED LEADS & ENROLLMENT</span>
                             </div>
                             <a href="#contact" class="editorial-text-link">
                                 <span>GET SIMILAR RESULTS</span>
@@ -373,22 +401,22 @@
                         </div>
                     </article>
 
-                    <!-- Case Study 3: Global Computer Solutions (Image Left 50% / Content Right 50%) -->
-                    <article class="work-editorial-row reveal" data-row="3">
-                        <div class="work-row-visual">
-                            <img src="assets/case-study-gcs.webp" class="work-editorial-img"
+                    <!-- Case Study Card 3: Global Computer Solutions -->
+                    <article class="work-card reveal" data-row="3">
+                        <div class="work-card-visual">
+                            <img src="assets/case-study-gcs.webp"
                                 alt="Global Computer Solutions Case Study - Enterprise IT Hardware and Annual Maintenance Contracts"
-                                loading="eager" decoding="async">
+                                loading="lazy" decoding="async">
+                            <span class="work-card-tag">IT HARDWARE & B2B ENTERPRISE</span>
                         </div>
-                        <div class="work-row-content">
-                            <span class="work-tag">IT HARDWARE &amp; B2B ENTERPRISE SERVICES</span>
-                            <h3 class="work-headline">Zero predictable corporate IT contract inquiries, losing
+                        <div class="work-card-body">
+                            <h3 class="work-card-title">Zero predictable corporate IT contract inquiries, losing
                                 high-value AMC deals to legacy vendors.</h3>
-                            <p class="work-description">Launched targeted commercial B2B Google Search campaigns
-                                targeting corporate hardware supply, server deployment, and annual IT maintenance.</p>
-                            <div class="work-stat-block">
+                            <p class="work-card-desc">Launched targeted commercial B2B Google Search campaigns targeting
+                                corporate hardware supply, server deployment, and annual IT maintenance.</p>
+                            <div class="work-card-stat">
                                 <span class="work-stat-number" data-stat="gcs">₹3.2L → ₹11.4L</span>
-                                <span class="work-stat-label">MONTHLY B2B CONTRACT PIPELINE GENERATED (+256%)</span>
+                                <span class="work-stat-label">MONTHLY B2B CONTRACT PIPELINE (+256%)</span>
                             </div>
                             <a href="#contact" class="editorial-text-link">
                                 <span>GET SIMILAR RESULTS</span>
@@ -445,6 +473,43 @@
                             <h3 class="service-row-title">CONTENT PRODUCTION</h3>
                             <p class="service-row-outcome">Photos and reels that actually look like your business.</p>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Growth Package Bundle Cards -->
+                <div class="pricing-bundles-grid reveal-group">
+                    <!-- 1. Starter Bundle -->
+                    <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                    <div class="pricing-card reveal">
+                        <div class="pricing-card-head">
+                            <h2 class="pricing-bundle-name">STARTER</h2>
+                        </div>
+                        <p class="pricing-bundle-includes">Basic website · Content Only (you provide footage) · Basic SEO · Monthly report</p>
+                        <div class="pricing-bundle-tag">BEST FOR: NEW BUSINESSES & FIRST-TIMERS</div>
+                        <div class="pricing-price-text">₹15,000 / MONTH</div>
+                    </div>
+
+                    <!-- 2. Growth Bundle (Featured / Inverted) -->
+                    <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                    <div class="pricing-card is-featured reveal">
+                        <div class="pricing-card-head">
+                            <h2 class="pricing-bundle-name">GROWTH</h2>
+                            <span class="pricing-popular-inline">MOST POPULAR</span>
+                        </div>
+                        <p class="pricing-bundle-includes">Clean website · Meta Ads management · Content + Shoot (monthly visit) · SEO · Google Business setup</p>
+                        <div class="pricing-bundle-tag">BEST FOR: SALONS · GYMS · CLINICS</div>
+                        <div class="pricing-price-text">₹25,000 / MONTH</div>
+                    </div>
+
+                    <!-- 3. Dominate Bundle -->
+                    <!-- PRICES VERIFIED BY BUSINESS OWNER -->
+                    <div class="pricing-card reveal">
+                        <div class="pricing-card-head">
+                            <h2 class="pricing-bundle-name">DOMINATE</h2>
+                        </div>
+                        <p class="pricing-bundle-includes">Pro website · Meta Ads · Google Ads · Content Pro (bi-weekly visits) · SEO · Monthly strategy call</p>
+                        <div class="pricing-bundle-tag">BEST FOR: BUSINESSES READY TO OWN THEIR MARKET</div>
+                        <div class="pricing-price-text">₹45,000 / MONTH</div>
                     </div>
                 </div>
 
@@ -679,6 +744,12 @@
                                 <textarea id="contact-message" name="message" class="form-textarea" rows="3"
                                     placeholder="What are your current growth bottlenecks?"></textarea>
                             </div>
+                            <!-- Honeypot field: hidden from humans, bots fill it and get silently rejected -->
+                            <div class="form-group hp-field" aria-hidden="true">
+                                <label for="contact-website" class="form-label">WEBSITE</label>
+                                <input type="text" id="contact-website" name="website" class="form-input"
+                                    tabindex="-1" autocomplete="off">
+                            </div>
                             <button type="submit" class="editorial-submit-btn" id="contact-submit-btn">
                                 <span>SEND MESSAGE</span>
                                 <svg class="submit-arrow" viewBox="0 0 16 16" fill="none"
@@ -745,10 +816,18 @@
             </div>
             <div class="footer-bottom-divider"></div>
             <div class="footer-copyright-row reveal">
-                <p>&copy; 2026 Beyond Horizon. All rights reserved.</p>
+                <p>&copy; <span id="copyright-year">2026</span> Beyond Horizon. All rights reserved.</p>
             </div>
         </div>
     </footer>
+
+    <!-- Dynamic Copyright Year -->
+    <script>
+        (function () {
+            var y = document.getElementById('copyright-year');
+            if (y) y.textContent = new Date().getFullYear();
+        })();
+    </script>
 
     <!-- Floating WhatsApp Button -->
     <a href="https://wa.me/918169176182" class="floating-whatsapp-btn" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
