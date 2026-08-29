@@ -1,17 +1,20 @@
-# Dependencies & Temporary Files
 node_modules/
-.DS_Store
-*.log
-
-# Large Backup & Zip Archives
-*.zip
-
-# Raw Uncompressed Source Video Frame Extractions (Dev only)
 images-portrait/
 images-2-portrait/
-images-portrait-native/
-images-2-portrait-native/
 image-portrait/
 image-2-portrait/
-images/
-images 2/
+.DS_Store
+
+# Encoded output frame folders
+images-webp/
+images-jpg/
+images-portrait-webp/
+images-portrait-jpg/
+images-2-webp/
+images-2-jpg/
+images-2-portrait-webp/
+images-2-portrait-jpg/
+frames-landscape/
+frames-portrait/
+frames-2-landscape/
+frames-2-portrait/
