@@ -423,6 +423,10 @@ body {
     z-index: 0;
     background-color: transparent;
     opacity: 1 !important;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 /* Dynamic Readability Gradient Overlay (z-5, placed between canvas and text inside panels) */

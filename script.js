@@ -167,7 +167,7 @@
             this.seq1LoadedCount = 0;
             this.seq2LoadedCount = 0;
 
-            // Step 1: Load frame 1 immediately for instant First Contentful Paint & LCP
+            // 1. Instant First Frames for both sequences (0ms)
             this.loadFrame(1, 0, () => {
                 if (!this.isLoaderDismissed) {
                     this.isLoaderDismissed = true;
@@ -177,52 +177,67 @@
                     this.renderTick();
                 }
             });
+            this.loadFrame(2, 0);
+            this.loadFrame(2, 1);
 
-            // Step 2: Stream Sequence 1 frames in progressive non-blocking idle chunks
-            let currentSeq1 = 1;
-            let currentSeq2 = 0;
-            let isSeq2Started = false;
-            const batchSize = 2;
+            // 2. High-speed Milestone Strides (every 4th frame)
+            // Immediately loads milestone keyframes across both sequences so near-neighbors are ALWAYS available
+            const strideKeyframes = [];
+            for (let i = 2; i < seq1Total; i += 3) strideKeyframes.push({ seq: 1, idx: i });
+            for (let i = 2; i < seq2Total; i += 3) strideKeyframes.push({ seq: 2, idx: i });
 
-            const loadNextBatch = () => {
-                if (currentSeq1 < seq1Total) {
-                    const end = Math.min(currentSeq1 + batchSize, seq1Total);
-                    for (let i = currentSeq1; i < end; i++) {
-                        this.loadFrame(1, i);
-                    }
-                    currentSeq1 = end;
-                } else if (isSeq2Started && currentSeq2 < seq2Total) {
-                    const end = Math.min(currentSeq2 + batchSize, seq2Total);
-                    for (let i = currentSeq2; i < end; i++) {
-                        this.loadFrame(2, i);
-                    }
-                    currentSeq2 = end;
+            let strideIdx = 0;
+            const loadStrides = () => {
+                const batch = Math.min(strideIdx + 8, strideKeyframes.length);
+                for (let k = strideIdx; k < batch; k++) {
+                    const item = strideKeyframes[k];
+                    this.loadFrame(item.seq, item.idx);
                 }
-
-                if (currentSeq1 < seq1Total || (isSeq2Started && currentSeq2 < seq2Total)) {
-                    if (typeof window.requestIdleCallback === 'function') {
-                        window.requestIdleCallback(loadNextBatch, { timeout: 120 });
-                    } else {
-                        setTimeout(loadNextBatch, 40);
-                    }
+                strideIdx = batch;
+                if (strideIdx < strideKeyframes.length) {
+                    setTimeout(loadStrides, 12);
+                } else {
+                    loadFillFrames();
                 }
             };
 
-            // Start Sequence 2 stream when user initiates scroll or touch
-            const triggerSeq2Stream = () => {
-                if (isSeq2Started) return;
-                isSeq2Started = true;
-                loadNextBatch();
+            // 3. Fast Fill Pipeline: Stream remaining in-between frames in parallel batches of 8
+            let fillSeq1 = 1;
+            let fillSeq2 = 1;
+            const loadFillFrames = () => {
+                let queued = 0;
+                while (queued < 8 && fillSeq1 < seq1Total) {
+                    if (!this.seq1Frames[fillSeq1]) {
+                        this.loadFrame(1, fillSeq1);
+                        queued++;
+                    }
+                    fillSeq1++;
+                }
+                while (queued < 8 && fillSeq2 < seq2Total) {
+                    if (!this.seq2Frames[fillSeq2]) {
+                        this.loadFrame(2, fillSeq2);
+                        queued++;
+                    }
+                    fillSeq2++;
+                }
+                if (fillSeq1 < seq1Total || fillSeq2 < seq2Total) {
+                    setTimeout(loadFillFrames, 16);
+                }
             };
 
-            window.addEventListener('scroll', triggerSeq2Stream, { once: true, passive: true });
-            window.addEventListener('touchstart', triggerSeq2Stream, { once: true, passive: true });
+            // Kick off milestone loading immediately
+            setTimeout(loadStrides, 20);
+        }
 
-            // Start Sequence 1 background streaming after initial render
-            if (typeof window.requestIdleCallback === 'function') {
-                window.requestIdleCallback(loadNextBatch, { timeout: 180 });
-            } else {
-                setTimeout(loadNextBatch, 80);
+        prioritizeFrames(seqId, targetIdx, range = 8) {
+            const arr = seqId === 1 ? this.seq1Frames : this.seq2Frames;
+            const total = seqId === 1 ? this.seq1Total : this.seq2Total;
+            const start = Math.max(0, targetIdx - range);
+            const end = Math.min(total, targetIdx + range);
+            for (let i = start; i < end; i++) {
+                if (!arr[i]) {
+                    this.loadFrame(seqId, i);
+                }
             }
         }
 
@@ -313,12 +328,9 @@
             const frameW = this.cachedIsPortrait ? 3698 : 1920;
             const frameH = this.cachedIsPortrait ? 2080 : 1080;
 
-            // Effective DPR Formula: min(devicePixelRatio, 2, frameWidth / cssWidth, frameHeight / cssHeight)
-            const systemDpr = Math.min(window.devicePixelRatio || 1, 2);
-            const maxAllowedDpr = Math.min(frameW / this.cachedVw, frameH / this.cachedVh);
-            this.effectiveDpr = Math.min(systemDpr, maxAllowedDpr);
-
-            console.log(`[PERF] effectiveDPR: ${this.effectiveDpr.toFixed(3)} | Viewport: ${this.cachedVw}x${this.cachedVh}`);
+            // Effective DPR Formula: Capped to 1.25 on mobile, 1.5 on desktop for rock-solid 60fps
+            const maxDpr = this.cachedIsMobile ? 1.25 : 1.5;
+            this.effectiveDpr = Math.min(window.devicePixelRatio || 1, maxDpr);
 
             this.canvasW = Math.round(this.cachedVw * this.effectiveDpr);
             this.canvasH = Math.round(this.cachedVh * this.effectiveDpr);
@@ -339,12 +351,12 @@
 
             if (this.ctx1) {
                 this.ctx1.imageSmoothingEnabled = true;
-                this.ctx1.imageSmoothingQuality = 'high';
+                this.ctx1.imageSmoothingQuality = 'medium';
             }
 
             if (this.ctx2) {
                 this.ctx2.imageSmoothingEnabled = true;
-                this.ctx2.imageSmoothingQuality = 'high';
+                this.ctx2.imageSmoothingQuality = 'medium';
             }
 
             // Cache Timeline Zone Distances
@@ -429,6 +441,7 @@
                 const targetIdx = prefersReducedMotion ? 0 : Math.min(this.seq1Total - 1, Math.max(0, Math.round(p1 * (this.seq1Total - 1))));
                 window._targetFrame = targetIdx;
                 window._targetFrameSeq1 = targetIdx;
+                this.prioritizeFrames(1, targetIdx, 8);
 
                 if (this.panelSeq1) {
                     this.panelSeq1.style.transform = 'translateY(0%)';
@@ -497,6 +510,8 @@
                 // ==========================================
                 const slideP = Math.min(1.0, Math.max(0.0, (scrollY - this.zone2Start) / this.zone2Duration));
                 this.lastRenderedZone = 2;
+                this.prioritizeFrames(1, this.seq1Total - 1, 4);
+                this.prioritizeFrames(2, 0, 4);
 
                 // Ensure Panel 1 remains at opacity 1, translateY 0
                 if (this.panelSeq1) {
@@ -578,6 +593,7 @@
                 const targetIdx = prefersReducedMotion ? 1 : Math.min(this.seq2Total - 1, Math.max(1, 1 + Math.round(p2 * (this.seq2Total - 2))));
                 window._targetFrame = targetIdx;
                 window._targetFrameSeq2 = targetIdx;
+                this.prioritizeFrames(2, targetIdx, 8);
 
                 if (this.panelSeq1) {
                     this.panelSeq1.style.transform = 'translateY(0%)';
