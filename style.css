@@ -387,7 +387,7 @@ body {
     z-index: 1;
 }
 
-/* Stage Sub-Panels (Layered Base and Sliding Sheets) */
+/* Stage Sub-Panels (Layered Base and Cross-Dissolve Overlay) */
 .stage-panel {
     position: absolute;
     inset: 0;
@@ -395,21 +395,22 @@ body {
     height: 100vh;
     height: 100dvh;
     overflow: hidden;
-    background-color: #000000;
+    background-color: transparent;
 }
 
 .stage-panel-seq1 {
     z-index: 1;
-    opacity: 1 !important;
+    opacity: 1;
     transform: translateY(0);
+    will-change: opacity;
 }
 
 .stage-panel-seq2 {
     z-index: 2;
-    background-color: #000000;
-    opacity: 1 !important;
-    transform: translateY(100%);
-    will-change: transform;
+    background-color: transparent;
+    opacity: 0;
+    transform: translateY(0);
+    will-change: opacity;
 }
 
 /* Full-Bleed Scrubbed Canvas (z-0) */

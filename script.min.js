@@ -448,7 +448,8 @@
                     this.panelSeq1.style.opacity = '1';
                 }
                 if (this.panelSeq2) {
-                    this.panelSeq2.style.transform = 'translateY(100%)';
+                    this.panelSeq2.style.transform = 'translateY(0%)';
+                    this.panelSeq2.style.opacity = '0';
                 }
 
                 // Draw frame if frame changed or coming from another zone
@@ -506,27 +507,22 @@
 
             } else if (scrollY >= this.zone2Start && scrollY < this.zone2End) {
                 // ==========================================
-                // ZONE 2: SLIDE HANDOFF (2.40vh -> 3.10vh, 70vh duration)
+                // ZONE 2: CINEMATIC CROSS-DISSOLVE (2.40vh -> 3.10vh, 70vh duration)
                 // ==========================================
                 const slideP = Math.min(1.0, Math.max(0.0, (scrollY - this.zone2Start) / this.zone2Duration));
                 this.lastRenderedZone = 2;
                 this.prioritizeFrames(1, this.seq1Total - 1, 4);
                 this.prioritizeFrames(2, 0, 4);
 
-                // Ensure Panel 1 remains at opacity 1, translateY 0
+                // Seamless Cross-Dissolve: Both panels pinned at translateY(0%) with smooth opacity blend
                 if (this.panelSeq1) {
                     this.panelSeq1.style.transform = 'translateY(0%)';
-                    this.panelSeq1.style.opacity = '1';
+                    this.panelSeq1.style.opacity = (1.0 - slideP).toFixed(3);
                 }
 
-                // Apply translateY on Panel 2
                 if (this.panelSeq2) {
-                    if (prefersReducedMotion) {
-                        this.panelSeq2.style.transform = slideP < 0.50 ? 'translateY(100%)' : 'translateY(0%)';
-                    } else {
-                        const translateY = (1.0 - slideP) * 100;
-                        this.panelSeq2.style.transform = `translateY(${translateY.toFixed(3)}%)`;
-                    }
+                    this.panelSeq2.style.transform = 'translateY(0%)';
+                    this.panelSeq2.style.opacity = slideP.toFixed(3);
                 }
 
                 // Ensure final frame drawn on Canvas 1
@@ -597,10 +593,11 @@
 
                 if (this.panelSeq1) {
                     this.panelSeq1.style.transform = 'translateY(0%)';
-                    this.panelSeq1.style.opacity = '1';
+                    this.panelSeq1.style.opacity = '0';
                 }
                 if (this.panelSeq2) {
                     this.panelSeq2.style.transform = 'translateY(0%)';
+                    this.panelSeq2.style.opacity = '1';
                 }
 
                 // Draw frame if frame changed or coming from another zone
