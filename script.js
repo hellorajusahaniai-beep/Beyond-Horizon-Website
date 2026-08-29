@@ -325,8 +325,8 @@
             this.cachedIsPortrait = (this.cachedVw / this.cachedVh) < 1.0;
             this.cachedIsMobile = this.cachedVw < 768;
 
-            const frameW = this.cachedIsPortrait ? 3698 : 1920;
-            const frameH = this.cachedIsPortrait ? 2080 : 1080;
+            const frameW = this.cachedIsPortrait ? 1440 : 1920;
+            const frameH = this.cachedIsPortrait ? 810 : 1080;
 
             // Effective DPR Formula: Capped to 1.25 on mobile, 1.5 on desktop for rock-solid 60fps
             const maxDpr = this.cachedIsMobile ? 1.25 : 1.5;

@@ -2479,8 +2479,6 @@ a.info-value:hover {
         margin-top: 4px;
         text-align: left !important;
     }
-        text-align: left !important;
-    }
 
     /* Hide rotated vertical step indicator below 768px */
     .seq-step-counter,
