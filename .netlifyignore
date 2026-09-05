@@ -1,0 +1,40 @@
+# ==============================================================================
+# Netlify Deployment Exclusions
+# Excludes raw source frames, dev scripts, and test PNGs from production deploys
+# ==============================================================================
+
+# Development folders and tooling
+dev/
+_dev/
+encode_frames.js
+google_apps_script_contact_form.js
+server.js
+
+# Test and simulation preview images
+final_test_*.png
+sim_*.png
+test_*.png
+thumb_*.png
+
+# Backups and archives
+*.zip
+backup*
+
+# Raw uncompressed image conversion frames
+# (Production serves images-webp/, images-portrait-webp/, images-2-webp/, images-2-portrait-webp/, images-jpg/, images-2-jpg/)
+images/
+images 2/
+image-portrait/
+image-2-portrait/
+images-portrait/
+images-2-portrait/
+images-portrait-native/
+images-2-portrait-native/
+
+# Repository & Node files
+node_modules/
+package.json
+package-lock.json
+README.md
+.gitignore
+.git/
