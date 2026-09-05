@@ -1,1 +1,14 @@
 /pricing /pricing.html 200
+
+# Security & Deploy Hygiene: Block dev tools, test images, raw sources, and archives
+/images/* /404 404!
+/images 2/* /404 404!
+/test_* /404 404!
+/sim_* /404 404!
+/final_test_* /404 404!
+/thumb_* /404 404!
+/*.zip /404 404!
+/encode_frames.js /404 404!
+/google_apps_script_contact_form.js /404 404!
+/server.js /404 404!
+/dev/* /404 404!

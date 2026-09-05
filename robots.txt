@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /images/
+Disallow: /images%202/
+Disallow: /dev/
 
 Sitemap: https://beyond-horizon-website.netlify.app/sitemap.xml

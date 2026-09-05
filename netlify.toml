@@ -2,6 +2,14 @@
   publish = "."
 
 [[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
   for = "/images-webp/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
@@ -46,7 +54,80 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Primary clean routing
 [[redirects]]
   from = "/pricing"
   to = "/pricing.html"
   status = 200
+
+# Security & Deploy Hygiene: Block raw source frames, dev scripts, and test PNGs
+[[redirects]]
+  from = "/images/*"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/images 2/*"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/test_*"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/sim_*"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/final_test_*"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/thumb_*"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/*.zip"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/encode_frames.js"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/google_apps_script_contact_form.js"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/server.js"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/dev/*"
+  to = "/404"
+  status = 404
+  force = true
