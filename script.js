@@ -121,6 +121,22 @@
             this.lastDrawnSeq2Idx = -1;
             this.lastRenderedZone = 0;
 
+            // Cached layer opacities for zero redundant DOM writes
+            this.panelSeq1Opacity = -1;
+            this.panelSeq2Opacity = -1;
+
+            // Scroll-aware preload state: pause background work during active user scroll
+            this.isUserScrolling = false;
+            this.scrollDirection = 1;
+            this.activeDecodes = 0;
+            this.maxConcurrentDecodes = 3;
+            this.isPreloadPaused = false;
+            this.preloadQueueTimer = null;
+            this._strideKeyframes = [];
+            this._strideIdx = 0;
+            this._fillSeq1 = 1;
+            this._fillSeq2 = 1;
+
             if (!this.wrapper || !this.canvas1 || !this.ctx1) return;
 
             this.init();
@@ -154,6 +170,28 @@
             this.startPreload();
         }
 
+        onUserScrollStart(dir = 1) {
+            this.isUserScrolling = true;
+            this.scrollDirection = dir;
+            if (this.preloadQueueTimer) {
+                clearTimeout(this.preloadQueueTimer);
+                this.preloadQueueTimer = null;
+            }
+            this.isPreloadPaused = true;
+        }
+
+        onUserScrollIdle() {
+            this.isUserScrolling = false;
+            if (this.isPreloadPaused) {
+                this.isPreloadPaused = false;
+                if (this._loadStrides && this._strideIdx < this._strideKeyframes.length) {
+                    this._loadStrides();
+                } else if (this._loadFillFrames) {
+                    this._loadFillFrames();
+                }
+            }
+        }
+
         startPreload() {
             if (this.isPreloadStarted) return;
             this.isPreloadStarted = true;
@@ -167,7 +205,7 @@
             this.seq1LoadedCount = 0;
             this.seq2LoadedCount = 0;
 
-            // 1. Instant First Frames for both sequences (0ms)
+            // 1. Instant First Frames for both sequences (urgent decode)
             this.loadFrame(1, 0, () => {
                 if (!this.isLoaderDismissed) {
                     this.isLoaderDismissed = true;
@@ -176,76 +214,98 @@
                     if (this.loader) this.loader.classList.add('hidden');
                     this.renderTick();
                 }
-            });
-            this.loadFrame(2, 0);
-            this.loadFrame(2, 1);
+            }, true);
+            this.loadFrame(2, 0, null, true);
+            this.loadFrame(2, 1, null, true);
 
-            // 2. High-speed Milestone Strides (every 4th frame)
-            // Immediately loads milestone keyframes across both sequences so near-neighbors are ALWAYS available
-            const strideKeyframes = [];
-            for (let i = 2; i < seq1Total; i += 3) strideKeyframes.push({ seq: 1, idx: i });
-            for (let i = 2; i < seq2Total; i += 3) strideKeyframes.push({ seq: 2, idx: i });
+            // 2. High-speed Milestone Strides (every 3rd frame)
+            this._strideKeyframes = [];
+            for (let i = 2; i < seq1Total; i += 3) this._strideKeyframes.push({ seq: 1, idx: i });
+            for (let i = 2; i < seq2Total; i += 3) this._strideKeyframes.push({ seq: 2, idx: i });
+            this._strideIdx = 0;
 
-            let strideIdx = 0;
-            const loadStrides = () => {
-                const batch = Math.min(strideIdx + 8, strideKeyframes.length);
-                for (let k = strideIdx; k < batch; k++) {
-                    const item = strideKeyframes[k];
-                    this.loadFrame(item.seq, item.idx);
+            this._loadStrides = () => {
+                if (this.isUserScrolling) {
+                    this.isPreloadPaused = true;
+                    return;
                 }
-                strideIdx = batch;
-                if (strideIdx < strideKeyframes.length) {
-                    setTimeout(loadStrides, 12);
+                const batch = Math.min(this._strideIdx + 6, this._strideKeyframes.length);
+                for (let k = this._strideIdx; k < batch; k++) {
+                    const item = this._strideKeyframes[k];
+                    this.loadFrame(item.seq, item.idx, null, false);
+                }
+                this._strideIdx = batch;
+                if (this._strideIdx < this._strideKeyframes.length) {
+                    this.preloadQueueTimer = setTimeout(this._loadStrides, 20);
                 } else {
-                    loadFillFrames();
+                    this._loadFillFrames();
                 }
             };
 
-            // 3. Fast Fill Pipeline: Stream remaining in-between frames in parallel batches of 8
-            let fillSeq1 = 1;
-            let fillSeq2 = 1;
-            const loadFillFrames = () => {
+            // 3. Background Fill: stream remaining frames in modest batches without choking CPU
+            this._fillSeq1 = 1;
+            this._fillSeq2 = 1;
+            this._loadFillFrames = () => {
+                if (this.isUserScrolling) {
+                    this.isPreloadPaused = true;
+                    return;
+                }
                 let queued = 0;
-                while (queued < 8 && fillSeq1 < seq1Total) {
-                    if (!this.seq1Frames[fillSeq1]) {
-                        this.loadFrame(1, fillSeq1);
+                while (queued < 6 && this._fillSeq1 < seq1Total) {
+                    if (!this.seq1Frames[this._fillSeq1]) {
+                        this.loadFrame(1, this._fillSeq1, null, false);
                         queued++;
                     }
-                    fillSeq1++;
+                    this._fillSeq1++;
                 }
-                while (queued < 8 && fillSeq2 < seq2Total) {
-                    if (!this.seq2Frames[fillSeq2]) {
-                        this.loadFrame(2, fillSeq2);
+                while (queued < 6 && this._fillSeq2 < seq2Total) {
+                    if (!this.seq2Frames[this._fillSeq2]) {
+                        this.loadFrame(2, this._fillSeq2, null, false);
                         queued++;
                     }
-                    fillSeq2++;
+                    this._fillSeq2++;
                 }
-                if (fillSeq1 < seq1Total || fillSeq2 < seq2Total) {
-                    setTimeout(loadFillFrames, 16);
+                if (this._fillSeq1 < seq1Total || this._fillSeq2 < seq2Total) {
+                    this.preloadQueueTimer = setTimeout(this._loadFillFrames, 24);
                 }
             };
 
-            // Kick off milestone loading immediately
-            setTimeout(loadStrides, 20);
+            // Kick off milestone loading after initial paint
+            setTimeout(this._loadStrides, 40);
         }
 
-        prioritizeFrames(seqId, targetIdx, range = 8) {
+        prioritizeFrames(seqId, targetIdx, range = 5, dir = 1) {
             const arr = seqId === 1 ? this.seq1Frames : this.seq2Frames;
             const total = seqId === 1 ? this.seq1Total : this.seq2Total;
-            const start = Math.max(0, targetIdx - range);
-            const end = Math.min(total, targetIdx + range);
-            for (let i = start; i < end; i++) {
-                if (!arr[i]) {
-                    this.loadFrame(seqId, i);
+
+            // 1. Immediately request the target frame itself if missing
+            if (!arr[targetIdx]) {
+                this.loadFrame(seqId, targetIdx, null, true);
+            }
+
+            // 2. Prioritize upcoming frames in the direction of scroll
+            const step = dir >= 0 ? 1 : -1;
+            for (let offset = 1; offset <= range; offset++) {
+                const aheadIdx = targetIdx + (offset * step);
+                if (aheadIdx >= 0 && aheadIdx < total && !arr[aheadIdx]) {
+                    this.loadFrame(seqId, aheadIdx, null, true);
+                }
+            }
+
+            // 3. Keep 1-2 trailing frames loaded for smooth reverse scrub
+            for (let offset = 1; offset <= 2; offset++) {
+                const behindIdx = targetIdx - (offset * step);
+                if (behindIdx >= 0 && behindIdx < total && !arr[behindIdx]) {
+                    this.loadFrame(seqId, behindIdx, null, false);
                 }
             }
         }
 
-        loadFrame(seqId, i, cb) {
+        loadFrame(seqId, i, cb, isUrgent = false) {
             const cfg = seqId === 1 ? this.seq1Config : this.seq2Config;
             const arr = seqId === 1 ? this.seq1Frames : this.seq2Frames;
             if (arr[i]) {
-                if (cb) cb();
+                if (cb && arr[i].complete) cb();
                 return;
             }
 
@@ -257,6 +317,7 @@
             const onDone = () => {
                 if (isHandled) return;
                 isHandled = true;
+                if (isUrgent && this.activeDecodes > 0) this.activeDecodes--;
                 this.decodedCount++;
                 if (seqId === 1) this.seq1LoadedCount++;
                 else this.seq2LoadedCount++;
@@ -272,7 +333,9 @@
             };
 
             img.onload = () => {
-                if ('decode' in img) {
+                // Throttle decode() only to urgent frames near playhead
+                if (isUrgent && 'decode' in img && this.activeDecodes < this.maxConcurrentDecodes) {
+                    this.activeDecodes++;
                     img.decode().then(onDone).catch(onDone);
                 } else {
                     onDone();
@@ -328,8 +391,8 @@
             const frameW = this.cachedIsPortrait ? 1440 : 1920;
             const frameH = this.cachedIsPortrait ? 810 : 1080;
 
-            // Effective DPR Formula: Capped to 1.25 on mobile, 1.5 on desktop for rock-solid 60fps
-            const maxDpr = this.cachedIsMobile ? 1.25 : 1.5;
+            // Effective DPR Formula: Capped to 1.0 on mobile, 1.25 on desktop for rock-solid 60fps
+            const maxDpr = this.cachedIsMobile ? 1.0 : 1.25;
             this.effectiveDpr = Math.min(window.devicePixelRatio || 1, maxDpr);
 
             this.canvasW = Math.round(this.cachedVw * this.effectiveDpr);
@@ -391,24 +454,31 @@
         }
 
         getFallbackFrame(arr, index, total, seqId = 1) {
-            let img = arr[index];
-            if (img && img.complete && img.naturalWidth > 0) return img;
+            const current = arr[index];
+            if (current && current.complete && current.naturalWidth > 0) return current;
 
-            for (let offset = 1; offset < total; offset++) {
+            // Fast bounded search (max +/- 8 frames)
+            const maxRadius = Math.min(8, total);
+            for (let offset = 1; offset <= maxRadius; offset++) {
                 const prevIdx = index - offset;
                 if (prevIdx >= 0) {
                     const prev = arr[prevIdx];
-                    if (prev && prev.complete && prev.naturalWidth > 0) {
-                        return prev;
-                    }
+                    if (prev && prev.complete && prev.naturalWidth > 0) return prev;
                 }
                 const nextIdx = index + offset;
                 if (nextIdx < total) {
                     const next = arr[nextIdx];
-                    if (next && next.complete && next.naturalWidth > 0) {
-                        return next;
-                    }
+                    if (next && next.complete && next.naturalWidth > 0) return next;
                 }
+            }
+
+            // O(1) fallback to last successfully drawn frame or first frame
+            const lastIdx = seqId === 1 ? this.lastDrawnSeq1Idx : this.lastDrawnSeq2Idx;
+            if (lastIdx >= 0 && arr[lastIdx] && arr[lastIdx].complete && arr[lastIdx].naturalWidth > 0) {
+                return arr[lastIdx];
+            }
+            if (arr[0] && arr[0].complete && arr[0].naturalWidth > 0) {
+                return arr[0];
             }
             return null;
         }
@@ -441,15 +511,22 @@
                 const targetIdx = prefersReducedMotion ? 0 : Math.min(this.seq1Total - 1, Math.max(0, Math.round(p1 * (this.seq1Total - 1))));
                 window._targetFrame = targetIdx;
                 window._targetFrameSeq1 = targetIdx;
-                this.prioritizeFrames(1, targetIdx, 8);
+                this.prioritizeFrames(1, targetIdx, 5, this.scrollDirection);
 
-                if (this.panelSeq1) {
-                    this.panelSeq1.style.transform = 'translateY(0%)';
-                    this.panelSeq1.style.opacity = '1';
+                // Guarded layer opacity updates (zero redundant style writes)
+                if (this.panelSeq1Opacity !== 1) {
+                    this.panelSeq1Opacity = 1;
+                    if (this.panelSeq1) {
+                        this.panelSeq1.style.transform = 'translateY(0%)';
+                        this.panelSeq1.style.opacity = '1';
+                    }
                 }
-                if (this.panelSeq2) {
-                    this.panelSeq2.style.transform = 'translateY(0%)';
-                    this.panelSeq2.style.opacity = '0';
+                if (this.panelSeq2Opacity !== 0) {
+                    this.panelSeq2Opacity = 0;
+                    if (this.panelSeq2) {
+                        this.panelSeq2.style.transform = 'translateY(0%)';
+                        this.panelSeq2.style.opacity = '0';
+                    }
                 }
 
                 // Draw frame if frame changed or coming from another zone
@@ -458,7 +535,6 @@
                     if (img && this.ctx1) {
                         this.lastDrawnSeq1Idx = targetIdx;
                         this.lastRenderedZone = 1;
-                        this.ctx1.clearRect(0, 0, w, h);
                         this.ctx1.globalAlpha = 1.0;
                         this.drawCoverWithRect(this.ctx1, img, this.seq1DrawRect);
                     }
@@ -469,7 +545,6 @@
                     const img2 = this.getFallbackFrame(this.seq2Frames, 1, this.seq2Total, 2);
                     if (img2 && this.ctx2) {
                         this.lastDrawnSeq2Idx = 1;
-                        this.ctx2.clearRect(0, 0, w, h);
                         this.ctx2.globalAlpha = 1.0;
                         this.drawCoverWithRect(this.ctx2, img2, this.seq2DrawRect);
                     }
@@ -491,18 +566,19 @@
                     this.updateStepCounter(step1 + 1, 3);
                 }
 
-                if (this.seq1TextBlock) this.seq1TextBlock.style.opacity = '1';
-                if (this.seq2Container) this.seq2Container.style.opacity = '1';
-                if (this.seq2Steps.length) {
+                if (this.seq2Steps.length && this.seq2CurrentStep !== 0) {
                     this.seq2Steps.forEach((el, idx) => {
                         el.classList.toggle('active', idx === 0);
                         el.classList.remove('prev');
                     });
                     this.seq2CurrentStep = 0;
                 }
-                if (this.stepCounter) this.stepCounter.style.opacity = '1';
-                if (this.gradientOverlay) this.gradientOverlay.classList.remove('seq2-mode');
-                if (this.wrapper) this.wrapper.classList.remove('step-stats-active');
+                if (this.gradientOverlay && this.gradientOverlay.classList.contains('seq2-mode')) {
+                    this.gradientOverlay.classList.remove('seq2-mode');
+                }
+                if (this.wrapper && this.wrapper.classList.contains('step-stats-active')) {
+                    this.wrapper.classList.remove('step-stats-active');
+                }
                 animateSeq2Stats(false);
 
             } else if (scrollY >= this.zone2Start && scrollY < this.zone2End) {
@@ -511,18 +587,25 @@
                 // ==========================================
                 const slideP = Math.min(1.0, Math.max(0.0, (scrollY - this.zone2Start) / this.zone2Duration));
                 this.lastRenderedZone = 2;
-                this.prioritizeFrames(1, this.seq1Total - 1, 4);
-                this.prioritizeFrames(2, 0, 4);
+                this.prioritizeFrames(1, this.seq1Total - 1, 3, this.scrollDirection);
+                this.prioritizeFrames(2, 1, 3, this.scrollDirection);
 
-                // Seamless Cross-Dissolve: Both panels pinned at translateY(0%) with smooth opacity blend
-                if (this.panelSeq1) {
-                    this.panelSeq1.style.transform = 'translateY(0%)';
-                    this.panelSeq1.style.opacity = (1.0 - slideP).toFixed(3);
+                const op1 = (1.0 - slideP).toFixed(3);
+                const op2 = slideP.toFixed(3);
+
+                if (this.panelSeq1Opacity !== op1) {
+                    this.panelSeq1Opacity = op1;
+                    if (this.panelSeq1) {
+                        this.panelSeq1.style.transform = 'translateY(0%)';
+                        this.panelSeq1.style.opacity = op1;
+                    }
                 }
-
-                if (this.panelSeq2) {
-                    this.panelSeq2.style.transform = 'translateY(0%)';
-                    this.panelSeq2.style.opacity = slideP.toFixed(3);
+                if (this.panelSeq2Opacity !== op2) {
+                    this.panelSeq2Opacity = op2;
+                    if (this.panelSeq2) {
+                        this.panelSeq2.style.transform = 'translateY(0%)';
+                        this.panelSeq2.style.opacity = op2;
+                    }
                 }
 
                 // Ensure final frame drawn on Canvas 1
@@ -530,7 +613,6 @@
                     const img1 = this.getFallbackFrame(this.seq1Frames, this.seq1Total - 1, this.seq1Total, 1);
                     if (img1 && this.ctx1) {
                         this.lastDrawnSeq1Idx = this.seq1Total - 1;
-                        this.ctx1.clearRect(0, 0, w, h);
                         this.ctx1.globalAlpha = 1.0;
                         this.drawCoverWithRect(this.ctx1, img1, this.seq1DrawRect);
                     }
@@ -541,21 +623,20 @@
                     const img2 = this.getFallbackFrame(this.seq2Frames, 1, this.seq2Total, 2);
                     if (img2 && this.ctx2) {
                         this.lastDrawnSeq2Idx = 1;
-                        this.ctx2.clearRect(0, 0, w, h);
                         this.ctx2.globalAlpha = 1.0;
                         this.drawCoverWithRect(this.ctx2, img2, this.seq2DrawRect);
                     }
                 }
 
                 // Sequence 1 Step 3 and Sequence 2 Step 0 active
-                if (this.seq1Steps.length) {
+                if (this.seq1CurrentStep !== 2 && this.seq1Steps.length) {
                     this.seq1Steps.forEach((el, idx) => {
                         el.classList.toggle('active', idx === 2);
                         el.classList.toggle('prev', idx < 2);
                     });
                     this.seq1CurrentStep = 2;
                 }
-                if (this.seq2Steps.length) {
+                if (this.seq2CurrentStep !== 0 && this.seq2Steps.length) {
                     this.seq2Steps.forEach((el, idx) => {
                         el.classList.toggle('active', idx === 0);
                         el.classList.remove('prev');
@@ -563,22 +644,24 @@
                     this.seq2CurrentStep = 0;
                 }
 
-                if (this.seq1TextBlock) this.seq1TextBlock.style.opacity = '1';
-                if (this.seq2Container) this.seq2Container.style.opacity = '1';
-                if (this.stepCounter) this.stepCounter.style.opacity = '1';
-
                 // Single shared overlay and counter switch at midpoint (>= 50%)
                 if (slideP < 0.50) {
-                    if (this.gradientOverlay) this.gradientOverlay.classList.remove('seq2-mode');
+                    if (this.gradientOverlay && this.gradientOverlay.classList.contains('seq2-mode')) {
+                        this.gradientOverlay.classList.remove('seq2-mode');
+                    }
                     this.updateStepCounter(3, 3);
                     this.stepDots.forEach((dot, idx) => dot.classList.toggle('active', idx === 2));
                 } else {
-                    if (this.gradientOverlay) this.gradientOverlay.classList.add('seq2-mode');
+                    if (this.gradientOverlay && !this.gradientOverlay.classList.contains('seq2-mode')) {
+                        this.gradientOverlay.classList.add('seq2-mode');
+                    }
                     this.updateStepCounter(1, 3);
                     this.stepDots.forEach((dot, idx) => dot.classList.toggle('active', idx === 0));
                 }
 
-                if (this.wrapper) this.wrapper.classList.remove('step-stats-active');
+                if (this.wrapper && this.wrapper.classList.contains('step-stats-active')) {
+                    this.wrapper.classList.remove('step-stats-active');
+                }
                 animateSeq2Stats(false);
 
             } else {
@@ -589,15 +672,22 @@
                 const targetIdx = prefersReducedMotion ? 1 : Math.min(this.seq2Total - 1, Math.max(1, 1 + Math.round(p2 * (this.seq2Total - 2))));
                 window._targetFrame = targetIdx;
                 window._targetFrameSeq2 = targetIdx;
-                this.prioritizeFrames(2, targetIdx, 8);
+                this.prioritizeFrames(2, targetIdx, 5, this.scrollDirection);
 
-                if (this.panelSeq1) {
-                    this.panelSeq1.style.transform = 'translateY(0%)';
-                    this.panelSeq1.style.opacity = '0';
+                // Guarded layer opacity updates (zero redundant style writes)
+                if (this.panelSeq1Opacity !== 0) {
+                    this.panelSeq1Opacity = 0;
+                    if (this.panelSeq1) {
+                        this.panelSeq1.style.transform = 'translateY(0%)';
+                        this.panelSeq1.style.opacity = '0';
+                    }
                 }
-                if (this.panelSeq2) {
-                    this.panelSeq2.style.transform = 'translateY(0%)';
-                    this.panelSeq2.style.opacity = '1';
+                if (this.panelSeq2Opacity !== 1) {
+                    this.panelSeq2Opacity = 1;
+                    if (this.panelSeq2) {
+                        this.panelSeq2.style.transform = 'translateY(0%)';
+                        this.panelSeq2.style.opacity = '1';
+                    }
                 }
 
                 // Draw frame if frame changed or coming from another zone
@@ -606,15 +696,14 @@
                     if (img && this.ctx2) {
                         this.lastDrawnSeq2Idx = targetIdx;
                         this.lastRenderedZone = 3;
-                        this.ctx2.clearRect(0, 0, w, h);
                         this.ctx2.globalAlpha = 1.0;
                         this.drawCoverWithRect(this.ctx2, img, this.seq2DrawRect);
                     }
                 }
 
-                if (this.seq2Container) this.seq2Container.style.opacity = '1';
-                if (this.stepCounter) this.stepCounter.style.opacity = '1';
-                if (this.gradientOverlay) this.gradientOverlay.classList.add('seq2-mode');
+                if (this.gradientOverlay && !this.gradientOverlay.classList.contains('seq2-mode')) {
+                    this.gradientOverlay.classList.add('seq2-mode');
+                }
 
                 // Update Sequence 2 Steps
                 let step2 = 0;
@@ -812,7 +901,6 @@
             });
 
             revealElements.forEach(el => observer.observe(el));
-            console.log(`[SCROLL_REVEAL] Observing ${revealElements.length} elements (threshold: 0.05, rootMargin: '0px 0px -20px 0px')`);
         }
 
         triggerStatAnimation(rowIdx) {
@@ -971,9 +1059,15 @@
     const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
     const mobileNavLinks = document.querySelectorAll('.mobile-nav-link, .mobile-nav-cta');
 
-    // Master Scroll Performance State
+    // Master Scroll Performance State & Kinetic Smoothing Engine
     window._targetScrollY = window.scrollY || window.pageYOffset || 0;
+    let targetScrollY = window._targetScrollY;
+    let currentScrubY = targetScrollY;
+    let isLerpActive = false;
     let isHeaderScrolled = false;
+    let scrollIdleTimer = null;
+    let lastTargetScrollY = targetScrollY;
+    let currentScrollDir = 1;
 
     function updateNavbar(scrollY) {
         if (!siteHeader) return;
@@ -1021,29 +1115,84 @@
         });
     }
 
-    // Master Scroll Handler: ultra-fast (< 0.1ms), updates target variables and schedules decoupled rAF
+    // Master Scroll Handler: tracks scroll direction, signals preloader, and starts kinetic lerp loop
     function onScroll() {
-        window._targetScrollY = window.scrollY || window.pageYOffset || 0;
-        if (!rafScheduled) {
-            rafScheduled = true;
-            requestAnimationFrame(renderTick);
+        const rawY = window.scrollY || window.pageYOffset || 0;
+        targetScrollY = rawY;
+        window._targetScrollY = rawY;
+
+        // Calculate scroll direction (1 = scrolling down/forward, -1 = scrolling up/backward)
+        if (rawY !== lastTargetScrollY) {
+            currentScrollDir = rawY > lastTargetScrollY ? 1 : -1;
+            lastTargetScrollY = rawY;
+        }
+
+        // Notify stage controller that user is scrolling (pauses background image decoding)
+        stageController.onUserScrollStart(currentScrollDir);
+
+        clearTimeout(scrollIdleTimer);
+        scrollIdleTimer = setTimeout(() => {
+            stageController.onUserScrollIdle();
+        }, 180);
+
+        if (!isLerpActive) {
+            isLerpActive = true;
+            requestAnimationFrame(kineticRenderTick);
         }
     }
     window.onScroll = onScroll;
 
-    // Master rAF Tick: executes canvas drawing & UI state updates in isolated rAF frame
-    function renderTick() {
-        rafScheduled = false;
-        const scrollY = window._targetScrollY !== undefined ? window._targetScrollY : (window.scrollY || window.pageYOffset || 0);
-        updateNavbar(scrollY);
-        stageController.renderTick(scrollY);
+    // Master Kinetic rAF Tick: continuously interpolates scrub position at 60/120fps for buttery smoothness
+    function kineticRenderTick() {
+        const rawY = targetScrollY;
+        const insideStage = rawY <= stageController.zoneOutroThreshold;
+
+        if (insideStage && !prefersReducedMotion) {
+            const dist = rawY - currentScrubY;
+            const absDist = Math.abs(dist);
+
+            // Adaptive Damping:
+            // Slower scroll = high cinematic smoothness (0.18 on desktop, 0.22 on mobile)
+            // Faster flick = tighter tracking (up to 0.38) to keep in sync with user gesture
+            const baseFactor = stageController.cachedIsMobile ? 0.22 : 0.18;
+            let factor = baseFactor;
+            if (absDist > 200) {
+                factor = Math.min(0.38, baseFactor + (absDist / 1200) * 0.16);
+            }
+
+            currentScrubY += dist * factor;
+
+            if (absDist < 0.25) {
+                currentScrubY = rawY;
+            }
+        } else {
+            // Outside the stage or reduced motion: snap immediately for native vertical scrolling
+            currentScrubY = rawY;
+        }
+
+        updateNavbar(rawY);
+        stageController.renderTick(currentScrubY);
         editorialController.renderTick();
+
+        // Continue kinetic rAF loop while still converging inside stage
+        if (Math.abs(rawY - currentScrubY) > 0.25 && insideStage && !prefersReducedMotion) {
+            requestAnimationFrame(kineticRenderTick);
+        } else {
+            currentScrubY = rawY;
+            stageController.renderTick(rawY);
+            isLerpActive = false;
+        }
     }
 
     // Global Resize Handler
     function onResize() {
         stageController.resize();
-        renderTick();
+        const rawY = window.scrollY || window.pageYOffset || 0;
+        targetScrollY = rawY;
+        currentScrubY = rawY;
+        updateNavbar(rawY);
+        stageController.renderTick(rawY);
+        editorialController.renderTick();
     }
 
     // URL Query & Hash-based scroll position supporter for deep-linking
@@ -1078,6 +1227,8 @@
                 }
 
                 window.scrollTo(0, targetY);
+                targetScrollY = targetY;
+                currentScrubY = targetY;
                 window._targetScrollY = targetY;
                 updateNavbar(targetY);
                 stageController.renderTick(targetY);
@@ -1090,6 +1241,8 @@
                     const targetY = parseInt(window.location.hash.replace('#scroll-', ''));
                     if (!isNaN(targetY)) {
                         window.scrollTo(0, targetY);
+                        targetScrollY = targetY;
+                        currentScrubY = targetY;
                         onScroll();
                     }
                 } else {
@@ -1106,10 +1259,6 @@
             console.error('Error applying URL scroll:', e);
         }
     }
-
-
-
-
 
     window.addEventListener('hashchange', checkUrlScroll);
     window.addEventListener('resize', onResize, { passive: true });
