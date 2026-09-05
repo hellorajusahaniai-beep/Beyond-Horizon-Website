@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-# NOTE: Replace beyondhorizon.com with the real production domain before launch
-Sitemap: https://beyondhorizon.com/sitemap.xml
+Sitemap: https://beyond-horizon-website.netlify.app/sitemap.xml

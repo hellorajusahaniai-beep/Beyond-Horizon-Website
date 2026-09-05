@@ -394,6 +394,7 @@ body {
     height: 100dvh;
     overflow: hidden;
     background-color: transparent;
+    contain: layout paint;
 }
 
 .stage-panel-seq1 {
@@ -2457,6 +2458,12 @@ a.info-value:hover {
     /* ==========================================================================
        Stage Mobile Rebuild: Safe-Area Anchoring & Unified Stack
        ========================================================================== */
+    /* Mobile Film Grain Optimization: avoid heavy mix-blend-mode readback */
+    .film-grain-overlay {
+        mix-blend-mode: normal;
+        opacity: 0.035;
+    }
+
     /* Sequence 1 gradient: top-to-bottom for mobile portrait text at top */
     .stage-gradient-seq1,
     .hero-gradient-overlay {
