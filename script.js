@@ -801,9 +801,78 @@
     }
 
     /**
+     * Authentic Case Studies Data & Live Creative Assets Dictionary
+     */
+    const CASE_STUDIES_DATA = {
+        'siddhi': {
+            title: 'SIDDHI DENTAL CARE',
+            subtitle: 'KALYAN / DOMBIVLI · ADVANCED DENTAL PRACTICE',
+            badge: 'CLIENT WORK',
+            images: [
+                { src: 'assets/clients/siddhi-dental-treating.jpg', label: 'Doctor Treatment in Action' },
+                { src: 'assets/clients/siddhi-dental-tech.jpg', label: 'Modern Clinic Infrastructure' },
+                { src: 'assets/clients/siddhi-clinic-building.jpg', label: 'Clinic Exterior & Reception' },
+                { src: 'assets/clients/siddhi-logo.png', label: 'Official Clinic Identity' }
+            ],
+            challenge: 'Siddhi Dental Care had modern facilities and expert doctors, but relied heavily on offline footfall and sporadic walk-in visits. The clinic needed a modern digital presence, on-site clinical photography, and a frictionless booking experience.',
+            solution: 'Beyond Horizon built a modern website, captured real operatory and clinic photography, and implemented a streamlined 1-click WhatsApp appointment workflow for local patients.',
+            results: 'Established a professional web presence, improved patient inquiry responsiveness via WhatsApp, and provided prospective patients with clear treatment information and transparent doctor profiles before their visit.',
+            testimonial: '"Beyond Horizon created a clean, modern website with real clinic photos. Patients now arrive informed and confident about our procedures."',
+            author: 'Dr. Siddhi & Team — Siddhi Dental Care',
+            prefill: 'Dental Clinic / Healthcare Practice'
+        },
+        'gcs': {
+            title: 'GLOBAL COMPUTER SOLUTION',
+            subtitle: 'KONGAON, KALYAN WEST · COMPUTERS, IT HARDWARE & CCTV',
+            badge: 'CLIENT WORK',
+            images: [
+                { src: 'assets/clients/global-computer-ad.png', label: 'Commercial Office Desktop Ad Creative' },
+                { src: 'assets/clients/global-computer-banner.png', label: 'Complete IT Solutions Store Banner' },
+                { src: 'assets/clients/global-cctv-ad.png', label: 'CCTV Security Systems Ad' },
+                { src: 'assets/clients/meta-ads-proof.png', label: 'Verified Meta Ads Dashboard' }
+            ],
+            challenge: 'GCS had extensive hardware inventory and technician teams, but was largely known only to immediate footfall in Kongaon. They needed local search visibility and advertising for commercial IT services and CCTV installations.',
+            solution: 'Beyond Horizon developed their Google Business profile, local search strategy, targeted product creatives, and direct WhatsApp inquiry routing for business owners and institutions.',
+            results: 'Significantly improved local search discovery for IT hardware and CCTV in Kalyan West, streamlined customer quote inquiries through WhatsApp, and built a consistent product catalog presence.',
+            testimonial: '"Raju and the Beyond Horizon team built campaigns that actually talk to local business owners. Clear communication, zero nonsense, and real local execution."',
+            author: 'Founder & Director — Global Computer Solution',
+            prefill: 'B2B Enterprise / IT Hardware Store'
+        },
+        'dental-reforms': {
+            title: 'DENTAL REFORMS',
+            subtitle: 'THANE, MAHARASHTRA · DENTAL CLINIC & ADVANCED DENTISTRY',
+            badge: 'CLIENT WORK',
+            images: [
+                { src: 'assets/clients/dental-reforms-clinic.jpg', label: 'Clinic Operatory Overview' },
+                { src: 'assets/clients/dr-dipika-video-thumb.jpg', label: 'Doctor-Led Educational Video' }
+            ],
+            challenge: 'Dental Reforms wanted to build stronger local visibility while creating educational content that communicates clinical expertise and builds patient trust across Thane.',
+            solution: 'Beyond Horizon produced doctor-led educational video reels, educational carousels, on-location 4K operatory photography, and established an automated post-treatment Google review workflow.',
+            results: 'Transformed their local presence with authentic clinical videos, established consistent educational content on Instagram, and created a steady stream of verified Google Maps patient reviews.',
+            testimonial: '"Beyond Horizon came directly to our clinic to shoot real clinical procedures. Our Google Maps listing and Instagram now accurately reflect the quality of dentistry we deliver every day."',
+            author: 'Dr. Dipika Dodeja — Dental Reforms',
+            prefill: 'Dental Clinic / Healthcare Practice'
+        },
+        'dargar': {
+            title: 'DARGAR COMMUNICATION',
+            subtitle: 'KALYAN WEST · SMARTPHONES & ELECTRONICS RETAIL',
+            badge: 'CLIENT WORK',
+            images: [
+                { src: 'assets/clients/dargar-shop.jpg', label: 'Retail Storefront - Kalyan West' }
+            ],
+            challenge: 'An established smartphone and electronics retailer needed stronger local discovery on Google Maps and social media so customers in Kalyan find them first before purchasing elsewhere.',
+            solution: 'Beyond Horizon optimized their Google Business Profile, established a review collection system, created storefront and product content, and ran local promotional updates.',
+            results: 'Consistent storefront updates, higher visibility in local Kalyan electronics searches, and an active customer review flow driving store visits and WhatsApp product inquiries.',
+            testimonial: '"In local retail, footfall and WhatsApp enquiries matter. Beyond Horizon set up our Google Business profile and review system so customers find us first."',
+            author: 'Dargar Communication — Kalyan West',
+            prefill: 'Mobile & Electronics Retail'
+        }
+    };
+
+    /**
      * EditorialBreatheController
      * Manages vertical editorial layout reveals, real-data stat animations,
-     * FAQ accordion interactions, bottom-border contact form, and smooth anchor scrolling.
+     * FAQ accordion interactions, showcase category filtering, case study modals, and smooth anchor scrolling.
      */
     class EditorialBreatheController {
         constructor() {
@@ -811,16 +880,66 @@
             this.faqButtons = document.querySelectorAll('.faq-question-btn');
             this.contactForm = document.getElementById('contact-form');
             this.anchorLinks = document.querySelectorAll('a[href^="#"]');
+            this.filterButtons = document.querySelectorAll('.work-filter-btn');
+            this.caseModal = document.getElementById('case-study-modal');
+            this.modalOpenBtns = document.querySelectorAll('.showcase-modal-btn');
+            this.modalCloseBtn = document.getElementById('modal-close-btn');
+            this.prefillLinks = document.querySelectorAll('a[data-prefill]');
             this.statAnimMap = new Map();
 
             this.init();
         }
 
         init() {
+            this.initDeliverablesAccordion();
+            this.initPricingPlanSelection();
+            this.initCaseStudyTabs();
+            this.initVideoPlayBtns();
             this.initFaqAccordion();
             this.initSmoothScroll();
             this.initScrollRevealObserver();
             this.initContactForm();
+            this.initWorkFilter();
+            this.initCaseStudyModal();
+            this.initPrefillLinks();
+        }
+
+        initDeliverablesAccordion() {
+            const delivBtns = document.querySelectorAll('.deliv-accordion-btn');
+            delivBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const item = btn.closest('.deliv-accordion-item');
+                    if (!item) return;
+                    const isOpen = item.classList.contains('is-open');
+
+                    if (isOpen) {
+                        item.classList.remove('is-open');
+                        btn.setAttribute('aria-expanded', 'false');
+                    } else {
+                        item.classList.add('is-open');
+                        btn.setAttribute('aria-expanded', 'true');
+                    }
+                });
+            });
+        }
+
+        initPricingPlanSelection() {
+            const pricingBtns = document.querySelectorAll('.pricing-cta-btn[data-plan]');
+            pricingBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const plan = btn.dataset.plan;
+                    const budgetSelect = document.getElementById('contact-budget');
+                    if (budgetSelect && plan) {
+                        if (plan === 'Starter') budgetSelect.value = '₹15K–₹25K';
+                        else if (plan === 'Growth') budgetSelect.value = '₹25K–₹50K';
+                        else if (plan === 'Dominate') budgetSelect.value = '₹50K+';
+                    }
+                    const nameInput = document.getElementById('contact-name');
+                    if (nameInput) {
+                        setTimeout(() => nameInput.focus(), 600);
+                    }
+                });
+            });
         }
 
         initFaqAccordion() {
@@ -903,63 +1022,349 @@
             revealElements.forEach(el => observer.observe(el));
         }
 
-        triggerStatAnimation(rowIdx) {
-            if (prefersReducedMotion) return;
-            const row = this.workRows[rowIdx];
-            if (!row) return;
-            const valEl = row.querySelector('.work-stat-number');
-            if (!valEl) return;
+        initWorkFilter() {
+            const catFilterBtns = document.querySelectorAll('.cat-filter-btn');
+            const caseTabs = document.querySelectorAll('.case-nav-tab');
+            const caseArticles = document.querySelectorAll('.case-study-article');
+            const emptyState = document.getElementById('category-empty-state');
 
-            if (rowIdx === 0) {
-                // Siddhi Dental Clinic: 18 -> 64 over 1200ms
-                const duration = 1200;
-                const startTime = performance.now();
-                const startVal = 18;
-                const endVal = 64;
+            if (catFilterBtns && catFilterBtns.length) {
+                catFilterBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const filter = btn.dataset.category || 'all';
+                        catFilterBtns.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
 
-                const update = (now) => {
-                    const elapsed = now - startTime;
-                    const progress = Math.min(1, elapsed / duration);
-                    const ease = 1 - Math.pow(1 - progress, 3);
-                    const current = Math.round(startVal + (endVal - startVal) * ease);
-                    valEl.textContent = `18 → ${current}`;
+                        if (filter === 'food' || filter === 'real-estate') {
+                            // Show in-production empty state
+                            caseTabs.forEach(t => t.style.display = 'none');
+                            caseArticles.forEach(a => a.classList.remove('active'));
+                            if (emptyState) {
+                                emptyState.style.display = 'block';
+                                const titleEl = emptyState.querySelector('.empty-state-title');
+                                const descEl = emptyState.querySelector('.empty-state-desc');
+                                const ctaEl = emptyState.querySelector('.cta-audit-btn span');
+                                if (filter === 'food') {
+                                    if (titleEl) titleEl.textContent = 'FOOD & HOSPITALITY CASE STUDIES';
+                                    if (descEl) descEl.textContent = 'We are currently executing video shoots and local customer acquisition systems for dining restaurants and cafes in Mumbai & Thane. Case studies will be published here upon campaign rollout.';
+                                    if (ctaEl) ctaEl.textContent = 'GET FREE AUDIT FOR YOUR RESTAURANT →';
+                                } else {
+                                    if (titleEl) titleEl.textContent = 'REAL ESTATE CASE STUDIES';
+                                    if (descEl) descEl.textContent = 'We are currently building localized lead-generation funnels and on-site property walkthrough video systems for real estate developers & brokers in Thane & Navi Mumbai.';
+                                    if (ctaEl) ctaEl.textContent = 'GET FREE AUDIT FOR YOUR REAL ESTATE BUSINESS →';
+                                }
+                            }
+                        } else {
+                            if (emptyState) emptyState.style.display = 'none';
 
-                    if (progress < 1) {
-                        this.statAnimMap.set(rowIdx, requestAnimationFrame(update));
-                    } else {
-                        valEl.textContent = `18 → ${endVal}`;
-                        this.statAnimMap.delete(rowIdx);
-                    }
-                };
-                this.statAnimMap.set(rowIdx, requestAnimationFrame(update));
-            } else if (rowIdx === 2) {
-                // IT Hardware & Enterprise: ₹3.2L -> ₹11.4L over 1200ms
-                const duration = 1200;
-                const startTime = performance.now();
-                const startVal = 3.2;
-                const endVal = 11.4;
+                            let firstMatch = null;
+                            caseTabs.forEach(tab => {
+                                const tabCat = tab.dataset.category;
+                                if (filter === 'all' || tabCat === filter) {
+                                    tab.style.display = 'inline-flex';
+                                    if (!firstMatch) firstMatch = tab;
+                                } else {
+                                    tab.style.display = 'none';
+                                }
+                            });
 
-                const update = (now) => {
-                    const elapsed = now - startTime;
-                    const progress = Math.min(1, elapsed / duration);
-                    const ease = 1 - Math.pow(1 - progress, 3);
-                    const current = (startVal + (endVal - startVal) * ease).toFixed(1);
-                    valEl.textContent = `₹3.2L → ₹${current}L`;
-
-                    if (progress < 1) {
-                        this.statAnimMap.set(rowIdx, requestAnimationFrame(update));
-                    } else {
-                        valEl.textContent = `₹3.2L → ₹${endVal.toFixed(1)}L`;
-                        this.statAnimMap.delete(rowIdx);
-                    }
-                };
-                this.statAnimMap.set(rowIdx, requestAnimationFrame(update));
+                            // If current active tab is hidden, switch to first visible
+                            const currentActiveTab = document.querySelector('.case-nav-tab.active');
+                            if (!currentActiveTab || currentActiveTab.style.display === 'none') {
+                                if (firstMatch) {
+                                    firstMatch.click();
+                                }
+                            }
+                        }
+                    });
+                });
             }
+
+            if (this.filterButtons && this.filterButtons.length) {
+                this.filterButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const filter = btn.dataset.filter;
+                        this.filterButtons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+
+                        const cards = document.querySelectorAll('.work-card');
+                        cards.forEach(card => {
+                            const cat = card.dataset.category;
+                            if (filter === 'all' || cat === filter) {
+                                card.classList.remove('is-filtered-out');
+                                card.classList.add('is-visible', 'in-view');
+                            } else {
+                                card.classList.add('is-filtered-out');
+                            }
+                        });
+                    });
+                });
+            }
+        }
+
+        initCaseStudyModal() {
+            if (!this.caseModal) return;
+
+            // Open buttons on each card
+            this.modalOpenBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const caseKey = btn.dataset.openCase;
+                    const data = CASE_STUDIES_DATA[caseKey];
+                    if (!data) return;
+
+                    this.populateModal(data);
+                    try {
+                        this.caseModal.showModal();
+                        document.body.style.overflow = 'hidden';
+                    } catch (err) {
+                        this.caseModal.setAttribute('open', '');
+                    }
+                });
+            });
+
+            // Close button
+            if (this.modalCloseBtn) {
+                this.modalCloseBtn.addEventListener('click', () => {
+                    this.closeModal();
+                });
+            }
+
+            // Close on backdrop click (click outside modal content)
+            this.caseModal.addEventListener('click', (e) => {
+                if (e.target === this.caseModal) {
+                    this.closeModal();
+                }
+            });
+
+            // Handle native escape key
+            this.caseModal.addEventListener('cancel', () => {
+                document.body.style.overflow = '';
+            });
+
+            // Modal CTA button
+            const modalCta = document.getElementById('modal-primary-cta');
+            if (modalCta) {
+                modalCta.addEventListener('click', () => {
+                    const prefillVal = modalCta.dataset.prefill || '';
+                    this.closeModal();
+                    this.scrollToContactAndPrefill(prefillVal);
+                });
+            }
+        }
+
+        populateModal(data) {
+            const titleEl = document.getElementById('modal-client-title');
+            const subEl = document.getElementById('modal-client-sub');
+            const badgeEl = document.getElementById('modal-badge-text');
+            const mainImg = document.getElementById('modal-main-img');
+            const thumbsRow = document.getElementById('modal-thumbs-row');
+            const probDesc = document.getElementById('modal-pillar-prob-desc');
+            const solDesc = document.getElementById('modal-pillar-sol-desc');
+            const resDesc = document.getElementById('modal-pillar-res-desc');
+            const testText = document.getElementById('modal-testimonial-text');
+            const testAuthor = document.getElementById('modal-testimonial-author');
+            const modalCta = document.getElementById('modal-primary-cta');
+
+            if (titleEl) titleEl.textContent = data.title;
+            if (subEl) subEl.textContent = data.subtitle;
+            if (badgeEl) badgeEl.textContent = data.badge;
+            if (probDesc) probDesc.textContent = data.challenge;
+            if (solDesc) solDesc.textContent = data.solution;
+            if (resDesc) resDesc.textContent = data.results;
+            if (testText) testText.textContent = data.testimonial;
+            if (testAuthor) testAuthor.textContent = data.author;
+            if (modalCta) modalCta.dataset.prefill = data.prefill;
+
+            // Media setup
+            if (mainImg && data.images && data.images.length > 0) {
+                mainImg.src = data.images[0].src;
+                mainImg.alt = data.images[0].label;
+            }
+
+            if (thumbsRow) {
+                thumbsRow.innerHTML = '';
+                if (data.images && data.images.length > 0) {
+                    data.images.forEach((imgObj, idx) => {
+                        const thumbBtn = document.createElement('button');
+                        thumbBtn.type = 'button';
+                        thumbBtn.className = `modal-thumb-btn ${idx === 0 ? 'active' : ''}`;
+                        thumbBtn.setAttribute('aria-label', imgObj.label);
+
+                        const thumbImg = document.createElement('img');
+                        thumbImg.src = imgObj.src;
+                        thumbImg.alt = imgObj.label;
+                        thumbImg.loading = 'lazy';
+                        thumbBtn.appendChild(thumbImg);
+
+                        thumbBtn.addEventListener('click', () => {
+                            thumbsRow.querySelectorAll('.modal-thumb-btn').forEach(b => b.classList.remove('active'));
+                            thumbBtn.classList.add('active');
+                            if (mainImg) {
+                                mainImg.style.opacity = '0';
+                                setTimeout(() => {
+                                    mainImg.src = imgObj.src;
+                                    mainImg.alt = imgObj.label;
+                                    mainImg.style.opacity = '1';
+                                }, 150);
+                            }
+                        });
+
+                        thumbsRow.appendChild(thumbBtn);
+                    });
+                }
+            }
+        }
+
+        closeModal() {
+            if (!this.caseModal) return;
+            try {
+                this.caseModal.close();
+            } catch (err) {
+                this.caseModal.removeAttribute('open');
+            }
+            document.body.style.overflow = '';
+        }
+
+        initPrefillLinks() {
+            this.prefillLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const prefill = link.dataset.prefill;
+                    if (prefill) {
+                        this.scrollToContactAndPrefill(prefill);
+                    }
+                });
+            });
+        }
+
+        initCaseStudyTabs() {
+            const tabs = document.querySelectorAll('.case-nav-tab');
+            const articles = document.querySelectorAll('.case-study-article');
+            if (!tabs.length || !articles.length) return;
+
+            const activateCase = (targetId, scrollIntoView = false) => {
+                if (!targetId) return;
+                const tab = document.querySelector(`.case-nav-tab[data-case-target="${targetId}"]`);
+                const article = document.getElementById(`case-study-${targetId}`);
+                if (!tab || !article) return;
+
+                tabs.forEach(t => {
+                    t.classList.remove('active');
+                    t.setAttribute('aria-selected', 'false');
+                });
+                articles.forEach(a => {
+                    a.classList.remove('active');
+                });
+
+                tab.classList.add('active');
+                tab.setAttribute('aria-selected', 'true');
+                article.classList.add('active');
+
+                if (scrollIntoView) {
+                    const header = document.getElementById('site-header');
+                    const offset = header ? header.getBoundingClientRect().height : 70;
+                    const y = tab.getBoundingClientRect().top + (window.scrollY || window.pageYOffset) - offset - 20;
+                    window.scrollTo({ top: Math.max(0, y), behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+                }
+            };
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetId = tab.dataset.caseTarget;
+                    activateCase(targetId, false);
+                });
+            });
+
+            // Connect Next Case Study buttons inside each article
+            const nextBtns = document.querySelectorAll('.next-case-btn');
+            nextBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const nextTarget = btn.dataset.nextTarget;
+                    if (nextTarget) {
+                        // Reset category filter to all if next case is in another category
+                        const allFilter = document.querySelector('.cat-filter-btn[data-category="all"]');
+                        if (allFilter && !allFilter.classList.contains('active')) {
+                            allFilter.click();
+                        }
+                        activateCase(nextTarget, true);
+                    }
+                });
+            });
+
+            // Check URL hash on load and hashchange
+            const handleHash = () => {
+                const hash = window.location.hash.replace(/^#/, '');
+                if (!hash) return;
+                if (hash === 'dental-reforms' || hash === 'case-study-dental-reforms') {
+                    activateCase('dental-reforms', true);
+                } else if (hash === 'dargar' || hash === 'case-study-dargar' || hash === 'dargar-communication') {
+                    activateCase('dargar', true);
+                } else if (hash === 'siddhi' || hash === 'case-study-siddhi' || hash === 'siddhi-dental') {
+                    activateCase('siddhi', true);
+                } else if (hash === 'gcs' || hash === 'case-study-gcs' || hash === 'global-computer-solution') {
+                    activateCase('gcs', true);
+                }
+            };
+
+            handleHash();
+            window.addEventListener('hashchange', handleHash);
+        }
+
+        initVideoPlayBtns() {
+            const playBtns = document.querySelectorAll('.video-play-btn');
+            playBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const card = btn.closest('.featured-video-card');
+                    if (card) {
+                        const overlay = card.querySelector('.video-play-overlay');
+                        if (overlay) {
+                            overlay.style.transition = 'opacity 300ms ease';
+                            overlay.style.opacity = '0.2';
+                            setTimeout(() => {
+                                overlay.style.opacity = '1';
+                            }, 1000);
+                        }
+                    }
+                });
+            });
+        }
+
+        scrollToContactAndPrefill(businessType) {
+            const bizInput = document.getElementById('contact-biz');
+            const nameInput = document.getElementById('contact-name');
+            const contactSection = document.getElementById('contact');
+
+            if (bizInput && businessType) {
+                bizInput.value = businessType;
+            }
+
+            if (contactSection) {
+                const nav = document.getElementById('site-header');
+                const navHeight = nav ? nav.getBoundingClientRect().height : 70;
+                const targetY = contactSection.getBoundingClientRect().top + (window.scrollY || window.pageYOffset) - navHeight;
+
+                window.scrollTo({
+                    top: Math.max(0, targetY),
+                    behavior: prefersReducedMotion ? 'auto' : 'smooth'
+                });
+            }
+
+            if (nameInput) {
+                setTimeout(() => {
+                    nameInput.focus();
+                }, 600);
+            }
+        }
+
+        triggerStatAnimation(rowIdx) {
+            // Factual presentation - no synthetic counter animations
         }
 
         initContactForm() {
             if (!this.contactForm) return;
-            const submitBtn = this.contactForm.querySelector('.editorial-submit-btn');
+            const submitBtn = this.contactForm.querySelector('.editorial-submit-btn') || document.getElementById('contact-submit-btn');
             const statusMsg = document.getElementById('form-status-msg');
             const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbybk9uBoPRq91US9yRs_xMp8ADpqboqURz4jp3IZMDg0g5_EzBZkj6dfe898QB_AejW/exec';
             let isSubmitting = false;
@@ -969,7 +1374,7 @@
                 if (isSubmitting) return;
                 isSubmitting = true;
 
-                const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '<span>SEND MESSAGE</span>';
+                const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '<span>START THE CONVERSATION</span><span aria-hidden="true">↗</span>';
                 if (submitBtn) {
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = '<span>SENDING...</span>';
@@ -980,10 +1385,12 @@
                 }
 
                 const nameValue = (this.contactForm.querySelector('[name="name"]') || {}).value || '';
-                const emailValue = (this.contactForm.querySelector('[name="email"]') || {}).value || '';
-                const phoneValue = (this.contactForm.querySelector('[name="phone"]') || {}).value || '';
                 const businessValue = (this.contactForm.querySelector('[name="business"]') || {}).value || '';
+                const phoneValue = (this.contactForm.querySelector('[name="phone"]') || {}).value || '';
+                const emailValue = (this.contactForm.querySelector('[name="email"]') || {}).value || '';
+                const serviceValue = (this.contactForm.querySelector('[name="service"]') || {}).value || '';
                 const budgetValue = (this.contactForm.querySelector('[name="budget"]') || {}).value || '';
+                const profileValue = (this.contactForm.querySelector('[name="profile_url"]') || {}).value || '';
                 const messageValue = (this.contactForm.querySelector('[name="message"]') || {}).value || '';
                 const websiteValue = (this.contactForm.querySelector('[name="website"]') || {}).value || '';
 
@@ -994,15 +1401,22 @@
                         statusMsg.textContent = "Thank you! Your message has been sent. We'll be in touch within 24 hours.";
                     }
                     this.contactForm.reset();
+                    isSubmitting = false;
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnHtml;
+                    }
                     return;
                 }
 
                 const formData = new FormData();
                 formData.append('name', nameValue);
-                formData.append('email', emailValue);
-                formData.append('phone', phoneValue);
                 formData.append('business', businessValue);
+                formData.append('phone', phoneValue);
+                formData.append('email', emailValue);
+                formData.append('service', serviceValue);
                 formData.append('budget', budgetValue);
+                formData.append('profile_url', profileValue);
                 formData.append('message', messageValue);
 
                 try {
@@ -1011,7 +1425,7 @@
                         body: formData
                     });
 
-                    const result = await response.json();
+                    const result = await response.json().catch(() => ({ status: 'success' }));
 
                     if (result && result.status === 'success') {
                         if (statusMsg) {

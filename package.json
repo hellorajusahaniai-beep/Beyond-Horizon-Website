@@ -4,12 +4,19 @@
   "description": "Beyond Horizon Marketing Agency - official website and digital portfolio",
   "private": true,
   "scripts": {
+    "dev": "node server.js",
     "start": "node server.js",
     "build:css": "esbuild style.css --minify --outfile=style.min.css",
     "build:js": "esbuild script.js --minify --outfile=script.min.js",
-    "build": "npm run build:css && npm run build:js"
+    "build": "npm run build:css && npm run build:js",
+    "build:dist": "npm run build && node build-dist.js",
+    "deploy:cf": "npm run build:dist && npx wrangler pages deploy dist --project-name=beyond-horizon-portfolio --branch=main"
   },
   "devDependencies": {
     "esbuild": "^0.24.0"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.7.0"
   }
 }

@@ -7,3 +7,6 @@ images-portrait-native/
 images-2-portrait-native/
 .DS_Store
 *.zip
+dist/
+dist_test/
+case studies/

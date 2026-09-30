@@ -1,0 +1,42 @@
+# ==============================================================================
+# Cloudflare Pages Deployment Exclusions (.pagesignore)
+# Excludes raw source frames, dev scripts, backups, and archives
+# ==============================================================================
+
+# Development folders and tooling
+dev/
+_dev/
+encode_frames.js
+google_apps_script_contact_form.js
+server.js
+
+# Test and simulation preview images
+final_test_*
+sim_*
+test_*
+thumb_*
+
+# Backups and archives
+*.zip
+backup*
+
+# Raw uncompressed image conversion frames
+# (Production uses images-webp/, images-portrait-webp/, images-2-webp/, images-2-portrait-webp/, images-jpg/, images-2-jpg/)
+images/
+images 2/
+image-portrait/
+image-2-portrait/
+images-portrait/
+images-2-portrait/
+images-portrait-native/
+images-2-portrait-native/
+
+# Repository, config & Node files
+node_modules/
+package.json
+package-lock.json
+README.md
+.gitignore
+.git/
+.netlifyignore
+netlify.toml
