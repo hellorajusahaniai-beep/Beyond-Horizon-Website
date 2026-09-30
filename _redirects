@@ -1,10 +1,4 @@
-# Dedicated Client Case Studies Clean URLs
-/dental-reforms /dental-reforms.html 200
-/dargar-communication /dargar-communication.html 200
-/siddhi-dental /siddhi-dental.html 200
-/global-computer-solution /global-computer-solution.html 200
-
-# Canonical /case-study/ routes
+# Canonical /case-study/ routes to standalone html files
 /case-study/dental-reforms /dental-reforms.html 200
 /case-study/dargar-communication /dargar-communication.html 200
 /case-study/global-computer-solution /global-computer-solution.html 200
@@ -12,10 +6,12 @@
 /case-study/siddhi-dental.html /siddhi-dental.html 200
 /case-study/siddhi-dental-clinic /siddhi-dental.html 200
 /case-study/siddhi-dental-clinic.html /siddhi-dental.html 200
-/work /index.html#work 200
-/services /index.html#services 200
-/process /index.html#process 200
-/contact /index.html#contact 200
+
+# Top-level Section Anchor Redirects
+/work /#work 302
+/services /#services 302
+/process /#process 302
+/contact /#contact 302
 
 
 # Security & Deploy Hygiene: Block dev tools, test images, raw sources, and archives

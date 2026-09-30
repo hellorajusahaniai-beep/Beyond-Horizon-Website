@@ -25,13 +25,39 @@ const server = http.createServer((req, res) => {
         reqUrl = '/index.html';
     }
 
-    const filePath = path.normalize(path.join(PUBLIC_DIR, reqUrl));
+    // Route mappings for clean URLs
+    const routeAliases = {
+        '/case-study/dental-reforms': '/dental-reforms.html',
+        '/case-study/dargar-communication': '/dargar-communication.html',
+        '/case-study/global-computer-solution': '/global-computer-solution.html',
+        '/case-study/siddhi-dental-clinic': '/siddhi-dental.html',
+        '/dental-reforms': '/dental-reforms.html',
+        '/dargar-communication': '/dargar-communication.html',
+        '/global-computer-solution': '/global-computer-solution.html',
+        '/siddhi-dental': '/siddhi-dental.html',
+        '/pricing': '/pricing.html',
+        '/work': '/index.html',
+        '/services': '/index.html',
+        '/process': '/index.html',
+        '/contact': '/index.html'
+    };
+
+    if (routeAliases[reqUrl]) {
+        reqUrl = routeAliases[reqUrl];
+    }
+
+    let filePath = path.normalize(path.join(PUBLIC_DIR, reqUrl));
 
     // Security check: stay inside directory
     if (!filePath.startsWith(PUBLIC_DIR)) {
         res.writeHead(403, { 'Content-Type': 'text/plain' });
         res.end('Forbidden');
         return;
+    }
+
+    // Try filePath as-is, or append .html if no extension
+    if (!fs.existsSync(filePath) && fs.existsSync(filePath + '.html')) {
+        filePath = filePath + '.html';
     }
 
     fs.stat(filePath, (err, stats) => {
